@@ -24,11 +24,12 @@ import java.util.List;
 public class EchoController {
 
     @RequestMapping(value="/", method = RequestMethod.POST)
-    public void exists(@RequestBody String ip){
+    public ResponseEntity<Boolean> exists(@RequestBody String ip){
         System.err.println("ip : " + ip);
+        return ResponseEntity.ok().body(null);
     }
 
-    @RequestMapping(value ="/discover", method = RequestMethod.GET)
+    @RequestMapping(value ="/discovery", method = RequestMethod.GET)
     public List<String> discover() throws IOException {
         List<String> discoveredDevices = new ArrayList<String>();
 
@@ -42,16 +43,16 @@ public class EchoController {
 
                 if (address.isReachable(100)) {
                     String deviceIP = address.toString().substring(1);
-
+                    String uri = "http://" + deviceIP + ":8080/echo/";
                     RestTemplate restTemplate = new RestTemplate();
 
-                    ResponseEntity<String> response
-                            = restTemplate.getForEntity(deviceIP + ":8080/echo", String.class);
+                    ResponseEntity<ResponseEntity> response
+                            = restTemplate.postForEntity(uri,null, ResponseEntity.class);
                     System.out.println("response : " + response.getStatusCode());
 
                 }
             }catch(Exception e){
-                e.printStackTrace();
+               //e.printStackTrace();
             }
         }
         return null;

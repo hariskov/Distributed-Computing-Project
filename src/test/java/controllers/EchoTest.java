@@ -11,6 +11,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 /**
@@ -26,6 +27,13 @@ public class EchoTest extends AbstractInitTest{
     public void echoText() throws Exception {
         getMockMvc().perform(post("/echo/")
                 .content("abcd")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print());
+    }
+
+    @Test
+    public void discoverTest() throws Exception {
+        getMockMvc().perform(get("/echo/discovery")
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print());
     }
