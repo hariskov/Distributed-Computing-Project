@@ -1,5 +1,6 @@
 package com.dc.config;
 
+import com.dc.interceptors.PreVoteInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +54,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Override
     public void addInterceptors(InterceptorRegistry registry){
+        registry.addInterceptor(new PreVoteInterceptor());
         // none for now , should add interceptor for calls to other servers
         // to verify whether they exist , add polling calls in here
     }

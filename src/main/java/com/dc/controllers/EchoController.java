@@ -34,22 +34,27 @@ public class EchoController {
         List<String> discoveredDevices = new ArrayList<String>();
 
         InetAddress localhost = InetAddress.getLocalHost();
+        byte[] localhost1 = InetAddress.getLocalHost().getAddress();
+        String localhost2 = InetAddress.getLocalHost().getCanonicalHostName();
+
         byte[] ip = localhost.getAddress();
 
         for (int i = 1; i <= 254; i++) {
             try {
                 ip[3] = (byte) i;
                 InetAddress address = InetAddress.getByAddress(ip);
+                if(!address.equals(localhost)) {
 
-                if (address.isReachable(100)) {
-                    String deviceIP = address.toString().substring(1);
-                    String uri = "http://" + deviceIP + ":8080/echo/";
-                    RestTemplate restTemplate = new RestTemplate();
+                    if (address.isReachable(100)) {
+                        String deviceIP = address.toString().substring(1);
+                        String uri = "http://" + deviceIP + ":8080/echo/";
+                        RestTemplate restTemplate = new RestTemplate();
 
-                    ResponseEntity<ResponseEntity> response
-                            = restTemplate.postForEntity(uri,null, ResponseEntity.class);
-                    System.out.println("response : " + response.getStatusCode());
+                        ResponseEntity<ResponseEntity> response
+                                = restTemplate.postForEntity(uri, null, ResponseEntity.class);
+                        System.out.println("response : " + response.getStatusCode());
 
+                    }
                 }
             }catch(Exception e){
                //e.printStackTrace();
