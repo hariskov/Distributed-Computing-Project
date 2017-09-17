@@ -1,6 +1,7 @@
 package controllers;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -20,10 +21,10 @@ public abstract class AbstractInitTest {
     @Before
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-
     }
 
     public MockMvc getMockMvc() {
         return mockMvc;
     }
+
 }

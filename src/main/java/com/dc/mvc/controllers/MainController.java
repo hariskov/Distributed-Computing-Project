@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Created by xumepa on 9/12/17.
  */
 @Controller
+@RequestMapping(value = "/", method = RequestMethod.GET)
 public class MainController {
 
     private static final String MAIN = "main";
