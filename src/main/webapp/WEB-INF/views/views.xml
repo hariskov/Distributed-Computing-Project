@@ -4,10 +4,10 @@
         "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 <tiles-definitions>
 
-    <definition name="login" extends="base.definition" template="/WEB-INF/views/main.jsp">
+    <definition name="main" extends="base.definition" template="/WEB-INF/views/main.jsp">
 
         <put-list-attribute name="controllers">
-            <add-attribute value="/static/js/login/controllers/mainController.js"/>
+            <add-attribute value="/login/controllers/mainController.js"/>
         </put-list-attribute>
 
         <put-list-attribute name="services">

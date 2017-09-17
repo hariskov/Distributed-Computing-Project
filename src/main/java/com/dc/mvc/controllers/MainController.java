@@ -17,7 +17,14 @@ public class MainController {
     private final static Logger log = LoggerFactory.getLogger(MainController.class);
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String getindexScreen() {
+    public String getMainScreen() {
+        System.out.println("a");
+        log.info(Thread.currentThread().getStackTrace()[1].getClassName() + " / " + Thread.currentThread().getStackTrace()[1].getMethodName());
+        return MAIN;
+    }
+    @RequestMapping(value = "/main", method = RequestMethod.GET)
+    public String getMainScreen1() {
+        System.out.println("b");
         log.info(Thread.currentThread().getStackTrace()[1].getClassName() + " / " + Thread.currentThread().getStackTrace()[1].getMethodName());
         return MAIN;
     }

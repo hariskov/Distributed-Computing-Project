@@ -3,6 +3,7 @@
 (function(){
 
 var configFunction = function($routeProvider){
+console.log('provider');
 
     $routeProvider
         .when('/',{

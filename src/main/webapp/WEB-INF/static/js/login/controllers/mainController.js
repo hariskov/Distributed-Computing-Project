@@ -3,6 +3,7 @@
 (function(){
 
 var mainFunction = function(mainService, $scope, $http, $location){
+    console.log('function controller');
 
 }
 

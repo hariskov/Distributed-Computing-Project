@@ -15,7 +15,6 @@
             <add-attribute value="/static/js/angular/angular-route.min.js"/>
         </put-list-attribute>
 
-
     </definition>
 
     <definition name="base.definition.layout" extends="base.definition">
@@ -23,7 +22,7 @@
     </definition>
 
 
-    <definition name="app.login" template="/WEB-INF/views/layout.jsp"  extends="base.definition"></definition>
+    <definition name="app.main" template="/WEB-INF/views/layout.jsp"  extends="base.definition"></definition>
 
 
 </tiles-definitions>
