@@ -23,4 +23,5 @@ hs_err_pid*
 
 .idea/libraries/*
 .idea/artifacts
+.idea/workspace.xml
 target/
