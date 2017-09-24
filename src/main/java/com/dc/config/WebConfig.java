@@ -1,9 +1,10 @@
 package com.dc.config;
 
-import com.dc.interceptors.PreVoteInterceptor;
+import com.dc.pojo.Devices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -52,9 +53,20 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         return tc;
     }
 
+    @Bean
+    public Devices devices(){
+        Devices devices = new Devices();
+        return devices;
+    }
+
+    @Bean
+    public RestTemplate getRestTemplate(){
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate;
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(new PreVoteInterceptor());
         // none for now , should add interceptor for calls to other servers
         // to verify whether they exist , add polling calls in here
     }
