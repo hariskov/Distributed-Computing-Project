@@ -34,7 +34,7 @@ public class VotingController {
 
     private void getVote(String v) {
         String uri = "http://" + v + ":8080/voting/getVote";
-        ResponseEntity<Boolean> response = restTemplate.postForEntity(v, null, Boolean.class);
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, null, Boolean.class);
         System.err.println("Vote was : " + response.getBody());
     }
 
