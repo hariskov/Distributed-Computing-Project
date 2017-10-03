@@ -19,6 +19,7 @@ public class MainController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getMainScreen() {
+
         System.out.println("a");
         log.info(Thread.currentThread().getStackTrace()[1].getClassName() + " / " + Thread.currentThread().getStackTrace()[1].getMethodName());
         return MAIN;

@@ -1,6 +1,7 @@
 package com.dc.controllers;
 
 import com.dc.pojo.Devices;
+import com.dc.pojo.VotingManager;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +26,21 @@ public class VotingController {
     Devices devices;
 
     @Autowired
+    VotingManager manager;
+
+    @Autowired
     RestTemplate restTemplate;
 
-    @RequestMapping(value="/startVote",method = RequestMethod.POST)
+    @RequestMapping(value="/startVote",method = RequestMethod.GET)
     public void startVote(){
+        manager.createVote("Vote");
         devices.getDevices().forEach((k,v)->getVote(v));
     }
 
     private void getVote(String v) {
         String uri = "http://" + v + ":8080/voting/getVote";
         ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, null, Boolean.class);
+        manager.putVote("Vote",devices.getDeviceUUID(v),response.getBody());
         System.err.println("Vote was : " + response.getBody());
     }
 

@@ -1,6 +1,7 @@
 package com.dc.config;
 
 import com.dc.pojo.Devices;
+import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,8 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
+
+import java.util.UUID;
 
 @Configuration
 @ComponentScan({"com.dc"})
@@ -67,8 +70,15 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean
+    public VotingManager votingManager(){
+        VotingManager vm = new VotingManager();
+        return vm;
+    }
+
+    @Bean
     public Devices devices(){
         Devices devices = new Devices();
+//        devices.discoverDevices();
         return devices;
     }
 
