@@ -1,5 +1,7 @@
 package com.dc.config;
 
+import com.dc.interceptors.DeviceCheckerInterceptor;
+import com.dc.interceptors.VotingInterceptor;
 import com.dc.pojo.Devices;
 import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -22,6 +25,8 @@ import java.util.UUID;
 @ComponentScan({"com.dc"})
 @EnableWebMvc
 public class WebConfig extends WebMvcConfigurerAdapter{
+
+    private HandlerInterceptor deviceCheckerInterceptor;
 
     @Bean
     public UrlBasedViewResolver viewResolver(){
@@ -89,9 +94,21 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry){
+    public void addInterceptors(InterceptorRegistry registry) {
         // none for now , should add interceptor for calls to other servers
         // to verify whether they exist , add polling calls in here
+
+        registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/voting/startVote");
+        registry.addInterceptor(getVotingInterceptor()).addPathPatterns("/voting/startVote");
+
     }
 
+    @Bean
+    public VotingInterceptor getVotingInterceptor(){return new VotingInterceptor();
+    }
+
+    @Bean
+    public DeviceCheckerInterceptor getDeviceCheckerInterceptor() {
+        return new DeviceCheckerInterceptor();
+    }
 }

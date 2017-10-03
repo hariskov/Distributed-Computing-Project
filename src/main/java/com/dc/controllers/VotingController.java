@@ -28,20 +28,10 @@ public class VotingController {
     @Autowired
     VotingManager manager;
 
-    @Autowired
-    RestTemplate restTemplate;
-
     @RequestMapping(value="/startVote",method = RequestMethod.GET)
     public void startVote(){
         manager.createVote("Vote");
-        devices.getDevices().forEach((k,v)->getVote(v));
-    }
-
-    private void getVote(String v) {
-        String uri = "http://" + v + ":8080/voting/getVote";
-        ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, null, Boolean.class);
-        manager.putVote("Vote",devices.getDeviceUUID(v),response.getBody());
-        System.err.println("Vote was : " + response.getBody());
+        devices.getDevices().forEach((k,v)->manager.getVote(v));
     }
 
     @RequestMapping(value="/getVote",method = RequestMethod.POST)

@@ -1,7 +1,10 @@
 package com.dc.pojo;
 
 import com.dc.exceptions.ExistingVoteException;
+import com.dc.exceptions.NoDevicesException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,19 +20,31 @@ public class VotingManager {
 
 //    private Map<String,Vote> manager= new HashMap<String,Vote>();
 
-    private List<Vote> manager = new ArrayList<Vote>();
+    @Autowired
+    RestTemplate restTemplate;
+
+    private List<Vote> manager;
+
+    public VotingManager(){
+        manager = new LinkedList<Vote>();
+    }
 
     public void createVote(String voteStr) {
-        if(manager.contains(voteStr)){
+        if (manager.contains(voteStr)) {
             throw new ExistingVoteException();
+        }else{
+            Vote vote = new Vote(devices);
+            vote.createVote(voteStr);
+            manager.add(vote);
         }
-        Vote vote = new Vote(devices);
-        vote.createVote(voteStr);
-        manager.add(vote);
     }
 
     public List<Vote> getVotes(){
         return manager;
+    }
+
+    public boolean hasVotes(){
+        return !manager.isEmpty();
     }
 
     public void putVote(String vote, UUID deviceUUID, Boolean body) {
@@ -39,31 +54,14 @@ public class VotingManager {
             returnedVote.setVote(deviceUUID,body);
         }
     }
+
+    public void getVote(String v) {
+        String uri = "http://" + v + ":8080/voting/getVote";
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, null, Boolean.class);
+        putVote("Vote",devices.getDeviceUUID(v),response.getBody());
+        System.err.println("Vote was : " + response.getBody());
+    }
+
 }
-
-class Vote{
-    private final Devices devices;
-    HashMap<UUID,Object> vote = new HashMap<>();
-    private String voteStr;
-
-    public Vote(Devices devices) {
-        this.devices = devices;
-    }
-
-    public void createVote(String voteStr) {
-        this.voteStr = voteStr;
-        devices.getDevices().forEach((k,v)->vote.put(k,null));
-    }
-
-    public String getVote(){
-        return voteStr;
-    }
-
-    public void setVote(UUID deviceUUID, Boolean body) {
-        vote.put(deviceUUID,body);
-    }
 
     //HashMap<UUID,Object>
-
-
-}

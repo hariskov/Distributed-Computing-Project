@@ -29,6 +29,7 @@ public class Devices {
         this.setCurrentDeviceUUID(uuid);
 
     }
+        
     public void addDevice(UUID uuid, String address){
         devices.put(uuid,address);
     }
