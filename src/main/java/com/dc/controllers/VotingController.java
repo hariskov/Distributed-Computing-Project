@@ -2,15 +2,12 @@ package com.dc.controllers;
 
 import com.dc.pojo.Devices;
 import com.dc.pojo.VotingManager;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -45,4 +42,5 @@ public class VotingController {
             return ResponseEntity.ok(false);
         }
     }
+
 }

@@ -17,13 +17,10 @@ import java.util.stream.Collectors;
  * Created by xumepa on 10/3/17.
  */
 
-public class VotingInterceptor implements HandlerInterceptor {
+public class NewVoteInterceptor implements HandlerInterceptor {
 
     @Autowired
     VotingManager manager;
-
-    @Autowired
-    Devices devices;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -35,7 +32,7 @@ public class VotingInterceptor implements HandlerInterceptor {
 
             // new vote should come if errors
             if (nullValues.size() > 0) {
-                nullValues.forEach((k, v) -> manager.getVote(devices.getDevices().get(k)));
+                //nullValues.forEach((k, v) -> manager.getVote(devices.getDevices().get(k)));
                 return false;
             }
         }
@@ -45,6 +42,9 @@ public class VotingInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        // we have all votes calculated !
+        Object o = manager.calculateVote("Vote");
+
 
     }
 

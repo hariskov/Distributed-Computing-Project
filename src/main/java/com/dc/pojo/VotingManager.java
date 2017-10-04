@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +63,11 @@ public class VotingManager {
         System.err.println("Vote was : " + response.getBody());
     }
 
+    public Object calculateVote(String vote) {
+        Vote receivedVote = manager.stream().filter(e->e.getVote().equals(vote)).findFirst().get();
+        Map<Object,Long> a = receivedVote.getVoteResults().entrySet().parallelStream().collect(Collectors.groupingBy(w->w.getValue(), Collectors.counting()));
+        return a.entrySet().stream().max(Map.Entry.comparingByValue()).get(); // assumes n/2 + 1
+    }
 }
 
     //HashMap<UUID,Object>

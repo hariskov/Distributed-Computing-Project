@@ -1,7 +1,8 @@
 package com.dc.config;
 
 import com.dc.interceptors.DeviceCheckerInterceptor;
-import com.dc.interceptors.VotingInterceptor;
+import com.dc.interceptors.NewVoteInterceptor;
+import com.dc.interceptors.VoteCalculatorInterceptor;
 import com.dc.pojo.Devices;
 import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -18,8 +19,6 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
-
-import java.util.UUID;
 
 @Configuration
 @ComponentScan({"com.dc"})
@@ -99,12 +98,18 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         // to verify whether they exist , add polling calls in here
 
         registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/voting/startVote");
-        registry.addInterceptor(getVotingInterceptor()).addPathPatterns("/voting/startVote");
+        registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/startVote");
+        registry.addInterceptor(getVoteCalculatorInterceptor()).addPathPatterns("/voting/getVote");
 
     }
 
+    private VoteCalculatorInterceptor getVoteCalculatorInterceptor() {
+        VoteCalculatorInterceptor voteCalculatorInterceptor = new VoteCalculatorInterceptor();
+        return voteCalculatorInterceptor;
+    }
+
     @Bean
-    public VotingInterceptor getVotingInterceptor(){return new VotingInterceptor();
+    public NewVoteInterceptor getNewVoteInterceptor(){return new NewVoteInterceptor();
     }
 
     @Bean
