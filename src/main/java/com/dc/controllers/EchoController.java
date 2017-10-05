@@ -7,16 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by xumepa on 9/17/17.
@@ -67,7 +62,6 @@ public class EchoController {
         return null;
     }
 
-
     private static InetAddress getLocalAddress(){
         try {
             Enumeration<NetworkInterface> b = NetworkInterface.getNetworkInterfaces();
@@ -93,6 +87,12 @@ public class EchoController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @RequestMapping(value="/syncDevices", method = RequestMethod.POST)
+    public void syncDevices(@RequestBody Devices newDevices){
+        System.out.println(newDevices.getDevices());
+//        devices.addDevice();
     }
 
 }

@@ -33,4 +33,7 @@ public class Vote {
         vote.put(deviceUUID, body);
     }
 
+    public int getVoteParticipants(){
+        return vote.size();
+    }
 }

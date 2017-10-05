@@ -1,5 +1,6 @@
 package com.dc.interceptors;
 
+import com.dc.exceptions.NoDevicesException;
 import com.dc.pojo.Devices;
 import com.dc.pojo.Vote;
 import com.dc.pojo.VotingManager;
@@ -22,17 +23,26 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     @Autowired
     VotingManager manager;
 
+    @Autowired
+    Devices devices;
+
+    // to check for previous votes that are not completed.
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        if(devices.getDevices().size()==0) {
+            throw new NoDevicesException();
+        }
+
         if(manager.hasVotes()) {
-            Vote lastVote = manager.getVotes().get(manager.getVotes().size() - 1);
+            Vote lastVote = manager.getLastVote();
             Map<UUID, Object> nullValues = lastVote.getVoteResults().entrySet().stream()
                     .filter(ent -> ent.getValue() == null).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
 
             // new vote should come if errors
             if (nullValues.size() > 0) {
-                //nullValues.forEach((k, v) -> manager.getVote(devices.getDevices().get(k)));
+                //nullValues.forEach((k, v) -> manager.getNetworkVotes(devices.getDevices().get(k)));
                 return false;
             }
         }
@@ -43,9 +53,10 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // we have all votes calculated !
-        Object o = manager.calculateVote("Vote");
-
-
+        Vote lastVote = manager.getVotes().get(manager.getVotes().size()-1);
+        if(lastVote.getVoteParticipants()!=devices.getDevices().size()){
+            // something went wrong -> a recipient left.
+        }
     }
 
     @Override

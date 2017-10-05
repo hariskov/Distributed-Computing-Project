@@ -28,7 +28,7 @@ public class VotingController {
     @RequestMapping(value="/startVote",method = RequestMethod.GET)
     public void startVote(){
         manager.createVote("Vote");
-        devices.getDevices().forEach((k,v)->manager.getVote(v));
+        devices.getDevices().forEach((k,v)->manager.getNetworkVotes(v));
     }
 
     @RequestMapping(value="/getVote",method = RequestMethod.POST)

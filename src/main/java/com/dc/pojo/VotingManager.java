@@ -44,6 +44,10 @@ public class VotingManager {
         return manager;
     }
 
+    public Vote getLastVote(){
+        return manager.get(manager.size()-1);
+    }
+
     public boolean hasVotes(){
         return !manager.isEmpty();
     }
@@ -56,8 +60,8 @@ public class VotingManager {
         }
     }
 
-    public void getVote(String v) {
-        String uri = "http://" + v + ":8080/voting/getVote";
+    public void getNetworkVotes(String v) {
+        String uri = "http://" + v + ":8080/voting/getNetworkVotes";
         ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, null, Boolean.class);
         putVote("Vote",devices.getDeviceUUID(v),response.getBody());
         System.err.println("Vote was : " + response.getBody());
