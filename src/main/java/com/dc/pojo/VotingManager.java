@@ -52,18 +52,18 @@ public class VotingManager {
         return !manager.isEmpty();
     }
 
-    public void putVote(String vote, UUID deviceUUID, Boolean body) {
+    public void putVote(String vote, Device device, Boolean body) {
         List<Vote> a = manager.parallelStream().filter(e->e.getVote().equals(vote)).collect(Collectors.toList());
         if(a.size()>0){
             Vote returnedVote = a.get(0);
-            returnedVote.setVote(deviceUUID,body);
+            returnedVote.setVote(device,body);
         }
     }
 
-    public void getNetworkVotes(String v) {
-        String uri = "http://" + v + ":8080/voting/getNetworkVotes";
+    public void getNetworkVotes(Device device) {
+        String uri = "http://" + device.getIp() + ":8080/voting/getNetworkVotes";
         ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, null, Boolean.class);
-        putVote("Vote",devices.getDeviceUUID(v),response.getBody());
+        putVote("Vote",device,response.getBody());
         System.err.println("Vote was : " + response.getBody());
     }
 

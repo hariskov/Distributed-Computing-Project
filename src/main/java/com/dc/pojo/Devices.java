@@ -15,27 +15,23 @@ public class Devices {
     @Autowired
     RestTemplate restTemplate;
 
-    Map<UUID,String> devices = new HashMap<UUID,String>();
-    private UUID currentDeviceUUID;
-    public Devices(){
-        UUID uuid = UUID.randomUUID();
-        this.setCurrentDeviceUUID(uuid);
+    List<Device> devices = new ArrayList<>();
+    private Device currentDevice;
 
-    }
-        
     public void addDevice(UUID uuid, String address){
-        devices.put(uuid,address);
+        Device device = new Device(uuid,address);
+        devices.add(device);
+    }
+    public void addDevice(Device device){
+        devices.add(device);
     }
 
-    public Map<UUID,String> getDevices(){
+    public List<Device> getDevices(){
         return devices;
     }
 
-    public boolean hasDevice(UUID uuid){
-        return devices.containsKey(uuid);
-    }
-
-    public boolean discoverDevice(String address){
+    //returns the device id
+    public UUID discoverDevice(String address){
 
         String uri = "http://" + address + ":8080/echo/";
         System.out.println(uri);
@@ -46,37 +42,35 @@ public class Devices {
         System.out.println(response.getStatusCode());
         try {
             UUID uuid = UUID.fromString(response.getBody());
-            return true;
+            return uuid;
         }catch(Exception ite){
-            return false;
-            //
+            return null;
         }
 //        ResponseEntity<UUID> body = response.getBody();
 //        System.out.println("response : " + body.toString());
     }
 
-    public UUID getCurrentDeviceUUID() {
-        return currentDeviceUUID;
+    public Device getCurrentDevice() {
+        return currentDevice;
     }
 
-    public void setCurrentDeviceUUID(UUID currentDeviceUUID) {
-        this.currentDeviceUUID = currentDeviceUUID;
+    public void setCurrentDevice(Device device) {
+        this.currentDevice = device;
     }
 
-    public UUID getDeviceUUID(String ip) {
-        for(Map.Entry<UUID, String> entrySet : devices.entrySet()){
-            if(entrySet.getValue() == ip){
-                return entrySet.getKey();
-            }
+    public void syncDevices(){
+        for (Device device : devices) {
+            String uri = "http://" + device.getIp() + ":8080/echo/";
+            ResponseEntity<String> response
+                    = restTemplate.postForEntity(uri, devices, String.class);
         }
-        return null;
+
     }
-
-
 //    public void setLocalIP(){
 //        InetAddress localhost = getLocalAddress();
 //        ip = localhost.getAddress();
 //        this.devices.put(currentDeviceUUID,ip.toString());
 //    }
+
 
 }

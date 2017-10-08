@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class Vote {
     private final Devices devices;
-    HashMap<UUID, Object> vote = new HashMap<>();
+    HashMap<Device, Object> vote = new HashMap<>();
     private String voteStr;
 
     public Vote(Devices devices) {
@@ -19,18 +19,18 @@ public class Vote {
 
     public void createVote(String voteStr) {
         this.voteStr = voteStr;
-        devices.getDevices().forEach((k, v) -> vote.put(k, null));
+        devices.getDevices().forEach(d -> vote.put(d, null));
     }
 
-    public HashMap<UUID,Object> getVoteResults(){
+    public HashMap<Device,Object> getVoteResults(){
         return vote;
     }
     public String getVote() {
         return voteStr;
     }
 
-    public void setVote(UUID deviceUUID, Boolean body) {
-        vote.put(deviceUUID, body);
+    public void setVote(Device device, Boolean body) {
+        vote.put(device, body);
     }
 
     public int getVoteParticipants(){

@@ -16,7 +16,6 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     @Autowired
     Devices devices;
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;
@@ -25,7 +24,8 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // this should send the current state of the devices to all devices.
-//        devices.getDevices().forEach((k,v)->syncDevices(v));
+//        devices.getDevices().forEach(device -> devices.syncDevices());
+        devices.syncDevices();
     }
 
     @Override

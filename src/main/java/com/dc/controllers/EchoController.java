@@ -1,5 +1,6 @@
 package com.dc.controllers;
 
+import com.dc.pojo.Device;
 import com.dc.pojo.Devices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by xumepa on 9/17/17.
@@ -26,7 +28,7 @@ public class EchoController {
 
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<String> exists(){
-        return ResponseEntity.ok().body(devices.getCurrentDeviceUUID().toString());
+        return ResponseEntity.ok().body(devices.getCurrentDevice().getUuid().toString());
     }
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)
@@ -48,8 +50,10 @@ public class EchoController {
                 InetAddress address = InetAddress.getByAddress(ip);
 //                if(!address.equals(localhost)) {
                     if (address.isReachable(100)) {
-                        if(devices.discoverDevice(address.toString().substring(1))) {
-                            this.devices.addDevice(this.devices.getCurrentDeviceUUID(),address.toString().substring(1));
+                        UUID deviceUUID = devices.discoverDevice(address.toString().substring(1));
+                        if(deviceUUID!=null) {
+                            Device discoveredDevice = new Device(deviceUUID,address.toString().substring(1));
+                            this.devices.addDevice(discoveredDevice);
                         }
 //                        (address.toString().substring(1));
                     }
@@ -90,8 +94,8 @@ public class EchoController {
     }
 
     @RequestMapping(value="/syncDevices", method = RequestMethod.POST)
-    public void syncDevices(@RequestBody Devices newDevices){
-        System.out.println(newDevices.getDevices());
+    public void syncDevices(@RequestBody List<Device> newDevices){
+        System.out.println(newDevices.size());
 //        devices.addDevice();
     }
 
