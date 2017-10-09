@@ -4,7 +4,7 @@ import com.dc.interceptors.CardInterceptor;
 import com.dc.interceptors.DeviceCheckerInterceptor;
 import com.dc.interceptors.NewVoteInterceptor;
 import com.dc.interceptors.VoteCalculatorInterceptor;
-import com.dc.pojo.Devices;
+import com.dc.pojo.DeviceManager;
 import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -79,10 +78,10 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean
-    public Devices devices(){
-        Devices devices = new Devices();
-//        devices.discoverDevices();
-        return devices;
+    public DeviceManager devices(){
+        DeviceManager deviceManager = new DeviceManager();
+//        deviceManager.discoverDevices();
+        return deviceManager;
     }
 
     @Bean
@@ -100,17 +99,16 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/startVote");
         registry.addInterceptor(getVoteCalculatorInterceptor()).addPathPatterns("/voting/getNetworkVotes");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
-
     }
 
     @Bean
-    private VoteCalculatorInterceptor getVoteCalculatorInterceptor() {
+    public VoteCalculatorInterceptor getVoteCalculatorInterceptor() {
         VoteCalculatorInterceptor voteCalculatorInterceptor = new VoteCalculatorInterceptor();
         return voteCalculatorInterceptor;
     }
 
     @Bean
-    CardInterceptor getCardInterceptor(){
+    public CardInterceptor getCardInterceptor(){
         return new CardInterceptor();
     }
 

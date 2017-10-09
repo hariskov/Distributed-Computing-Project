@@ -2,12 +2,13 @@
 
 (function(){
 
-    var initializationServiceFunction = function($http){
-        this.submit = function(card){
+    var initializationServiceFunction = function($http) {
+
+        this.submitCard = function (card) {
             var request = {
-                method:'post',
-                url:'card/playCard',
-                data:card
+                method: 'post',
+                url: 'card/playCard',
+                data: card
             };
 
             return $http(request).then({
@@ -15,10 +16,10 @@
                     return result.data;
                 }
             });
-        }
-    };
+        };
 
-    var app = angular.module('mainApp');
+    }
+var app = angular.module('mainApp');
 
     app.service('mainService',['$http', initializationServiceFunction]);
 

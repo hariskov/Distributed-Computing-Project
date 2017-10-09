@@ -1,7 +1,7 @@
 package com.dc.controllers;
 
 import com.dc.pojo.Device;
-import com.dc.pojo.Devices;
+import com.dc.pojo.DeviceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,11 +24,11 @@ import java.util.UUID;
 public class EchoController {
 
     @Autowired
-    Devices devices;
+    DeviceManager deviceManager;
 
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<String> exists(){
-        return ResponseEntity.ok().body(devices.getCurrentDevice().getUuid().toString());
+        return ResponseEntity.ok().body(deviceManager.getCurrentDevice().getUuid().toString());
     }
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)
@@ -50,10 +50,10 @@ public class EchoController {
                 InetAddress address = InetAddress.getByAddress(ip);
 //                if(!address.equals(localhost)) {
                     if (address.isReachable(100)) {
-                        UUID deviceUUID = devices.discoverDevice(address.toString().substring(1));
+                        UUID deviceUUID = deviceManager.discoverDevice(address.toString().substring(1));
                         if(deviceUUID!=null) {
                             Device discoveredDevice = new Device(deviceUUID,address.toString().substring(1));
-                            this.devices.addDevice(discoveredDevice);
+                            this.deviceManager.addDevice(discoveredDevice);
                         }
 //                        (address.toString().substring(1));
                     }
@@ -96,7 +96,8 @@ public class EchoController {
     @RequestMapping(value="/syncDevices", method = RequestMethod.POST)
     public void syncDevices(@RequestBody List<Device> newDevices){
         System.out.println(newDevices.size());
-//        devices.addDevice();
+        newDevices.forEach(e->deviceManager.addDevice(e));
+//        deviceManager.addDevice();
     }
 
 }

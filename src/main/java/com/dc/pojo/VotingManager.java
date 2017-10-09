@@ -1,13 +1,11 @@
 package com.dc.pojo;
 
 import com.dc.exceptions.ExistingVoteException;
-import com.dc.exceptions.NoDevicesException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -17,7 +15,7 @@ import java.util.stream.Collectors;
 public class VotingManager {
 
     @Autowired
-    private Devices devices;
+    private DeviceManager deviceManager;
 
 //    private Map<String,Vote> manager= new HashMap<String,Vote>();
 
@@ -30,14 +28,17 @@ public class VotingManager {
         manager = new LinkedList<Vote>();
     }
 
-    public void createVote(String voteStr) {
+    public Vote createVote(String voteStr) {
+
         if (manager.contains(voteStr)) {
             throw new ExistingVoteException();
         }else{
-            Vote vote = new Vote(devices);
-            vote.createVote(voteStr);
+            Vote vote = new Vote(voteStr);
             manager.add(vote);
+            deviceManager.getDevices().forEach(d -> vote.setVote(d, null));
+            return vote;
         }
+
     }
 
     public List<Vote> getVotes(){
@@ -52,7 +53,7 @@ public class VotingManager {
         return !manager.isEmpty();
     }
 
-    public void putVote(String vote, Device device, Boolean body) {
+    public void putVote(String vote, Device device, Object body) {
         List<Vote> a = manager.parallelStream().filter(e->e.getVote().equals(vote)).collect(Collectors.toList());
         if(a.size()>0){
             Vote returnedVote = a.get(0);
@@ -60,18 +61,13 @@ public class VotingManager {
         }
     }
 
-    public void getNetworkVotes(Device device) {
-        String uri = "http://" + device.getIp() + ":8080/voting/getNetworkVotes";
-        ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, null, Boolean.class);
+    public void getNetworkVotes(Device device, Vote vote) {
+        String uri = "http://" + device.getIp() + ":8080/voting/getVote";
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, vote, Boolean.class);
         putVote("Vote",device,response.getBody());
         System.err.println("Vote was : " + response.getBody());
     }
 
-    public Object calculateVote(String vote) {
-        Vote receivedVote = manager.stream().filter(e->e.getVote().equals(vote)).findFirst().get();
-        Map<Object,Long> a = receivedVote.getVoteResults().entrySet().parallelStream().collect(Collectors.groupingBy(w->w.getValue(), Collectors.counting()));
-        return a.entrySet().stream().max(Map.Entry.comparingByValue()).get(); // assumes n/2 + 1
-    }
 }
 
     //HashMap<UUID,Object>

@@ -1,6 +1,7 @@
 package com.dc.interceptors;
 
-import com.dc.pojo.Devices;
+import com.dc.pojo.DeviceManager;
+import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,7 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 public class DeviceCheckerInterceptor implements HandlerInterceptor {
 
     @Autowired
-    Devices devices;
+    DeviceManager deviceManager;
+
+    @Autowired
+    VotingManager votingManager;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -23,16 +27,14 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        // this should send the current state of the devices to all devices.
-//        devices.getDevices().forEach(device -> devices.syncDevices());
-        devices.syncDevices();
+        // this should send the current state of the deviceManager to all deviceManager.
+//        deviceManager.getDevices().forEach(device -> deviceManager.syncDevices());
+        deviceManager.syncDevices();
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        //start leader selection process after devices have discovered and synced.
 
     }
-
-
-
 }

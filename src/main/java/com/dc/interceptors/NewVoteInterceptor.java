@@ -2,7 +2,7 @@ package com.dc.interceptors;
 
 import com.dc.exceptions.NoDevicesException;
 import com.dc.pojo.Device;
-import com.dc.pojo.Devices;
+import com.dc.pojo.DeviceManager;
 import com.dc.pojo.Vote;
 import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +24,13 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     VotingManager manager;
 
     @Autowired
-    Devices devices;
+    DeviceManager deviceManager;
 
     // to check for previous votes that are not completed.
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        if(devices.getDevices().size()==0) {
+        if(deviceManager.getDevices().size()==0) {
             throw new NoDevicesException();
         }
 
@@ -40,10 +39,9 @@ public class NewVoteInterceptor implements HandlerInterceptor {
             Map<Device, Object> nullValues = lastVote.getVoteResults().entrySet().stream()
                     .filter(ent -> ent.getValue() == null).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
-
             // new vote should come if errors
             if (nullValues.size() > 0) {
-                //nullValues.forEach((k, v) -> manager.getNetworkVotes(devices.getDevices().get(k)));
+                //nullValues.forEach((k, v) -> manager.getNetworkVotes(deviceManager.getDevices().get(k)));
                 return false;
             }
         }
@@ -55,7 +53,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // we have all votes calculated !
         Vote lastVote = manager.getVotes().get(manager.getVotes().size()-1);
-        if(lastVote.getVoteParticipants()!=devices.getDevices().size()){
+        if(lastVote.getVoteParticipants()!= deviceManager.getDevices().size()){
             // something went wrong -> a recipient left.
         }
     }

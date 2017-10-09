@@ -10,20 +10,25 @@ import java.util.*;
  * Created by xumepa on 9/24/17.
  */
 
-public class Devices {
+public class DeviceManager {
 
     @Autowired
     RestTemplate restTemplate;
 
     List<Device> devices = new ArrayList<>();
     private Device currentDevice;
+    private Device server;
 
     public void addDevice(UUID uuid, String address){
         Device device = new Device(uuid,address);
         devices.add(device);
     }
+
     public void addDevice(Device device){
-        devices.add(device);
+        // should be unique
+        if(devices.stream().filter(e->e.getUuid() == device.getUuid()).count()==0){
+            devices.add(device);
+        }
     }
 
     public List<Device> getDevices(){
@@ -48,8 +53,6 @@ public class Devices {
         }
     }
 
-
-
     public Device getCurrentDevice() {
         return currentDevice;
     }
@@ -60,10 +63,18 @@ public class Devices {
 
     public void syncDevices(){
         for (Device device : devices) {
-            String uri = "http://" + device.getIp() + ":8080/echo/";
+            String uri = "http://" + device.getIp() + ":8080/echo/syncDevices";
             ResponseEntity<String> response
                     = restTemplate.postForEntity(uri, devices, String.class);
         }
 
+    }
+
+    public Device getServer() {
+        return server;
+    }
+
+    public void setServer(Device server) {
+        this.server = server;
     }
 }

@@ -2,7 +2,7 @@ package controllers;
 
 import com.dc.config.WebConfig;
 import com.dc.pojo.Device;
-import com.dc.pojo.Devices;
+import com.dc.pojo.DeviceManager;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public abstract class AbstractInitTest {
     private MockMvc mockMvc;
 
     @Autowired
-    Devices devices;
+    DeviceManager deviceManager;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -37,8 +37,8 @@ public abstract class AbstractInitTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
         Device device = new Device(UUID.randomUUID(),"127.0.0.1");
-        devices.addDevice(device);
-        devices.setCurrentDevice(device);
+        deviceManager.addDevice(device);
+        deviceManager.setCurrentDevice(device);
     }
 
     public MockMvc getMockMvc() {

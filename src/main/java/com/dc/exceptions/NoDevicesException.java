@@ -6,7 +6,7 @@ package com.dc.exceptions;
 public class NoDevicesException extends RuntimeException {
 
     public NoDevicesException(){
-        super("Devices is empty");
+        super("DeviceManager is empty");
     }
 
 }

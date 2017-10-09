@@ -34,7 +34,7 @@ public class EchoTest extends AbstractInitTest{
     public void devicesTest() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
-        String a = mapper.writeValueAsString(devices.getDevices());
+        String a = mapper.writeValueAsString(deviceManager.getDevices());
         getMockMvc().perform(post("/echo/syncDevices")
                 .content(a)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
