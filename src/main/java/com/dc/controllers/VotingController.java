@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
  * Created by xumepa on 9/24/17.
  */
 
-
 @Controller
 @RequestMapping(value = "/voting")
 public class VotingController {
