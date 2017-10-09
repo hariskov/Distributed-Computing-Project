@@ -1,17 +1,11 @@
 package controllers;
 
-import com.dc.pojo.Devices;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.UUID;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 /**
@@ -23,7 +17,7 @@ public class EchoTest extends AbstractInitTest{
     @Test
     public void echoTest() throws Exception {
         getMockMvc().perform(post("/echo/")
-                .content("abcd")
+//                .content("abcd")
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print());
     }
@@ -35,11 +29,10 @@ public class EchoTest extends AbstractInitTest{
                 .andDo(print());
     }
 
+//    @Ignore
     @Test
     public void devicesTest() throws Exception {
 
-        Devices devices = new Devices();
-        devices.addDevice(UUID.randomUUID(),"abcd");
         ObjectMapper mapper = new ObjectMapper();
         String a = mapper.writeValueAsString(devices.getDevices());
         getMockMvc().perform(post("/echo/syncDevices")

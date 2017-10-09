@@ -3,6 +3,7 @@ package controllers;
 import com.dc.pojo.Devices;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,10 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  */
 public class VotingControllerTest extends AbstractInitTest{
 
-    @Autowired
-    Devices devices;
-
     @Test
+    @Ignore
     public void echoText() throws Exception {
         getMockMvc().perform(get("/voting/startVote")
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -36,11 +35,4 @@ public class VotingControllerTest extends AbstractInitTest{
 //                .andDo(print());
 //    }
 
-
-    @Before
-    @Test
-    public void votingConfig() throws Exception {
-//        devices.addDevice(UUID.randomUUID(),"192.168.43.175");
-        devices.addDevice(UUID.randomUUID(),"192.168.43.230");
-    }
 }

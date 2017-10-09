@@ -46,9 +46,9 @@ public class Devices {
         }catch(Exception ite){
             return null;
         }
-//        ResponseEntity<UUID> body = response.getBody();
-//        System.out.println("response : " + body.toString());
     }
+
+
 
     public Device getCurrentDevice() {
         return currentDevice;
@@ -66,11 +66,4 @@ public class Devices {
         }
 
     }
-//    public void setLocalIP(){
-//        InetAddress localhost = getLocalAddress();
-//        ip = localhost.getAddress();
-//        this.devices.put(currentDeviceUUID,ip.toString());
-//    }
-
-
 }

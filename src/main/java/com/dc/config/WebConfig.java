@@ -1,5 +1,6 @@
 package com.dc.config;
 
+import com.dc.interceptors.CardInterceptor;
 import com.dc.interceptors.DeviceCheckerInterceptor;
 import com.dc.interceptors.NewVoteInterceptor;
 import com.dc.interceptors.VoteCalculatorInterceptor;
@@ -25,8 +26,6 @@ import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 @EnableWebMvc
 public class WebConfig extends WebMvcConfigurerAdapter{
 
-    private HandlerInterceptor deviceCheckerInterceptor;
-
     @Bean
     public UrlBasedViewResolver viewResolver(){
         UrlBasedViewResolver resolver = new UrlBasedViewResolver();
@@ -38,8 +37,8 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("/static/");
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("/resources/");
     }
 
     @Bean
@@ -100,12 +99,19 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/echo/discovery");
         registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/startVote");
         registry.addInterceptor(getVoteCalculatorInterceptor()).addPathPatterns("/voting/getNetworkVotes");
+        registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
 
     }
 
+    @Bean
     private VoteCalculatorInterceptor getVoteCalculatorInterceptor() {
         VoteCalculatorInterceptor voteCalculatorInterceptor = new VoteCalculatorInterceptor();
         return voteCalculatorInterceptor;
+    }
+
+    @Bean
+    CardInterceptor getCardInterceptor(){
+        return new CardInterceptor();
     }
 
     @Bean

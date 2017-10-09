@@ -1,6 +1,7 @@
 package com.dc.interceptors;
 
 import com.dc.exceptions.NoDevicesException;
+import com.dc.pojo.Device;
 import com.dc.pojo.Devices;
 import com.dc.pojo.Vote;
 import com.dc.pojo.VotingManager;
@@ -36,7 +37,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 
         if(manager.hasVotes()) {
             Vote lastVote = manager.getLastVote();
-            Map<UUID, Object> nullValues = lastVote.getVoteResults().entrySet().stream()
+            Map<Device, Object> nullValues = lastVote.getVoteResults().entrySet().stream()
                     .filter(ent -> ent.getValue() == null).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
 

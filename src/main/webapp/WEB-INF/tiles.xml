@@ -6,23 +6,15 @@
 
 
     <definition name="base.definition" template="/WEB-INF/views/layout.jsp">
-        <put-attribute name="title" value="IM CMS" />
+        <put-attribute name="title" value="Dist Systems" />
         <put-attribute name="body" value="" />
 
-        <put-list-attribute name="angular">
-            <add-attribute value="/static/js/angular/angular-1.5.7.js"/>
-            <add-attribute value="/static/js/angular/angular-locale_en-gb.js"/>
-            <add-attribute value="/static/js/angular/angular-route.min.js"/>
-        </put-list-attribute>
+        <!--<put-list-attribute name="angular">-->
+            <!--<add-attribute value="/resources/js/angular/angular-1.5.7.js"/>-->
+            <!--<add-attribute value="/resources/js/angular/angular-locale_en-gb.js"/>-->
+            <!--<add-attribute value="/resources/js/angular/angular-route.min.js"/>-->
+        <!--</put-list-attribute>-->
 
     </definition>
-
-    <definition name="base.definition.layout" extends="base.definition">
-
-    </definition>
-
-
-    <definition name="app.main" template="/WEB-INF/views/layout.jsp"  extends="base.definition"></definition>
-
 
 </tiles-definitions>

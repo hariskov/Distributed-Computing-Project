@@ -9,6 +9,9 @@ public class Device{
     private String ip;
     private UUID uuid;
 
+    public Device(){
+
+    }
     public Device(String ip){
         this(UUID.randomUUID(),ip);
     }

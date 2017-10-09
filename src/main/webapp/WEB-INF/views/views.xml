@@ -4,19 +4,27 @@
         "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 <tiles-definitions>
 
-    <definition name="main" extends="base.definition" template="/WEB-INF/views/main.jsp">
+    <definition name="main"  template="/WEB-INF/views/main.jsp">
+        <!--extends="base.definition"-->
+
+        <put-list-attribute name="angular">
+            <add-attribute value="/resources/js/angular/angular-1.5.7.js"/>
+            <add-attribute value="/resources/js/angular/angular-locale_en-gb.js"/>
+            <add-attribute value="/resources/js/angular/angular-route.min.js"/>
+        </put-list-attribute>
 
         <put-list-attribute name="controllers">
-            <add-attribute value="/static/js/login/controllers/mainController.js"/>
+            <add-attribute value="/resources/js/main/controllers/mainController.js"/>
         </put-list-attribute>
 
         <put-list-attribute name="services">
-            <add-attribute value="/static/js/login/services/mainService.js"/>
+            <add-attribute value="/resources/js/main/services/mainService.js"/>
         </put-list-attribute>
 
         <put-list-attribute name="application">
-            <add-attribute value="/static/js/login/mainApp.js"/>
+            <add-attribute value="/resources/js/main/mainApp.js"/>
         </put-list-attribute>
+
 
     </definition>
 
