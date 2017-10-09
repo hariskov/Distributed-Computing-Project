@@ -2,6 +2,8 @@ package com.dc.config;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.annotation.PostConstruct;
+
 
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 

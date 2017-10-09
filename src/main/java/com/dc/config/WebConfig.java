@@ -20,6 +20,9 @@ import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 
+import javax.annotation.PostConstruct;
+import javax.ws.rs.POST;
+
 @Configuration
 @ComponentScan({"com.dc"})
 @EnableWebMvc
@@ -77,10 +80,12 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         return vm;
     }
 
+    @PostConstruct
     @Bean
     public DeviceManager devices(){
         DeviceManager deviceManager = new DeviceManager();
-//        deviceManager.discoverDevices();
+//        deviceManager.setCurrentDevice(deviceManager.g);
+        deviceManager.discoverDevices();
         return deviceManager;
     }
 

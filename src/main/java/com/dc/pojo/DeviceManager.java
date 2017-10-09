@@ -16,9 +16,16 @@ public class DeviceManager {
     @Autowired
     RestTemplate restTemplate;
 
+    InetAddress localhost = getLocalAddress();
     List<Device> devices = new ArrayList<>();
     private Device currentDevice;
     private Device server;
+
+    public DeviceManager(){
+        currentDevice = new Device();
+        currentDevice.setUuid(UUID.randomUUID());
+        currentDevice.setIp(localhost.getHostAddress());
+    }
 
     public void addDevice(UUID uuid, String address){
         Device device = new Device(uuid,address);
@@ -81,7 +88,6 @@ public class DeviceManager {
 
     public void discoverDevices() {
 
-        InetAddress localhost = getLocalAddress();
         byte[] ip = localhost.getAddress();
 
         for (int i = 1; i <= 254; i++) {
@@ -102,7 +108,7 @@ public class DeviceManager {
         }
     }
 
-        private static InetAddress getLocalAddress(){
+        private InetAddress getLocalAddress(){
             try {
                 Enumeration<NetworkInterface> b = NetworkInterface.getNetworkInterfaces();
                 while( b.hasMoreElements()) {

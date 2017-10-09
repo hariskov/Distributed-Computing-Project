@@ -25,7 +25,6 @@ public class MainController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getMainScreen() {
-        deviceManager.discoverDevices();
         return MAIN;
     }
 //    @RequestMapping(value = "/main", method = RequestMethod.GET)
