@@ -1,7 +1,10 @@
 package com.dc.pojo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.*;
@@ -11,6 +14,7 @@ import java.util.*;
  * Created by xumepa on 9/24/17.
  */
 
+@Service
 public class DeviceManager {
 
     @Autowired
@@ -25,16 +29,21 @@ public class DeviceManager {
         currentDevice = new Device();
         currentDevice.setUuid(UUID.randomUUID());
         currentDevice.setIp(localhost.getHostAddress());
+        addDevice(currentDevice);
     }
 
     public void addDevice(UUID uuid, String address){
         Device device = new Device(uuid,address);
-        devices.add(device);
+//        devices.add(device);
     }
 
     public void addDevice(Device device){
         // should be unique
-        if(devices.stream().filter(e->e.getUuid() == device.getUuid()).count()==0){
+//        if(devices.stream().filter(e->e.getIp() == device.getIp()).count()!=0){
+//        }
+
+
+        if(!devices.contains(device)){
             devices.add(device);
         }
     }
@@ -44,21 +53,16 @@ public class DeviceManager {
     }
 
     //returns the device id
-    public UUID discoverDevice(String address){
+    public Device discoverDevice(String address){
 
         String uri = "http://" + address + ":8080/echo/";
-        System.out.println(uri);
 
-        ResponseEntity<String> response
-                = restTemplate.postForEntity(uri, null, String.class);
+        ResponseEntity<Device> response
+                = restTemplate.postForEntity(uri, null, Device.class);
 
         System.out.println(response.getStatusCode());
-        try {
-            UUID uuid = UUID.fromString(response.getBody());
-            return uuid;
-        }catch(Exception ite){
-            return null;
-        }
+        return response.getBody();
+
     }
 
     public Device getCurrentDevice() {
@@ -71,11 +75,14 @@ public class DeviceManager {
 
     public void syncDevices(){
         for (Device device : devices) {
-            String uri = "http://" + device.getIp() + ":8080/echo/syncDevices";
-            ResponseEntity<String> response
-                    = restTemplate.postForEntity(uri, devices, String.class);
+            try {
+                String uri = "http://" + device.getIp() + ":8080/echo/syncDevices";
+                System.out.println(device.getUuid());
+                restTemplate.postForEntity(uri, devices, Object.class);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
-
     }
 
     public Device getServer() {
@@ -94,16 +101,18 @@ public class DeviceManager {
             try {
                 ip[3] = (byte) i;
                 InetAddress address = InetAddress.getByAddress(ip);
-                if (address.isReachable(100)) {
-                    UUID deviceUUID = discoverDevice(address.toString().substring(1));
-                    if (deviceUUID != null) {
-                        Device discoveredDevice = new Device(deviceUUID, address.toString().substring(1));
+                if(address.getHostAddress().equals(localhost.getHostAddress())){
+                    continue;
+                }
+                if (address.isReachable(100) ) {
+                    Device discoveredDevice = discoverDevice(address.toString().substring(1));
+                    if (discoveredDevice != null) {
                         addDevice(discoveredDevice);
                     }
                 }
                 //                }
             } catch (Exception e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }

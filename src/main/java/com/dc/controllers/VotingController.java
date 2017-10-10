@@ -34,7 +34,7 @@ public class VotingController {
     public void startVote(){
         Vote vote = manager.createVote("Vote");
         if(vote!=null) {
-            deviceManager.getDevices().forEach(k -> manager.getNetworkVotes(k,vote ));
+            deviceManager.getDevices().forEach(k -> manager.getNetworkVotes(k, vote));
         }
     }
 

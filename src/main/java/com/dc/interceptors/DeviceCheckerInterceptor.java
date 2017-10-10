@@ -17,9 +17,6 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     @Autowired
     DeviceManager deviceManager;
 
-    @Autowired
-    VotingManager votingManager;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;

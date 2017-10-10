@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
@@ -80,19 +81,16 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         return vm;
     }
 
-    @PostConstruct
-    @Bean
-    public DeviceManager devices(){
-        DeviceManager deviceManager = new DeviceManager();
-//        deviceManager.setCurrentDevice(deviceManager.g);
-        deviceManager.discoverDevices();
-        return deviceManager;
-    }
 
     @Bean
     public RestTemplate getRestTemplate(){
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate;
+        return new RestTemplate();
+    }
+
+    @Bean
+    public DeviceManager devices(){
+        DeviceManager deviceManager = new DeviceManager();
+        return deviceManager;
     }
 
     @Override

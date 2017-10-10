@@ -64,10 +64,9 @@ public class VotingManager {
     public void getNetworkVotes(Device device, Vote vote) {
         String uri = "http://" + device.getIp() + ":8080/voting/getVote";
         ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, vote, Boolean.class);
-        putVote("Vote",device,response.getBody());
+        putVote("Vote", device, response.getBody());
         System.err.println("Vote was : " + response.getBody());
     }
-
 }
 
     //HashMap<UUID,Object>

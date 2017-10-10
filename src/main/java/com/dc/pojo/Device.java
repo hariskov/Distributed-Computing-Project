@@ -1,10 +1,13 @@
 package com.dc.pojo;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import java.util.UUID;
 
 /**
  * Created by xumepa on 10/6/17.
  */
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class Device{
     private String ip;
     private UUID uuid;

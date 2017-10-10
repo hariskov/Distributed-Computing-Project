@@ -5,6 +5,8 @@ import com.dc.pojo.DeviceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,8 +29,8 @@ public class EchoController {
     DeviceManager deviceManager;
 
     @RequestMapping(value="/", method = RequestMethod.POST)
-    public ResponseEntity<String> exists(){
-        return ResponseEntity.ok().body(deviceManager.getCurrentDevice().getUuid().toString());
+    public ResponseEntity<Device> exists(){
+        return ResponseEntity.ok().body(deviceManager.getCurrentDevice());
     }
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)
@@ -36,10 +38,13 @@ public class EchoController {
         deviceManager.discoverDevices();
     }
 
-    @RequestMapping(value="/syncDevices", method = RequestMethod.POST)
-    public void syncDevices(@RequestBody List<Device> newDevices){
-        System.out.println(newDevices.size());
-        newDevices.forEach(e->deviceManager.addDevice(e));
+//    @PostMapping(value="/syncDevices", produces = "application/json", consumes = "application/json")
+    @PostMapping("/syncDevices")
+    public ResponseEntity<String> syncDevices(@RequestBody List<Device> a){
+        a.forEach(e->deviceManager.addDevice(e));
+        return ResponseEntity.ok().body(null);
+
+//        newDevices.forEach(e->deviceManager.addDevice(e));
     }
 
 }
