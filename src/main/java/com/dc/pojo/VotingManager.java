@@ -68,6 +68,10 @@ public class VotingManager {
         putVote("Vote", device, response.getBody());
         System.err.println("Vote for " + device.getIp() + " was : " + response.getBody());
     }
+
+    public void setVotes(List<Vote> votes) {
+        this.manager = votes;
+    }
 }
 
     //HashMap<UUID,Object>

@@ -16,6 +16,8 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
 
     @Autowired
     DeviceManager deviceManager;
+    @Autowired
+    VotingManager votingManager;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -27,7 +29,7 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
         // this should send the current state of the deviceManager to all deviceManager.
 //        deviceManager.getDevices().forEach(device -> deviceManager.syncDevices());
         if(deviceManager.getDevices().size()>1) {
-            deviceManager.syncDevices();
+            deviceManager.syncDevices(votingManager.getVotes());
         }
     }
 

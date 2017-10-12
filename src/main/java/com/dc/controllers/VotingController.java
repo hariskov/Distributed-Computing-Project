@@ -31,11 +31,12 @@ public class VotingController {
     VotingManager manager;
 
     @RequestMapping(value="/startVote",method = RequestMethod.GET)
-    public void startVote(){
+    public ResponseEntity startVote(){
         Vote vote = manager.createVote("Vote");
         if(vote!=null) {
             deviceManager.getDevices().forEach(k -> manager.getNetworkVotes(k, vote));
         }
+        return ResponseEntity.ok(null);
     }
 
 //    @RequestMapping(value="/getVoteStr",method = RequestMethod.POST)

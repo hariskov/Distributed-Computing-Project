@@ -43,6 +43,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
             if (nullValues.size() > 0) {
                 //nullValues.forEach((k, v) -> manager.getNetworkVotes(deviceManager.getDevices().get(k)));
                 // request vote where it failed !
+
                 return true;
             }
         }

@@ -2,6 +2,8 @@ package com.dc.controllers;
 
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
+import com.dc.pojo.Vote;
+import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.xml.ws.Response;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class EchoController {
 
     @Autowired
     DeviceManager deviceManager;
+
+    @Autowired
+    VotingManager votingManager;
 
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<Device> exists(){
@@ -39,7 +45,11 @@ public class EchoController {
     public ResponseEntity<String> syncDevices(@RequestBody List<Device> a){
         a.forEach(e->deviceManager.addDevice(e));
         return ResponseEntity.ok().body(null);
+    }
 
-//        newDevices.forEach(e->deviceManager.addDevice(e));
+    @PostMapping("/syncVotes")
+    public ResponseEntity<String> syncVotes(@RequestBody List<Vote> votes){
+        votes.forEach(e->votingManager.setVotes(votes));
+        return ResponseEntity.ok().body(null);
     }
 }

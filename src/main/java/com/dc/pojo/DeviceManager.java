@@ -71,7 +71,7 @@ public class DeviceManager {
         this.currentDevice = device;
     }
 
-    public void syncDevices(){
+    public void syncDevices(List<Vote> votes){
         for (Device device : devices) {
             if(device == currentDevice){
                 continue;
@@ -80,6 +80,8 @@ public class DeviceManager {
                 String uri = "http://" + device.getIp() + ":8080/echo/syncDevices";
                 System.out.println(device.getUuid());
                 restTemplate.postForEntity(uri, devices, Object.class);
+                uri = "http://" + device.getIp() + ":8080/echo/syncVotes";
+                restTemplate.postForEntity(uri, votes, Object.class);
             }catch(Exception e){
                 e.printStackTrace();
             }
