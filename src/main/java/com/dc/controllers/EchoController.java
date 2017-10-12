@@ -5,17 +5,13 @@ import com.dc.pojo.DeviceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
-import java.net.*;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by xumepa on 9/17/17.
@@ -46,5 +42,4 @@ public class EchoController {
 
 //        newDevices.forEach(e->deviceManager.addDevice(e));
     }
-
 }

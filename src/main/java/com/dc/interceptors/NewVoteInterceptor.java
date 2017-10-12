@@ -55,6 +55,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         Vote lastVote = manager.getVotes().get(manager.getVotes().size()-1);
         if(lastVote.getVoteParticipants()!= deviceManager.getDevices().size()){
             // something went wrong -> a recipient left.
+            // restart
         }
     }
 

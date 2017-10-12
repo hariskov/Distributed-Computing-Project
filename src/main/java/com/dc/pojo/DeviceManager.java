@@ -94,7 +94,12 @@ public class DeviceManager {
     }
 
     public void discoverDevices() {
-
+        if(1==1){
+            Device device = discoverDevice("10.63.23.97");
+            if(device!=null){
+                addDevice(device);
+            }
+        }
         byte[] ip = localhost.getAddress();
 
         for (int i = 1; i <= 254; i++) {
