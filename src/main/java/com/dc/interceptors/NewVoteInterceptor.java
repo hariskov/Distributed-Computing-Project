@@ -36,13 +36,14 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 
         if(manager.hasVotes()) {
             Vote lastVote = manager.getLastVote();
-            Map<Device, Object> nullValues = lastVote.getVoteResults().entrySet().stream()
-                    .filter(ent -> ent.getValue() == null).collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+            Map<Device, Object> nullValues = lastVote.getVote().entrySet().stream()
+                    .filter(ent -> ent.getValue() == "").collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
             // new vote should come if errors
             if (nullValues.size() > 0) {
                 //nullValues.forEach((k, v) -> manager.getNetworkVotes(deviceManager.getDevices().get(k)));
-                return false;
+                // request vote where it failed !
+                return true;
             }
         }
 
@@ -56,6 +57,13 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         if(lastVote.getVoteParticipants()!= deviceManager.getDevices().size()){
             // something went wrong -> a recipient left.
             // restart
+            return;
+        }
+
+        Object resultedObject = manager.getLastVote().calculateVote();
+        if(resultedObject instanceof Device) {
+            Device dev = (Device)resultedObject;
+            System.err.println("winning vote " + dev.getUuid());
         }
     }
 

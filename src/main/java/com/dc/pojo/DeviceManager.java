@@ -32,18 +32,14 @@ public class DeviceManager {
         addDevice(currentDevice);
     }
 
-    public void addDevice(UUID uuid, String address){
-        Device device = new Device(uuid,address);
-//        devices.add(device);
-    }
-
     public void addDevice(Device device){
         // should be unique
-//        if(devices.stream().filter(e->e.getIp() == device.getIp()).count()!=0){
-//        }
+        if(devices.stream().filter(e->e.getIp() == device.getIp()).count()!=0){
+
+        }
 
 
-        if(!devices.contains(device)){
+        if(devices.stream().filter(e->e.getUuid().equals(device.getUuid())).count()==0){
             devices.add(device);
         }
     }
@@ -57,12 +53,14 @@ public class DeviceManager {
 
         String uri = "http://" + address + ":8080/echo/";
 
-        ResponseEntity<Device> response
-                = restTemplate.postForEntity(uri, null, Device.class);
-
-        System.out.println(response.getStatusCode());
-        return response.getBody();
-
+        try {
+            ResponseEntity<Device> response
+                    = restTemplate.postForEntity(uri, null, Device.class);
+            System.out.println(response.getBody());
+            return response.getBody();
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public Device getCurrentDevice() {
@@ -75,6 +73,9 @@ public class DeviceManager {
 
     public void syncDevices(){
         for (Device device : devices) {
+            if(device == currentDevice){
+                continue;
+            }
             try {
                 String uri = "http://" + device.getIp() + ":8080/echo/syncDevices";
                 System.out.println(device.getUuid());
@@ -95,9 +96,10 @@ public class DeviceManager {
 
     public void discoverDevices() {
         if(1==1){
-            Device device = discoverDevice("10.63.23.97");
+            Device device = discoverDevice("192.168.43.214");
             if(device!=null){
                 addDevice(device);
+                return;
             }
         }
         byte[] ip = localhost.getAddress();

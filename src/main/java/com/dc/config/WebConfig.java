@@ -9,10 +9,13 @@ import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
@@ -23,6 +26,8 @@ import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.POST;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @ComponentScan({"com.dc"})
@@ -122,5 +127,14 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     @Bean
     public DeviceCheckerInterceptor getDeviceCheckerInterceptor() {
         return new DeviceCheckerInterceptor();
+    }
+
+    @Bean
+    public ObjectMapper mapper(){
+        Map<Class<?>,Class<?>> mix = new HashMap<Class<?>,Class<?>>();
+        return new Jackson2ObjectMapperBuilder().featuresToDisable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS)
+                .dateFormat(new ISO8601DateFormat())
+                .mixIns(mix)
+                .build();
     }
 }

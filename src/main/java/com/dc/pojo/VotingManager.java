@@ -35,7 +35,7 @@ public class VotingManager {
         }else{
             Vote vote = new Vote(voteStr);
             manager.add(vote);
-            deviceManager.getDevices().forEach(d -> vote.setVote(d, null));
+            deviceManager.getDevices().forEach(d -> vote.addVote(d, ""));
             return vote;
         }
 
@@ -54,18 +54,19 @@ public class VotingManager {
     }
 
     public void putVote(String vote, Device device, Object body) {
-        List<Vote> a = manager.parallelStream().filter(e->e.getVote().equals(vote)).collect(Collectors.toList());
+        List<Vote> a = manager.parallelStream().filter(e->e.getVoteStr().equals(vote)).collect(Collectors.toList());
         if(a.size()>0){
             Vote returnedVote = a.get(0);
-            returnedVote.setVote(device,body);
+            returnedVote.addVote(device,body);
         }
     }
 
     public void getNetworkVotes(Device device, Vote vote) {
         String uri = "http://" + device.getIp() + ":8080/voting/getVote";
-        ResponseEntity<Boolean> response = restTemplate.postForEntity(uri, vote, Boolean.class);
+        ResponseEntity<Object> response =
+                restTemplate.postForEntity(uri, vote, Object.class);
         putVote("Vote", device, response.getBody());
-        System.err.println("Vote was : " + response.getBody());
+        System.err.println("Vote for " + device.getIp() + " was : " + response.getBody());
     }
 }
 

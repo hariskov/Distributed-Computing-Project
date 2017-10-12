@@ -16,9 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public class VoteCalculatorInterceptor implements HandlerInterceptor {
 
-    @Autowired
-    VotingManager votingManager;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;
@@ -27,12 +24,6 @@ public class VoteCalculatorInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 //        calculateVote
-
-        Object resultedObject = votingManager.getLastVote().calculateVote();
-        if(resultedObject instanceof Device) {
-            Device dev = (Device)resultedObject;
-            System.out.println(dev.getUuid());
-        }
 
     }
 

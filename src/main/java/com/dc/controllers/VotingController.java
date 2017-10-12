@@ -7,13 +7,13 @@ import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +38,10 @@ public class VotingController {
         }
     }
 
-    @RequestMapping(value="/getVote",method = RequestMethod.POST)
+//    @RequestMapping(value="/getVoteStr",method = RequestMethod.POST)
+    @PostMapping("/getVote")
     public ResponseEntity<Object> voting(@RequestBody Vote vote){
-        List<Vote> localVotes = manager.getVotes().stream().filter(e->e.getVote() == vote.getVote()).collect(Collectors.toList());
+        List<Vote> localVotes = manager.getVotes().stream().filter(e->e.getVoteStr() == vote.getVoteStr()).collect(Collectors.toList());
 
         if(localVotes.size()>0){
             return ResponseEntity.ok("ad");
