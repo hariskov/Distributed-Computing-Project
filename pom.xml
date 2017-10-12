@@ -137,6 +137,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.7.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
 
     </dependencies>
 
@@ -161,11 +166,18 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.tomcat.maven</groupId>-->
-                <!--<artifactId>tomcat7-maven-plugin</artifactId>-->
-                <!--<version>2.2</version>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <url>http://192.168.8.35:8080/manager/text</url>
+                    <server>myTomcat</server>
+                    <path>/${project.artifactId}</path>
+                    <username>test</username>
+                    <password>test</password>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
