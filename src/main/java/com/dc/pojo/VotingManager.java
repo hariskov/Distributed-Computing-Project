@@ -17,8 +17,6 @@ public class VotingManager {
     @Autowired
     private DeviceManager deviceManager;
 
-//    private Map<String,Vote> manager= new HashMap<String,Vote>();
-
     @Autowired
     RestTemplate restTemplate;
 

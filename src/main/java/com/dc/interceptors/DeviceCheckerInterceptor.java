@@ -29,7 +29,8 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
         // this should send the current state of the deviceManager to all deviceManager.
 //        deviceManager.getDevices().forEach(device -> deviceManager.syncDevices());
         if(deviceManager.getDevices().size()>1) {
-            deviceManager.syncDevices(votingManager.getVotes());
+            deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
+//            deviceManager.syncDevices(); //votingManager.getVotes()
         }
     }
 

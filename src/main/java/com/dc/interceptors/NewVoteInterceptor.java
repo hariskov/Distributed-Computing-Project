@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -55,9 +56,11 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // we have all votes calculated !
         Vote lastVote = manager.getVotes().get(manager.getVotes().size()-1);
-        if(lastVote.getVoteParticipants()!= deviceManager.getDevices().size()){
+        if(lastVote.getVoteParticipants().size() != deviceManager.getDevices().size()){
+            List<Device> missingAnswers = deviceManager.getDevices().stream().filter(e->!lastVote.getVoteParticipants().contains(e)).collect(Collectors.toList());
             // something went wrong -> a recipient left.
             // restart
+            missingAnswers.forEach(e->manager.getNetworkVotes(e,lastVote));
             return;
         }
 

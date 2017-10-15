@@ -22,7 +22,6 @@ public class CardControllerTest extends AbstractInitTest {
 
         ObjectMapper mapper = new ObjectMapper();
 
-
         getMockMvc().perform(post("/card/playCard/").content(mapper.writeValueAsString(card))
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print());

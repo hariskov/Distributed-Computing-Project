@@ -1,6 +1,7 @@
 package com.dc.pojo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,10 +15,10 @@ import java.util.*;
  * Created by xumepa on 9/24/17.
  */
 
-@Service
+//@Service
 public class DeviceManager {
 
-    @Autowired
+//    @Autowired
     RestTemplate restTemplate;
 
     InetAddress localhost = getLocalAddress();
@@ -25,7 +26,8 @@ public class DeviceManager {
     private Device currentDevice;
     private Device server;
 
-    public DeviceManager(){
+    public DeviceManager(RestTemplate restTemplate){
+        this.restTemplate=restTemplate;
         currentDevice = new Device();
         currentDevice.setUuid(UUID.randomUUID());
         currentDevice.setIp(localhost.getHostAddress());
@@ -34,12 +36,9 @@ public class DeviceManager {
 
     public void addDevice(Device device){
         // should be unique
-        if(devices.stream().filter(e->e.getIp() == device.getIp()).count()!=0){
+//        devices.forEach(e->e.equals(device));
 
-        }
-
-
-        if(devices.stream().filter(e->e.getUuid().equals(device.getUuid())).count()==0){
+        if(devices.stream().filter(e->e.equals(device)).count()==0){
             devices.add(device);
         }
     }
@@ -51,7 +50,7 @@ public class DeviceManager {
     //returns the device id
     public Device discoverDevice(String address){
 
-        String uri = "http://" + address + ":8080/echo/";
+        String uri = "http://" + address + ":8080/project/echo/";
 
         try {
             ResponseEntity<Device> response
@@ -71,21 +70,21 @@ public class DeviceManager {
         this.currentDevice = device;
     }
 
-    public void syncDevices(List<Vote> votes){
-        for (Device device : devices) {
-            if(device == currentDevice){
-                continue;
+    public void syncDevices(Device device){
+//        for (Device device : devices) {
+            if(device.equals(currentDevice)){
+                return;
             }
             try {
-                String uri = "http://" + device.getIp() + ":8080/echo/syncDevices";
-                System.out.println(device.getUuid());
-                restTemplate.postForEntity(uri, devices, Object.class);
-                uri = "http://" + device.getIp() + ":8080/echo/syncVotes";
-                restTemplate.postForEntity(uri, votes, Object.class);
+                String uri = "http://" + device.getIp() + ":8080/project/echo/getDevices";
+                ParameterizedTypeReference<List<Device>> typeRef = new ParameterizedTypeReference<List<Device>>() {};
+                ResponseEntity<List<Device>> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, null, typeRef);
+                List<Device> deviceResponse = responseEntity.getBody();
+                deviceResponse.stream().filter(e->!devices.contains(e)).forEach(this::addDevice);
             }catch(Exception e){
                 e.printStackTrace();
             }
-        }
+//        }
     }
 
     public Device getServer() {
@@ -97,13 +96,6 @@ public class DeviceManager {
     }
 
     public void discoverDevices() {
-        if(1==1){
-            Device device = discoverDevice("192.168.43.214");
-            if(device!=null){
-                addDevice(device);
-                return;
-            }
-        }
         byte[] ip = localhost.getAddress();
 
         for (int i = 1; i <= 254; i++) {
@@ -118,6 +110,7 @@ public class DeviceManager {
                     if (discoveredDevice != null) {
                         addDevice(discoveredDevice);
                     }
+                    break;
                 }
                 //                }
             } catch (Exception e) {

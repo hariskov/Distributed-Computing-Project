@@ -1,10 +1,13 @@
 package com.dc.config;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.annotation.PostConstruct;
 
 
+@Configuration
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
@@ -16,7 +19,7 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
     @Override
     protected Class<?>[] getServletConfigClasses(){
-        return null;
+        return new Class[]{WebConfig.class};
     }
 
     @Override

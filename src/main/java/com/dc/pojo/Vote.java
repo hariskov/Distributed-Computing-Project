@@ -2,7 +2,9 @@ package com.dc.pojo;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -37,8 +39,8 @@ public class Vote {
         vote.put(device, body);
     }
 
-    public int getVoteParticipants(){
-        return vote.size();
+    public List<Device> getVoteParticipants(){
+        return Arrays.asList((Device[]) vote.keySet().toArray());
     }
 
     public Object calculateVote() {

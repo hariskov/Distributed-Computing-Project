@@ -11,18 +11,19 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.codehaus.jackson.map.util.ISO8601DateFormat;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.*;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.POST;
@@ -30,8 +31,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ComponentScan({"com.dc"})
 @EnableWebMvc
+@ImportResource("classpath:dc-servlet.xml")
+@ComponentScan(basePackages = { "com.dc" },
+        useDefaultFilters = false, includeFilters = @ComponentScan.Filter(Controller.class))
 public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Bean
@@ -57,6 +60,20 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         return tilesViewResolver;
     }
 
+    @Bean
+    public RestTemplate getRestTemplate(){
+        return new RestTemplate();
+    }
+
+    @Bean
+//    @PostConstruct
+//    @DependsOn("getRestTemplate")
+    public DeviceManager devices(){
+        DeviceManager deviceManager = new DeviceManager(getRestTemplate());
+        deviceManager.discoverDevices();
+        return deviceManager;
+    }
+
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry){
         registry.viewResolver(tilesViewResolver());
@@ -70,6 +87,11 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         return tc;
     }
 
+    @Bean
+    public VotingManager votingManager(){
+        VotingManager vm = new VotingManager();
+        return vm;
+    }
 
     @Bean
     public ObjectMapper objectMapper() {
@@ -78,24 +100,6 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
 
         return mapper;
-    }
-
-    @Bean
-    public VotingManager votingManager(){
-        VotingManager vm = new VotingManager();
-        return vm;
-    }
-
-
-    @Bean
-    public RestTemplate getRestTemplate(){
-        return new RestTemplate();
-    }
-
-    @Bean
-    public DeviceManager devices(){
-        DeviceManager deviceManager = new DeviceManager();
-        return deviceManager;
     }
 
     @Override
