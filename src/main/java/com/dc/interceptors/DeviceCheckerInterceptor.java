@@ -42,12 +42,12 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
         //start leader selection process after devices have discovered and synced.
         //votingManager.createVote("Leader");
 
-        String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
-
-        try {
-              restTemplate.postForEntity(uri, "Leader", Object.class);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+//        String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
+//
+//        try {
+//              restTemplate.postForEntity(uri, "Leader", Object.class);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
     }
 }

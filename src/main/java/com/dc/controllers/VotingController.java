@@ -44,8 +44,9 @@ public class VotingController {
     }
 
     @PostMapping("/newVote")
-    public void newVote(@RequestBody Vote vote){
-        Vote localVotes = manager.getVotes().stream().filter(e->e.getVoteStr() == vote.getVoteStr()).findFirst().orElse(null);
+    public ResponseEntity newVote(@RequestBody Vote vote){
+        System.out.println("abcbde123");
+        Vote localVotes = manager.getVotes().stream().filter(e->e.getVoteStr().equals(vote.getVoteStr())).findFirst().orElse(null);
         Object result;
         if(localVotes == null){
             result = null;
@@ -56,6 +57,7 @@ public class VotingController {
         }
 
         localVotes.addVote(deviceManager.getCurrentDevice(),result);
+        return ResponseEntity.ok(null);
     }
 
 //    @RequestMapping(value="/getVoteStr",method = RequestMethod.POST)
@@ -64,8 +66,8 @@ public class VotingController {
         Vote localVotes = manager.getVotes().stream().filter(e->e.getVoteStr() == vote.getVoteStr()).findFirst().orElse(null);
 
         System.out.println(vote.toString());
-        System.out.println("logged in voting");
-        return null;
+            System.out.println("logged in voting");
+        return ResponseEntity.ok(null);
     }
 
 }

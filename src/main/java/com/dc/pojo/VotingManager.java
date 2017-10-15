@@ -64,10 +64,14 @@ public class VotingManager {
     }
 
     public void getNetworkVotes(Device device, Vote vote) {
-        String uri = "http://" + device.getIp() + ":8080/project/voting/newVote";
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/voting/newVote";
 //        ResponseEntity<Object> response =
-                restTemplate.postForEntity(uri, vote, Object.class);
+            restTemplate.postForEntity(uri, vote, Object.class);
 //        return response.getBody();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void setVotes(List<Vote> votes) {
