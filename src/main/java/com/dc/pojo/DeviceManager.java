@@ -80,7 +80,7 @@ public class DeviceManager {
                 ParameterizedTypeReference<List<Device>> typeRef = new ParameterizedTypeReference<List<Device>>() {};
                 ResponseEntity<List<Device>> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, null, typeRef);
                 List<Device> deviceResponse = responseEntity.getBody();
-                deviceResponse.stream().filter(e->!devices.contains(e)).forEach(this::addDevice);
+                deviceResponse.stream().filter(e->!devices.contains(e)).forEach(this::addDevice); // do voting for this shit
             }catch(Exception e){
                 e.printStackTrace();
             }
@@ -110,7 +110,7 @@ public class DeviceManager {
                     if (discoveredDevice != null) {
                         addDevice(discoveredDevice);
                     }
-                    break;
+//                    break;
                 }
                 //                }
             } catch (Exception e) {

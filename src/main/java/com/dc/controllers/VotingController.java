@@ -31,8 +31,8 @@ public class VotingController {
     VotingManager manager;
 
     @RequestMapping(value="/startVote",method = RequestMethod.GET)
-    public ResponseEntity startVote(){
-        Vote vote = manager.createVote("Vote");
+    public ResponseEntity startVote(@RequestBody String voteType){
+        Vote vote = manager.createVote(voteType);
         if(vote!=null) {
             deviceManager.getDevices().forEach(k -> manager.getNetworkVotes(k, vote));
         }
