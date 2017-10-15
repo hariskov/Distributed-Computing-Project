@@ -4,6 +4,7 @@ import com.dc.interceptors.CardInterceptor;
 import com.dc.interceptors.DeviceCheckerInterceptor;
 import com.dc.interceptors.NewVoteInterceptor;
 import com.dc.interceptors.VoteCalculatorInterceptor;
+import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -17,6 +18,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -34,7 +36,7 @@ import java.util.Map;
 @EnableWebMvc
 @ImportResource("classpath:dc-servlet.xml")
 @ComponentScan(basePackages = { "com.dc" },
-        useDefaultFilters = false, includeFilters = @ComponentScan.Filter(Controller.class))
+        useDefaultFilters = false, includeFilters = @ComponentScan.Filter({Controller.class, CustomInterceptor.class}))
 public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Bean
@@ -107,7 +109,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         // none for now , should add interceptor for calls to other servers
         // to verify whether they exist , add polling calls in here
 
-        registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/echo/discovery");
+        registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/main");
         registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/startVote");
         registry.addInterceptor(getVoteCalculatorInterceptor()).addPathPatterns("/voting/getNetworkVotes");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");

@@ -39,7 +39,7 @@ public class Vote {
         vote.put(device, body);
     }
 
-    public List<Device> getVoteParticipants(){
+    public List<Device> receiveVoteParticipants(){
         return Arrays.asList((Device[]) vote.keySet().toArray());
     }
 

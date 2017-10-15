@@ -36,7 +36,6 @@ public class VotingManager {
             deviceManager.getDevices().forEach(d -> vote.addVote(d, ""));
             return vote;
         }
-
     }
 
     public List<Vote> getVotes(){
@@ -45,6 +44,11 @@ public class VotingManager {
 
     public Vote getLastVote(){
         return manager.get(manager.size()-1);
+    }
+
+    public Object getCurrentLastVote(){
+        Device dev = getLastVote().getVote().entrySet().stream().filter(k->k.getKey()==deviceManager.getCurrentDevice()).findFirst().orElse(null).getKey();
+        return dev;
     }
 
     public boolean hasVotes(){
@@ -60,15 +64,19 @@ public class VotingManager {
     }
 
     public void getNetworkVotes(Device device, Vote vote) {
-        String uri = "http://" + device.getIp() + ":8080/voting/getVote";
-        ResponseEntity<Object> response =
+        String uri = "http://" + device.getIp() + ":8080/project/voting/newVote";
+//        ResponseEntity<Object> response =
                 restTemplate.postForEntity(uri, vote, Object.class);
-        putVote("Vote", device, response.getBody());
-        System.err.println("Vote for " + device.getIp() + " was : " + response.getBody());
+//        return response.getBody();
     }
 
     public void setVotes(List<Vote> votes) {
         this.manager = votes;
+    }
+
+    public void sendVote(Device device, Object lastVote) {
+        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
+        restTemplate.postForEntity(uri, lastVote, Object.class);
     }
 }
 

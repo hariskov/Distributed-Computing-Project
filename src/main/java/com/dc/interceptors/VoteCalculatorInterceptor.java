@@ -1,5 +1,6 @@
 package com.dc.interceptors;
 
+import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.Device;
 import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by xumepa on 10/4/17.
  */
 
-
+@CustomInterceptor
 public class VoteCalculatorInterceptor implements HandlerInterceptor {
 
     @Override

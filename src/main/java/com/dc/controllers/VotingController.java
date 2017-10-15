@@ -30,33 +30,42 @@ public class VotingController {
     @Autowired
     VotingManager manager;
 
-    @RequestMapping(value="/startVote",method = RequestMethod.GET)
+//    @RequestMapping(value="/startVote",method = RequestMethod.GET)
+    @PostMapping("/startVote")
     public ResponseEntity startVote(@RequestBody String voteType){
         Vote vote = manager.createVote(voteType);
         if(vote!=null) {
-            deviceManager.getDevices().forEach(k -> manager.getNetworkVotes(k, vote));
+            for (Device device : deviceManager.getDevices()) {
+                manager.getNetworkVotes(device, vote);
+//                manager.putVote(voteType, device, result);
+            }
         }
         return ResponseEntity.ok(null);
     }
 
-//    @RequestMapping(value="/getVoteStr",method = RequestMethod.POST)
-    @PostMapping("/getVote")
-    public ResponseEntity<Object> voting(@RequestBody Vote vote){
-        List<Vote> localVotes = manager.getVotes().stream().filter(e->e.getVoteStr() == vote.getVoteStr()).collect(Collectors.toList());
-
-        if(localVotes.size()>0){
-            return ResponseEntity.ok("ad");
+    @PostMapping("/newVote")
+    public void newVote(@RequestBody Vote vote){
+        Vote localVotes = manager.getVotes().stream().filter(e->e.getVoteStr() == vote.getVoteStr()).findFirst().orElse(null);
+        Object result;
+        if(localVotes == null){
+            result = null;
         }else {
             Random randomizer = new Random();
             Device random = deviceManager.getDevices().get(randomizer.nextInt(deviceManager.getDevices().size()));
-            return ResponseEntity.ok(random);
+            result = random;
         }
-        //
-//        if(randomNum>5){
-//            return ResponseEntity.ok(true);
-//        }else{
-//            return ResponseEntity.ok(false);
-//        }
+
+        localVotes.addVote(deviceManager.getCurrentDevice(),result);
+    }
+
+//    @RequestMapping(value="/getVoteStr",method = RequestMethod.POST)
+    @PostMapping("/receiveVote")
+    public ResponseEntity<Object> voting(@RequestBody Vote vote){
+        Vote localVotes = manager.getVotes().stream().filter(e->e.getVoteStr() == vote.getVoteStr()).findFirst().orElse(null);
+
+        System.out.println(vote.toString());
+        System.out.println("logged in voting");
+        return null;
     }
 
 }

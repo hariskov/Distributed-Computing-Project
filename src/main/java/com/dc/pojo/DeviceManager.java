@@ -110,7 +110,7 @@ public class DeviceManager {
                     if (discoveredDevice != null) {
                         addDevice(discoveredDevice);
                     }
-//                    break;
+                    break;
                 }
                 //                }
             } catch (Exception e) {

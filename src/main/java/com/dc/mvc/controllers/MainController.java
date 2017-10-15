@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 
 /**
  * Created by xumepa on 9/12/17.
@@ -18,23 +21,19 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping(value = "/", method = RequestMethod.GET)
 public class MainController {
 
-    @Autowired
-    RestTemplate restTemplate;
-
-    @Autowired
-    DeviceManager deviceManager;
-
     private static final String MAIN = "main";
     private final static Logger log = LoggerFactory.getLogger(MainController.class);
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String getMainScreen() {
+    public void getMainScreen(HttpServletResponse httpServletResponse) throws IOException {
+        httpServletResponse.sendRedirect(MAIN);
+//        return MAIN;
+    }
+
+    @RequestMapping(value = "/main", method = RequestMethod.GET)
+    public String getMainScreen1() {
+        System.out.println("b");
+        log.info(Thread.currentThread().getStackTrace()[1].getClassName() + " / " + Thread.currentThread().getStackTrace()[1].getMethodName());
         return MAIN;
     }
-//    @RequestMapping(value = "/main", method = RequestMethod.GET)
-//    public String getMainScreen1() {
-//        System.out.println("b");
-//        log.info(Thread.currentThread().getStackTrace()[1].getClassName() + " / " + Thread.currentThread().getStackTrace()[1].getMethodName());
-//        return MAIN;
-//    }
 }

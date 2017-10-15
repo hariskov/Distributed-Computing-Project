@@ -1,6 +1,7 @@
 package com.dc.interceptors;
 
 import com.dc.exceptions.NoDevicesException;
+import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.Vote;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * Created by xumepa on 10/3/17.
  */
-
+@CustomInterceptor
 public class NewVoteInterceptor implements HandlerInterceptor {
 
     @Autowired
@@ -55,24 +56,30 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // we have all votes calculated !
-        Vote lastVote = manager.getVotes().get(manager.getVotes().size()-1);
-        if(lastVote.getVoteParticipants().size() != deviceManager.getDevices().size()){
-            List<Device> missingAnswers = deviceManager.getDevices().stream().filter(e->!lastVote.getVoteParticipants().contains(e)).collect(Collectors.toList());
-            // something went wrong -> a recipient left.
-            // restart
-            missingAnswers.forEach(e->manager.getNetworkVotes(e,lastVote));
-            return;
-        }
+//        Vote lastVote = manager.getVotes().get(manager.getVotes().size()-1);
+//        if(lastVote.receiveVoteParticipants().size() != deviceManager.getDevices().size()){
+//            List<Device> missingAnswers = deviceManager.getDevices().stream().filter(e->!lastVote.receiveVoteParticipants().contains(e)).collect(Collectors.toList());
+//            // something went wrong -> a recipient left.
+//            // restart
+//            missingAnswers.forEach(e->manager.getNetworkVotes(e,lastVote));
+//            return;
+//        }
+//
+//        Object resultedObject = manager.getLastVote().calculateVote();
+//        if(resultedObject instanceof Device) {
+//            Device dev = (Device)resultedObject;
+//            System.err.println("winning vote " + dev.getUuid());
+//        }
 
-        Object resultedObject = manager.getLastVote().calculateVote();
-        if(resultedObject instanceof Device) {
-            Device dev = (Device)resultedObject;
-            System.err.println("winning vote " + dev.getUuid());
-        }
+        // send the vote to the rest of clients
+
+
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
+        for (Device device : deviceManager.getDevices()) {
+            manager.sendVote(device,manager.getCurrentLastVote());
+        }
     }
 }

@@ -1,10 +1,8 @@
 package com.dc.interceptors;
 
-import com.dc.pojo.Device;
+import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.DeviceManager;
-import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by xumepa on 10/3/17.
  */
+@CustomInterceptor
 public class DeviceCheckerInterceptor implements HandlerInterceptor {
 
     @Autowired
@@ -36,7 +35,6 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
             deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
 //            deviceManager.syncDevices(); //votingManager.getVotes()
         }
-
     }
 
     @Override
@@ -44,15 +42,12 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
         //start leader selection process after devices have discovered and synced.
         //votingManager.createVote("Leader");
 
-            String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/voting/startVote";
+        String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
 
-            try {
-                ResponseEntity<Object> voteResponse
-                        = restTemplate.postForEntity(uri, "Leader", Object.class);
-                System.out.println(voteResponse.getBody());
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-
+        try {
+              restTemplate.postForEntity(uri, "Leader", Object.class);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
