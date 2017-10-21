@@ -36,7 +36,9 @@ public abstract class AbstractInitTest {
     @Before
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        Device device = new Device(UUID.randomUUID(),"127.0.0.1");
+        Device device = new Device();
+        device.setIp("127.0.0.1");
+        device.setUuid(UUID.randomUUID());
         deviceManager.addDevice(device);
         deviceManager.setCurrentDevice(device);
     }
