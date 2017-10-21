@@ -57,7 +57,9 @@ public class StartVoteInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
     // send the vote to the rest of clients
         for (Device device : deviceManager.getDevices()) {
-            votingService.sendVoteResult(device,manager.getTempVote());
+            if(!device.equals(deviceManager.getCurrentDevice())) {
+                votingService.sendVoteResult(device, manager.getTempVote());
+            }
         }
     }
 

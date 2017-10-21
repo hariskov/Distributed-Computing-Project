@@ -1,5 +1,6 @@
 package com.dc.services;
 
+import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +22,7 @@ import java.util.List;
 public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
-    private RestTemplate restTemplate;
+    CustomRestTemplate restTemplate;
 
     public Device discoverDevice(String address) {
         String uri = "http://" + address + ":8080/project/echo/";

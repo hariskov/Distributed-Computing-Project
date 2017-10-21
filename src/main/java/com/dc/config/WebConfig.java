@@ -1,5 +1,6 @@
 package com.dc.config;
 
+import com.dc.components.CustomRestTemplate;
 import com.dc.interceptors.CardInterceptor;
 import com.dc.interceptors.DeviceCheckerInterceptor;
 import com.dc.interceptors.StartVoteInterceptor;
@@ -13,6 +14,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.codehaus.jackson.map.util.ISO8601DateFormat;
 import org.springframework.context.annotation.*;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
@@ -27,8 +30,8 @@ import java.util.Map;
 @Configuration
 @EnableWebMvc
 @ImportResource("classpath:dc-servlet.xml")
-@ComponentScan(basePackages = { "com.dc" })
-//        useDefaultFilters = false, includeFilters = @ComponentScan.Filter({Controller.class, CustomInterceptor.class,Component.class}))
+@ComponentScan(basePackages = { "com.dc" },
+        useDefaultFilters = false, includeFilters = @ComponentScan.Filter({Controller.class, Component.class}))
 public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Bean
@@ -55,15 +58,13 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean(name="restTemplate")
-    public RestTemplate restTemplate(){
-        return new RestTemplate();
+    public CustomRestTemplate restTemplate(){
+        return new CustomRestTemplate();
     }
 
     @Bean
-//    @DependsOn("deviceService")
     public DeviceManager deviceManager(){
-        DeviceManager deviceManager = new DeviceManager();//getRestTemplate()
-//        deviceManager.discoverDevices();
+        DeviceManager deviceManager = new DeviceManager();
         return deviceManager;
     }
 

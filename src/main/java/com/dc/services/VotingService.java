@@ -1,5 +1,6 @@
 package com.dc.services;
 
+import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.Vote;
@@ -20,7 +21,7 @@ import java.util.Random;
 public class VotingService {
 
     @Autowired
-    RestTemplate restTemplate;
+    CustomRestTemplate restTemplate;
 
     public void sendNewVoteToDevices(Device device, Vote vote) {
         try {

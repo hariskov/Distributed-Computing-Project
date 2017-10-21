@@ -1,5 +1,6 @@
 package com.dc.controllers;
 
+import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.Card;
 import com.dc.pojo.DeviceManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 public class CardController {
 
     @Autowired
-    RestTemplate restTemplate;
+    CustomRestTemplate restTemplate;
 
     @Autowired
     DeviceManager deviceManager;
