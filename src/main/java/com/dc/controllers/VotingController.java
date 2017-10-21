@@ -44,7 +44,7 @@ public class VotingController {
             votingManager.setTempVote(vote);
         }else{
             for (Map.Entry<Device, Object> entrySet : vote.getVote().entrySet()) {
-                if(!votingManager.getTempVote().contains(entrySet.getKey())){
+                if(!votingManager.getTempVote().containsDevice(entrySet.getKey())){
                     votingManager.getTempVote().addVote(entrySet.getKey(),entrySet.getValue());
                 }
             }

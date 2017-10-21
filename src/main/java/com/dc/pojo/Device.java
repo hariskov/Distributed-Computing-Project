@@ -18,6 +18,10 @@ public class Device extends Object implements Serializable{
 
     }
 
+    public Device(String ip){
+        this(UUID.randomUUID(),ip);
+    }
+
     public Device(UUID uuid, String ip){
         this.ip=ip;
         this.uuid=uuid;

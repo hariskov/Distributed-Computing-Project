@@ -2,7 +2,6 @@ package com.dc.pojo;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,14 +10,12 @@ import java.util.stream.Collectors;
  */
 
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
-public class Vote implements Serializable{
+public class Vote {
     HashMap<Device, Object> vote = new HashMap<>();
     private String voteStr;
-    private int id;
     private Device creator;
 
     public Vote(){
-        this.id = new Random().nextInt(10000);
     }
 
     public Vote(String voteStr) {
@@ -26,15 +23,13 @@ public class Vote implements Serializable{
         this.voteStr = voteStr;
     }
 
-    public boolean contains(Device dev){
-        boolean contains = false;
-        for (Map.Entry<Device, Object> entrySet : vote.entrySet()) {
-            if(entrySet.getKey().equals(dev)){
-                contains = true;
-                break;
+    public boolean containsDevice(Device device){
+        for (Map.Entry<Device, Object> entry : vote.entrySet()) {
+            if(entry.getKey().equals(device)){
+                return true;
             }
         }
-        return contains;
+        return false;
     }
 
     public HashMap<Device,Object> getVote(){
@@ -60,23 +55,6 @@ public class Vote implements Serializable{
         Map<Object,Long> a = getVote().entrySet().parallelStream().collect(Collectors.groupingBy(w->w.getValue(), Collectors.counting()));
         return a.entrySet().stream().max(Map.Entry.comparingByValue()).get(); // assumes n/2 + 1
     }
-
-    public int getId(){
-        return this.id;
-    }
-
-    @Override
-    public boolean equals(Object var1) {
-        if(var1 instanceof Vote){
-            if(this.id == ((Vote) var1).getId()){
-                return true;
-            }
-            return false;
-        }else{
-            return false;
-        }
-    }
-    @Override public int hashCode() { return id; }
 
     public Device getCreator() {
         return creator;
