@@ -2,19 +2,23 @@ package com.dc.pojo;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import java.io.Serializable;
+import java.util.Random;
 import java.util.UUID;
 
 /**
  * Created by xumepa on 10/6/17.
  */
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
-public class Device extends  Object{
+public class Device extends Object implements Serializable{
     private String ip;
     private UUID uuid;
+    transient int id;
 
     public Device(){
 
     }
+
     public Device(String ip){
         this(UUID.randomUUID(),ip);
     }
@@ -22,6 +26,7 @@ public class Device extends  Object{
     public Device(UUID uuid, String ip){
         this.ip=ip;
         this.uuid=uuid;
+        id = new Random().nextInt(10000);
     }
 
     public String getIp() {
@@ -44,6 +49,9 @@ public class Device extends  Object{
     public boolean equals(Object var1) {
         if(var1 instanceof Device){
             Device newDevice = (Device)var1;
+            if(this.id == newDevice.id){
+                return true;
+            }
             if(newDevice.getUuid().equals(this.getUuid()) && newDevice.getIp().equals(this.getIp())){
                 return true;
             }
@@ -52,5 +60,8 @@ public class Device extends  Object{
             return false;
         }
     }
+
+
+    @Override public int hashCode() { return id; }
 
 }

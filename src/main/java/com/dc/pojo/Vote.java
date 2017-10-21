@@ -2,6 +2,7 @@ package com.dc.pojo;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,14 +11,14 @@ import java.util.stream.Collectors;
  */
 
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
-public class Vote {
+public class Vote implements Serializable{
     HashMap<Device, Object> vote = new HashMap<>();
     private String voteStr;
-    private UUID id;
+    private int id;
     private Device creator;
 
     public Vote(){
-        this.id = UUID.randomUUID();
+        this.id = new Random().nextInt(10000);
 
     }
 
@@ -50,7 +51,7 @@ public class Vote {
         return a.entrySet().stream().max(Map.Entry.comparingByValue()).get(); // assumes n/2 + 1
     }
 
-    public UUID getId(){
+    public int getId(){
         return this.id;
     }
 
@@ -65,6 +66,7 @@ public class Vote {
             return false;
         }
     }
+    @Override public int hashCode() { return id; }
 
     public Device getCreator() {
         return creator;

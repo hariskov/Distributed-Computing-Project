@@ -29,9 +29,7 @@ public class DeviceManager {
 
     @Autowired
     public DeviceManager(){
-        currentDevice = new Device();
-        currentDevice.setUuid(UUID.randomUUID());
-        currentDevice.setIp(localhost.getHostAddress());
+        currentDevice = new Device(UUID.randomUUID(),localhost.getHostAddress());
         addDevice(currentDevice);
     }
 
