@@ -102,7 +102,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
         registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/main");
         registry.addInterceptor(getStartVoteInterceptor()).addPathPatterns("/voting/startVote");
-        registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/newVote");
+        registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/receiveNewTempVote");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
     }
 

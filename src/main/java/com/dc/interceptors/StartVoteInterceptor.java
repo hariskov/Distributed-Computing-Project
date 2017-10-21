@@ -1,7 +1,6 @@
 package com.dc.interceptors;
 
 import com.dc.exceptions.NoDevicesException;
-import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.Vote;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 /**
  * Created by xumepa on 10/3/17.
  */
-@CustomInterceptor
 public class StartVoteInterceptor implements HandlerInterceptor {
 
     @Autowired
@@ -57,25 +55,9 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        // we have all votes calculated !
-//        Vote lastVote = manager.getVotes().get(manager.getVotes().size()-1);
-//        if(lastVote.receiveVoteParticipants().size() != deviceManager.getDevices().size()){
-//            List<Device> missingAnswers = deviceManager.getDevices().stream().filter(e->!lastVote.receiveVoteParticipants().contains(e)).collect(Collectors.toList());
-//            // something went wrong -> a recipient left.
-//            // restart
-//            missingAnswers.forEach(e->manager.sendNewVoteToDevices(e,lastVote));
-//            return;
-//        }
-//
-//        Object resultedObject = manager.getLastVote().calculateVote();
-//        if(resultedObject instanceof Device) {
-//            Device dev = (Device)resultedObject;
-//            System.err.println("winning vote " + dev.getUuid());
-//        }
-
     // send the vote to the rest of clients
         for (Device device : deviceManager.getDevices()) {
-            votingService.sendVoteResult(device,manager.getCurrentVote());
+            votingService.sendVoteResult(device,manager.getTempVote());
         }
     }
 

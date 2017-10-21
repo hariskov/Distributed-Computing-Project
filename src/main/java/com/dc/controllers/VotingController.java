@@ -1,5 +1,6 @@
 package com.dc.controllers;
 
+import com.dc.pojo.Device;
 import com.dc.pojo.Vote;
 import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.HashMap;
 
 /**
  * Created by xumepa on 9/24/17.
@@ -20,7 +23,6 @@ public class VotingController {
     @Autowired
     VotingManager votingManager;
 
-//    @RequestMapping(value="/startVote",method = RequestMethod.GET)
     @PostMapping("/startVote")
     public ResponseEntity startVote(@RequestBody String voteType){
         Vote vote = votingManager.createVote(voteType);
@@ -30,26 +32,39 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
-    @PostMapping("/newVote")
+    @PostMapping("/receiveNewTempVote")
     public ResponseEntity newVote(@RequestBody Vote vote){
 //        votingManager.generateVoteResult(vote);
-        votingManager.setCurrentCirculatingVote(vote);
+
+        if(!votingManager.getTempVote().equals(vote)) {
+            votingManager.setCurrentCirculatingVote(vote);
+        }else{
+            votingManager.addValueToCurrentTempVote(vote);
+        }
+
+
         //TODO fix this
-//        localVotes.addVote(deviceManager.getCurrentDevice(),result);
-        //TODO fix this
+        // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !
+        // possibility : another machine doesnt have it YET -> keep requesting till it receives -> this will fix reliability issue !
 
         return ResponseEntity.ok(null);
     }
 
-//    @RequestMapping(value="/getVoteStr",method = RequestMethod.POST)
     @PostMapping("/receiveVote")
     public ResponseEntity<Object> voting(@RequestBody Vote vote){
 
         System.out.println(vote.toString());
-//        vote.
-//        this should put the Vote
-        votingManager.applyVote(vote);
 
+        //        this should put the Vote
+
+        HashMap<Device, Object> receivedVotes = votingManager.getLastVote().getVote();
+        HashMap<Device, Object> currentVotes = vote.getVote();
+
+
+        // when receive vote -> calculate it against current vote
+//        if(sameVotes) {
+//            votingManager.applyVote(vote);
+//        }
         return ResponseEntity.ok(null);
     }
 

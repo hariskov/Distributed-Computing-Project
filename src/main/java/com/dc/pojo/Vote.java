@@ -2,10 +2,7 @@ package com.dc.pojo;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -17,8 +14,11 @@ public class Vote {
 //    private final DeviceManager deviceManager;
     HashMap<Device, Object> vote = new HashMap<>();
     private String voteStr;
+    private UUID id;
+
 
     public Vote(){
+        this.id = UUID.randomUUID();
     }
 
     public Vote(String voteStr) {
@@ -48,4 +48,21 @@ public class Vote {
         Map<Object,Long> a = getVote().entrySet().parallelStream().collect(Collectors.groupingBy(w->w.getValue(), Collectors.counting()));
         return a.entrySet().stream().max(Map.Entry.comparingByValue()).get(); // assumes n/2 + 1
     }
+
+    public UUID getId(){
+        return this.id;
+    }
+
+    @Override
+    public boolean equals(Object var1) {
+        if(var1 instanceof Vote){
+            if(this.id == ((Vote) var1).getId()){
+                return true;
+            }
+            return false;
+        }else{
+            return false;
+        }
+    }
+
 }

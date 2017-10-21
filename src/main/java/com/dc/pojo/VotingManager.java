@@ -3,9 +3,7 @@ package com.dc.pojo;
 import com.dc.exceptions.ExistingVoteException;
 import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +22,7 @@ public class VotingManager {
     VotingService votingService;
 
     private List<Vote> manager;
-    private Vote newVote;
+    private Vote tempVote;
 
     public VotingManager(){
         manager = new LinkedList<Vote>();
@@ -36,8 +34,8 @@ public class VotingManager {
             throw new ExistingVoteException();
         }else{
             Vote newVote = new Vote(voteStr);
-//            newVote.addVote(deviceManager.getCurrentDevice(),"");
-//            deviceManager.getDevices().forEach(d -> newVote.addVote(d, ""));
+//            tempVote.addVote(deviceManager.getCurrentDevice(),"");
+//            deviceManager.getDevices().forEach(d -> tempVote.addVote(d, ""));
             return newVote;
         }
     }
@@ -75,14 +73,9 @@ public class VotingManager {
     public Vote getLastVote(){
         return manager.get(manager.size()-1);
     }
-//
-//    public Object getCurrentVote(){
-//        Device dev = newVote.getVote().entrySet().stream().filter(k->k.getKey()==deviceManager.getCurrentDevice()).findFirst().orElse(null).getKey();
-//        return dev;
-//    }
 
-    public Vote getCurrentVote(){
-        return newVote;
+    public Vote getTempVote(){
+        return tempVote;
     }
 
     public boolean hasVotes(){
@@ -102,8 +95,10 @@ public class VotingManager {
     }
 
     public void setCurrentCirculatingVote(Vote currentCirculatingVote) {
-        this.newVote = currentCirculatingVote;
+        this.tempVote = currentCirculatingVote;
+    }
+
+    public void addValueToCurrentTempVote(Vote vote) {
+        manager.add(vote);
     }
 }
-
-    //HashMap<UUID,Object>

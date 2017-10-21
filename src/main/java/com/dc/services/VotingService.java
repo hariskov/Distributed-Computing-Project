@@ -24,7 +24,7 @@ public class VotingService {
 
     public void sendNewVoteToDevices(Device device, Vote vote) {
         try {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/newVote";
+            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
 //        ResponseEntity<Object> response =
             restTemplate.postForEntity(uri, vote, Object.class);
 //        return response.getBody();
@@ -36,5 +36,5 @@ public class VotingService {
     public void sendVoteResult(Device device, Object lastVote) {
         String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
         restTemplate.postForEntity(uri, lastVote, Object.class);
-        }
+    }
 }
