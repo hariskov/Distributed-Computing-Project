@@ -40,7 +40,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
         if(manager.hasVotes()) {
             Vote lastVote = manager.getLastVote();
-            Map<Device, Object> nullValues = lastVote.getVote().entrySet().stream()
+            Map<Device, Object> nullValues = lastVote.getVoteMap().entrySet().stream()
                     .filter(ent -> ent.getValue() == "").collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
 
             // new vote should come if errors

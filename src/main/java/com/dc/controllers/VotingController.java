@@ -1,18 +1,12 @@
 package com.dc.controllers;
 
-import com.dc.pojo.Device;
-import com.dc.pojo.DeviceManager;
-import com.dc.pojo.Vote;
-import com.dc.pojo.VotingManager;
+import com.dc.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by xumepa on 9/24/17.
@@ -24,9 +18,6 @@ public class VotingController {
 
     @Autowired
     VotingManager votingManager;
-
-    @Autowired
-    DeviceManager deviceManager;
 
     @PostMapping("/startVote")
     public ResponseEntity startVote(@RequestBody String voteType){
@@ -43,9 +34,9 @@ public class VotingController {
         if(votingManager.getTempVote() == null){
             votingManager.setTempVote(vote);
         }else{
-            for (Map.Entry<Device, Object> entrySet : vote.getVote().entrySet()) {
-                if(!votingManager.getTempVote().containsDevice(entrySet.getKey())){
-                    votingManager.getTempVote().addVote(entrySet.getKey(),entrySet.getValue());
+            for(SingleVote da : vote.getVotes()) {
+                if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
+                    votingManager.getTempVote().addVote(da);
                 }
             }
         }
@@ -64,8 +55,8 @@ public class VotingController {
 
         //        this should put the Vote
 
-        HashMap<Device, Object> receivedVotes = votingManager.getLastVote().getVote();
-        HashMap<Device, Object> currentVotes = vote.getVote();
+//        HashMap<Device, Object> receivedVotes = votingManager.getLastVote().getVoteMap();
+//        HashMap<Device, Object> currentVotes = vote.getVoteMap();
 
 
         // when receive vote -> calculate it against current vote

@@ -1,17 +1,14 @@
 package com.dc.pojo;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by xumepa on 10/3/17.
  */
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+//@JsonSerialize(include=JsonSerialize.Inclusion.ALWAYS)
 public class Vote {
-    HashMap<Device, Object> vote = new HashMap<>();
+    private List<SingleVote> votes = new ArrayList<SingleVote>();
     private String voteStr;
     private Device creator;
 
@@ -24,18 +21,14 @@ public class Vote {
     }
 
     public boolean containsDevice(Device device){
-        for (Map.Entry<Device, Object> entry : vote.entrySet()) {
-            if(entry.getKey().equals(device)){
+        for(SingleVote da : votes) {
+            if (da.getDevice().equals(device)) {
                 return true;
             }
         }
         return false;
     }
 
-    public HashMap<Device,Object> getVote(){
-        return vote;
-    }
-    public void setVote(HashMap<Device, Object> vote){this.vote=vote;}
 
     public String getVoteStr() {
         return voteStr;
@@ -43,18 +36,18 @@ public class Vote {
     public void setVoteStr(String str){this.voteStr=str;}
 
     public void addVote(Device device, Object body) {
-        vote.put(device, body);
+        SingleVote da = new SingleVote();
+        da.setAnswer(body);
+        da.setDevice(device);
+        votes.add(da);
+
     }
 
-    public List<Device> receiveVoteParticipants(){
-        return Arrays.asList((Device[]) vote.keySet().toArray());
-    }
-
-    public Object calculateVote() {
-//        Vote receivedVote = manager.stream().filter(e->e.getVoteStr().equals(vote)).findFirst().get();
-        Map<Object,Long> a = getVote().entrySet().parallelStream().collect(Collectors.groupingBy(w->w.getValue(), Collectors.counting()));
-        return a.entrySet().stream().max(Map.Entry.comparingByValue()).get(); // assumes n/2 + 1
-    }
+//    public Object calculateVote() {
+////        Vote receivedVote = manager.stream().filter(e->e.getVoteStr().equals(voteMap)).findFirst().get();
+//        Map<Object,Long> a = getVoteMap().entrySet().parallelStream().collect(Collectors.groupingBy(w->w.getValue(), Collectors.counting()));
+//        return a.entrySet().stream().max(Map.Entry.comparingByValue()).get(); // assumes n/2 + 1
+//    }
 
     public Device getCreator() {
         return creator;
@@ -62,5 +55,17 @@ public class Vote {
 
     public void setCreator(Device creator) {
         this.creator = creator;
+    }
+
+    public List<SingleVote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<SingleVote> votes) {
+        this.votes = votes;
+    }
+
+    public void addVote(SingleVote da) {
+        votes.add(da);
     }
 }
