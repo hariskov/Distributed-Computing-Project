@@ -1,6 +1,5 @@
 package com.dc.interceptors;
 
-import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.DeviceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by xumepa on 10/9/17.
  */
-@CustomInterceptor
 public class CardInterceptor implements HandlerInterceptor {
 
     @Autowired

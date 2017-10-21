@@ -98,7 +98,7 @@ public class VotingManager {
         this.tempVote = currentCirculatingVote;
     }
 
-    public void addValueToCurrentTempVote(Vote vote) {
-        manager.add(vote);
+    public void addValueToCurrentTempVote() {
+        tempVote.addVote(deviceManager.getCurrentDevice(),"");
     }
 }

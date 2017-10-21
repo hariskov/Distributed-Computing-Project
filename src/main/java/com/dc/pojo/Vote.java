@@ -22,6 +22,7 @@ public class Vote {
     }
 
     public Vote(String voteStr) {
+        this();
         this.voteStr = voteStr;
     }
 

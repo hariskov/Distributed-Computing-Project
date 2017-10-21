@@ -100,7 +100,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         // none for now , should add interceptor for calls to other servers
         // to verify whether they exist , add polling calls in here
 
-        registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/main");
+        registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/echo/discovery");
         registry.addInterceptor(getStartVoteInterceptor()).addPathPatterns("/voting/startVote");
         registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/receiveNewTempVote");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");

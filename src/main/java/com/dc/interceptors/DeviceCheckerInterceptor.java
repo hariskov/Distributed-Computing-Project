@@ -1,9 +1,7 @@
 package com.dc.interceptors;
 
-import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.DeviceManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by xumepa on 10/3/17.
  */
-@CustomInterceptor
 public class DeviceCheckerInterceptor implements HandlerInterceptor {
 
     @Autowired

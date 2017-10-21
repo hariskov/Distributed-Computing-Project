@@ -1,5 +1,6 @@
 package com.dc.interceptors;
 
+import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.VotingManager;
 import com.dc.services.VotingService;
@@ -36,9 +37,21 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         // send Current Temp Vote to all machines to verify !
         // call receiveVote with updated temp vote.
 
-        if(deviceManager.getDevices().size() != votingManager.getTempVote().getVote().size()) {
-            deviceManager.getDevices().forEach(e -> votingService.sendNewVoteToDevices(e, votingManager.getTempVote()));
+        for (Device device : deviceManager.getDevices()) {
+            if(!votingManager.getTempVote().getVote().containsKey(device)){
+                votingService.sendNewVoteToDevices(device,votingManager.getTempVote());
+            }
         }
+
+//
+//        if(deviceManager.getDevices().size() != votingManager.getTempVote().getVote().size()) {
+////            deviceManager.getDevices().forEach(e -> votingService.sendNewVoteToDevices(e, votingManager.getTempVote()));
+//            for (Device device : deviceManager.getDevices()) {
+//                if(device != deviceManager.getCurrentDevice()){
+//                    votingService.sendNewVoteToDevices(device,votingManager.getTempVote());
+//                }
+//            }
+//        }
     }
 
     @Override

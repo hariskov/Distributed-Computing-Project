@@ -1,6 +1,7 @@
 package com.dc.controllers;
 
 import com.dc.pojo.Device;
+import com.dc.pojo.DeviceManager;
 import com.dc.pojo.Vote;
 import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by xumepa on 9/24/17.
@@ -22,6 +24,9 @@ public class VotingController {
 
     @Autowired
     VotingManager votingManager;
+
+    @Autowired
+    DeviceManager deviceManager;
 
     @PostMapping("/startVote")
     public ResponseEntity startVote(@RequestBody String voteType){
@@ -36,12 +41,20 @@ public class VotingController {
     public ResponseEntity newVote(@RequestBody Vote vote){
 //        votingManager.generateVoteResult(vote);
 
-        if(!votingManager.getTempVote().equals(vote)) {
+
+        if(votingManager.getTempVote() == null){
             votingManager.setCurrentCirculatingVote(vote);
-        }else{
-            votingManager.addValueToCurrentTempVote(vote);
         }
 
+        if(votingManager.getTempVote().getVote().containsKey(deviceManager.getCurrentDevice())) {
+            votingManager.addValueToCurrentTempVote();
+        }
+
+        for (Map.Entry<Device, Object> deviceObjectEntry : vote.getVote().entrySet()) {
+            if(!votingManager.getTempVote().getVote().containsKey(deviceObjectEntry.getKey())){
+                votingManager.getTempVote().addVote(deviceObjectEntry.getKey(),deviceObjectEntry.getValue());
+            }
+        }
 
         //TODO fix this
         // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !
