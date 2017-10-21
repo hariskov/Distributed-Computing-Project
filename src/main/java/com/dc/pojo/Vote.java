@@ -19,12 +19,22 @@ public class Vote implements Serializable{
 
     public Vote(){
         this.id = new Random().nextInt(10000);
-
     }
 
     public Vote(String voteStr) {
         this();
         this.voteStr = voteStr;
+    }
+
+    public boolean contains(Device dev){
+        boolean contains = false;
+        for (Map.Entry<Device, Object> entrySet : vote.entrySet()) {
+            if(entrySet.getKey().getUuid() == dev.getUuid()){
+                contains = true;
+                break;
+            }
+        }
+        return contains;
     }
 
     public HashMap<Device,Object> getVote(){
