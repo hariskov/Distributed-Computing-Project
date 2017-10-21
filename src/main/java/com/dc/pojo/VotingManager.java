@@ -1,8 +1,10 @@
 package com.dc.pojo;
 
 import com.dc.exceptions.ExistingVoteException;
+import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -12,15 +14,17 @@ import java.util.stream.Collectors;
  * Created by xumepa on 10/3/17.
  */
 
+@Component
 public class VotingManager {
 
     @Autowired
     private DeviceManager deviceManager;
 
     @Autowired
-    RestTemplate restTemplate;
+    VotingService votingService;
 
     private List<Vote> manager;
+    private Vote newVote;
 
     public VotingManager(){
         manager = new LinkedList<Vote>();
@@ -31,11 +35,37 @@ public class VotingManager {
         if (manager.contains(voteStr)) {
             throw new ExistingVoteException();
         }else{
-            Vote vote = new Vote(voteStr);
-            manager.add(vote);
-            deviceManager.getDevices().forEach(d -> vote.addVote(d, ""));
-            return vote;
+            Vote newVote = new Vote(voteStr);
+//            newVote.addVote(deviceManager.getCurrentDevice(),"");
+//            deviceManager.getDevices().forEach(d -> newVote.addVote(d, ""));
+            return newVote;
         }
+    }
+
+    public void sendVotes(Vote vote) {
+        for (Device device : deviceManager.getDevices()) {
+            votingService.sendNewVoteToDevices(device, vote);
+//                manager.putVote(voteType, device, result);
+        }
+    }
+
+    public Vote getVoteResults(Vote vote) {
+        return getVotes().stream().filter(e->e.getVoteStr().equals(vote.getVoteStr())).findFirst().orElse(null);
+    }
+
+    public void generateVoteResult(Vote vote) {
+        Object result;
+        if(getVoteResults(vote) == null){
+            result = null;
+        }else {
+            Random randomizer = new Random();
+            Device random = deviceManager.getDevices().get(randomizer.nextInt(deviceManager.getDevices().size()));
+            result = random;
+        }
+    }
+
+    public void applyVote(Vote vote){
+        manager.add(vote);
     }
 
     public List<Vote> getVotes(){
@@ -45,10 +75,14 @@ public class VotingManager {
     public Vote getLastVote(){
         return manager.get(manager.size()-1);
     }
+//
+//    public Object getCurrentVote(){
+//        Device dev = newVote.getVote().entrySet().stream().filter(k->k.getKey()==deviceManager.getCurrentDevice()).findFirst().orElse(null).getKey();
+//        return dev;
+//    }
 
-    public Object getCurrentLastVote(){
-        Device dev = getLastVote().getVote().entrySet().stream().filter(k->k.getKey()==deviceManager.getCurrentDevice()).findFirst().orElse(null).getKey();
-        return dev;
+    public Vote getCurrentVote(){
+        return newVote;
     }
 
     public boolean hasVotes(){
@@ -63,24 +97,12 @@ public class VotingManager {
         }
     }
 
-    public void getNetworkVotes(Device device, Vote vote) {
-        try {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/newVote";
-//        ResponseEntity<Object> response =
-            restTemplate.postForEntity(uri, vote, Object.class);
-//        return response.getBody();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
     public void setVotes(List<Vote> votes) {
         this.manager = votes;
     }
 
-    public void sendVote(Device device, Object lastVote) {
-        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
-        restTemplate.postForEntity(uri, lastVote, Object.class);
+    public void setCurrentCirculatingVote(Vote currentCirculatingVote) {
+        this.newVote = currentCirculatingVote;
     }
 }
 

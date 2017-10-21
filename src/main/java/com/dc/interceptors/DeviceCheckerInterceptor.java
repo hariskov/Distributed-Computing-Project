@@ -19,9 +19,6 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     @Autowired
     DeviceManager deviceManager;
 
-    @Autowired
-    RestTemplate restTemplate;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;

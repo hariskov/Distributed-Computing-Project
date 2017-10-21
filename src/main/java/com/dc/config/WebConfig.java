@@ -2,9 +2,8 @@ package com.dc.config;
 
 import com.dc.interceptors.CardInterceptor;
 import com.dc.interceptors.DeviceCheckerInterceptor;
+import com.dc.interceptors.StartVoteInterceptor;
 import com.dc.interceptors.NewVoteInterceptor;
-import com.dc.interceptors.VoteCalculatorInterceptor;
-import com.dc.misc.CustomInterceptor;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -12,31 +11,24 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.codehaus.jackson.map.util.ISO8601DateFormat;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
-import org.springframework.web.util.UrlPathHelper;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.POST;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 @EnableWebMvc
 @ImportResource("classpath:dc-servlet.xml")
-@ComponentScan(basePackages = { "com.dc" },
-        useDefaultFilters = false, includeFilters = @ComponentScan.Filter({Controller.class, CustomInterceptor.class}))
+@ComponentScan(basePackages = { "com.dc" })
+//        useDefaultFilters = false, includeFilters = @ComponentScan.Filter({Controller.class, CustomInterceptor.class,Component.class}))
 public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Bean
@@ -62,17 +54,16 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         return tilesViewResolver;
     }
 
-    @Bean
-    public RestTemplate getRestTemplate(){
+    @Bean(name="restTemplate")
+    public RestTemplate restTemplate(){
         return new RestTemplate();
     }
 
     @Bean
-//    @PostConstruct
-//    @DependsOn("getRestTemplate")
-    public DeviceManager devices(){
-        DeviceManager deviceManager = new DeviceManager(getRestTemplate());
-        deviceManager.discoverDevices();
+//    @DependsOn("deviceService")
+    public DeviceManager deviceManager(){
+        DeviceManager deviceManager = new DeviceManager();//getRestTemplate()
+//        deviceManager.discoverDevices();
         return deviceManager;
     }
 
@@ -110,15 +101,14 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         // to verify whether they exist , add polling calls in here
 
         registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/main");
-        registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/startVote");
-        registry.addInterceptor(getVoteCalculatorInterceptor()).addPathPatterns("/voting/getNetworkVotes");
+        registry.addInterceptor(getStartVoteInterceptor()).addPathPatterns("/voting/startVote");
+        registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/newVote");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
     }
 
     @Bean
-    public VoteCalculatorInterceptor getVoteCalculatorInterceptor() {
-        VoteCalculatorInterceptor voteCalculatorInterceptor = new VoteCalculatorInterceptor();
-        return voteCalculatorInterceptor;
+    public NewVoteInterceptor getNewVoteInterceptor() {
+        return new NewVoteInterceptor();
     }
 
     @Bean
@@ -127,7 +117,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean
-    public NewVoteInterceptor getNewVoteInterceptor(){return new NewVoteInterceptor();
+    public StartVoteInterceptor getStartVoteInterceptor(){return new StartVoteInterceptor();
     }
 
     @Bean

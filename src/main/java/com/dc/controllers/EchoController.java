@@ -42,7 +42,8 @@ public class EchoController {
 
 //    @PostMapping(value="/syncDevices", produces = "application/json", consumes = "application/json")
     @PostMapping("/getDevices")
-    public ResponseEntity<Object> syncDevices(){
+    public ResponseEntity<Object> syncDevices(@RequestBody List<Device> devices){
+        long counter = deviceManager.getDevices().stream().filter(e-> !devices.contains(e)).count();
         return ResponseEntity.ok().body(deviceManager.getDevices());
     }
 

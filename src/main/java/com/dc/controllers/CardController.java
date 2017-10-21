@@ -2,7 +2,6 @@ package com.dc.controllers;
 
 import com.dc.pojo.Card;
 import com.dc.pojo.DeviceManager;
-import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,9 +16,6 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 @RequestMapping(value="card")
 public class CardController {
-
-    @Autowired
-    VotingManager votingManager;
 
     @Autowired
     RestTemplate restTemplate;
