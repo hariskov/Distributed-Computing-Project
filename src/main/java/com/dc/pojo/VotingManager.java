@@ -35,7 +35,7 @@ public class VotingManager {
         }else{
             Vote newVote = new Vote(voteStr);
             newVote.setCreator(deviceManager.getCurrentDevice());
-//            tempVote.addVote(deviceManager.getCurrentDevice(),"");
+            newVote.addVote(deviceManager.getCurrentDevice(),"");
 //            deviceManager.getDevices().forEach(d -> tempVote.addVote(d, ""));
             return newVote;
         }
@@ -43,8 +43,10 @@ public class VotingManager {
 
     public void sendVotes(Vote vote) {
         for (Device device : deviceManager.getDevices()) {
-            votingService.sendNewVoteToDevices(device, vote);
+            if (device != deviceManager.getCurrentDevice()) {
+                votingService.sendNewVoteToDevices(device, vote);
 //                manager.putVote(voteType, device, result);
+            }
         }
     }
 

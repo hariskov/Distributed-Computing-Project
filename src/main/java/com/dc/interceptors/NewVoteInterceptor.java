@@ -39,9 +39,9 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         // call receiveVote with updated temp vote.
 
         for (Device device : deviceManager.getDevices()) {
-//            if(!votingManager.getTempVote().getVote().containsKey(device)){
-                votingService.sendNewVoteToDevices(device,votingManager.getTempVote());
-//            }
+            if(device!=deviceManager.getCurrentDevice()) {
+                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
+            }
         }
 
 //
