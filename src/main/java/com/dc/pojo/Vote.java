@@ -29,7 +29,7 @@ public class Vote implements Serializable{
     public boolean contains(Device dev){
         boolean contains = false;
         for (Map.Entry<Device, Object> entrySet : vote.entrySet()) {
-            if(entrySet.getKey().getUuid() == dev.getUuid()){
+            if(entrySet.getKey().equals(dev)){
                 contains = true;
                 break;
             }
