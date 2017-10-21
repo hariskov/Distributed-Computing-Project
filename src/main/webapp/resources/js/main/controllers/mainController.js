@@ -10,6 +10,20 @@ var mainFunction = function(mainService, $scope, $http, $location){
         cardValue:"2"
     };
 
+    self.discoverDone=false;
+
+
+    self.discover = function(){
+        mainService.discover().then(
+            function(success){
+                console.log(success);
+                self.discoverDone = true;
+            },function(fail){
+                console.log(fail);
+            }
+        )
+    };
+
     self.submit = function(){
         mainService.submitCard(self.card).then(
             function(success){

@@ -36,8 +36,10 @@ public class EchoController {
     }
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)
-    public void discover() throws IOException {
+    public ResponseEntity discover() throws IOException {
         deviceManager.discoverDevices();
+
+        return ResponseEntity.ok(null);
     }
 
 //    @PostMapping(value="/syncDevices", produces = "application/json", consumes = "application/json")
