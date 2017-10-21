@@ -28,6 +28,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        request.getHeaderNames();
         return true;
     }
 
@@ -38,9 +39,9 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         // call receiveVote with updated temp vote.
 
         for (Device device : deviceManager.getDevices()) {
-            if(!votingManager.getTempVote().getVote().containsKey(device)){
+//            if(!votingManager.getTempVote().getVote().containsKey(device)){
                 votingService.sendNewVoteToDevices(device,votingManager.getTempVote());
-            }
+//            }
         }
 
 //

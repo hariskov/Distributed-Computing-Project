@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class Vote {
-//    private final DeviceManager deviceManager;
     HashMap<Device, Object> vote = new HashMap<>();
     private String voteStr;
     private UUID id;
-
+    private Device creator;
 
     public Vote(){
         this.id = UUID.randomUUID();
+
     }
 
     public Vote(String voteStr) {
@@ -66,4 +66,11 @@ public class Vote {
         }
     }
 
+    public Device getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Device creator) {
+        this.creator = creator;
+    }
 }

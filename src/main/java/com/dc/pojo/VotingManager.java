@@ -34,6 +34,7 @@ public class VotingManager {
             throw new ExistingVoteException();
         }else{
             Vote newVote = new Vote(voteStr);
+            newVote.setCreator(deviceManager.getCurrentDevice());
 //            tempVote.addVote(deviceManager.getCurrentDevice(),"");
 //            deviceManager.getDevices().forEach(d -> tempVote.addVote(d, ""));
             return newVote;
@@ -94,8 +95,9 @@ public class VotingManager {
         this.manager = votes;
     }
 
-    public void setCurrentCirculatingVote(Vote currentCirculatingVote) {
+    public void setTempVote(Vote currentCirculatingVote) {
         this.tempVote = currentCirculatingVote;
+        addValueToCurrentTempVote();
     }
 
     public void addValueToCurrentTempVote() {

@@ -39,20 +39,14 @@ public class VotingController {
 
     @PostMapping("/receiveNewTempVote")
     public ResponseEntity newVote(@RequestBody Vote vote){
-//        votingManager.generateVoteResult(vote);
-
 
         if(votingManager.getTempVote() == null){
-            votingManager.setCurrentCirculatingVote(vote);
-        }
-
-        if(votingManager.getTempVote().getVote().containsKey(deviceManager.getCurrentDevice())) {
-            votingManager.addValueToCurrentTempVote();
-        }
-
-        for (Map.Entry<Device, Object> deviceObjectEntry : vote.getVote().entrySet()) {
-            if(!votingManager.getTempVote().getVote().containsKey(deviceObjectEntry.getKey())){
-                votingManager.getTempVote().addVote(deviceObjectEntry.getKey(),deviceObjectEntry.getValue());
+            votingManager.setTempVote(vote);
+        }else{
+            for (Map.Entry<Device, Object> entrySet : vote.getVote().entrySet()) {
+                if(!votingManager.getTempVote().getVote().containsKey(entrySet.getKey())){
+                    votingManager.getTempVote().addVote(entrySet.getKey(),entrySet.getValue());
+                }
             }
         }
 
