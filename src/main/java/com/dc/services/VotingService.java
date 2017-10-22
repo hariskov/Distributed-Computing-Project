@@ -50,8 +50,10 @@ public class VotingService {
     }
 
     public void processVote(Vote vote) {
-        if(!votingManager.hasCurrentSingleVote()){
+        if(votingManager.getTempVote()==null){
             votingManager.setTempVote(vote);
+        }
+        if(!votingManager.hasCurrentSingleVote()){
             votingManager.setCurrentSingleVote(vote.getVoteStr());
         }else{
             for(SingleVote da : vote.getVotes()) {

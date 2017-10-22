@@ -81,9 +81,13 @@ public class Vote {
     }
 
     public boolean hasCurrentSingleVote() {
-        if(currentVote == null){
+        try {
+            if (currentVote == null) {
+                return false;
+            }
+            return true;
+        } catch (NullPointerException npe) {
             return false;
         }
-        return true;
     }
 }
