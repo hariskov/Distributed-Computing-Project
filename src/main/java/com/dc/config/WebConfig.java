@@ -1,10 +1,7 @@
 package com.dc.config;
 
 import com.dc.components.CustomRestTemplate;
-import com.dc.interceptors.CardInterceptor;
-import com.dc.interceptors.DeviceCheckerInterceptor;
-import com.dc.interceptors.NewVoteInterceptor;
-import com.dc.interceptors.StartVoteInterceptor;
+import com.dc.interceptors.*;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -16,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -101,6 +99,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         registry.addInterceptor(getStartVoteInterceptor()).addPathPatterns("/voting/startVote");
         registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/receiveNewTempVote");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
+        registry.addInterceptor(getReceiveVoteInterceptor()).addPathPatterns("/voting/receiveVote");
     }
 
     @Bean
@@ -120,6 +119,11 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     @Bean
     public DeviceCheckerInterceptor getDeviceCheckerInterceptor() {
         return new DeviceCheckerInterceptor();
+    }
+
+    @Bean
+    public ReceiveVoteInterceptor getReceiveVoteInterceptor() {
+        return new ReceiveVoteInterceptor();
     }
 
 //    @Bean

@@ -75,4 +75,10 @@ public class Vote {
         vote.setVoteStr(voteStr);
         vote.addVote(currentVote);
     }
+
+    public SingleVote getVoteOfDevice(Device currentDevice) {
+        Optional<SingleVote> result = votes.stream().filter(e->e.getDevice().equals(currentDevice)).findFirst();
+        SingleVote vote = result.get();
+        return vote;
+    }
 }

@@ -26,4 +26,16 @@ public class SingleVote {
     public void setAnswer(Object answer) {
         this.answer = answer;
     }
+
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof SingleVote){
+            if(((SingleVote) o).getDevice().equals(this.getDevice())){
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 }

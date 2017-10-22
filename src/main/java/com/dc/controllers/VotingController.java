@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 /**
  * Created by xumepa on 9/24/17.
  */
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping(value = "/voting")
 public class VotingController {
+
+    private final static Logger logger = LoggerFactory.getLogger(VotingController.class);
 
     @Autowired
     VotingService votingService;
@@ -41,8 +45,8 @@ public class VotingController {
     @PostMapping("/receiveVote")
     public ResponseEntity<Object> voting(@RequestBody Vote vote){
 
-        System.out.println(vote.toString());
-
+        logger.info("entered Voting : " + vote.getVoteStr());
+        votingService.processVote(vote);
         //        this should put the Vote
 
 //        HashMap<Device, Object> receivedVotes = votingManager.getLastVote().getVoteMap();

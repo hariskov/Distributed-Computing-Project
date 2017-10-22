@@ -5,6 +5,10 @@ import com.dc.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 /**
  * Created by xumepa on 10/19/17.
  */
@@ -30,9 +34,9 @@ public class VotingService {
         }
     }
 
-    public void sendVoteResult(Device device, Object lastVote) {
+    public void sendVoteResult(Device device, Object voteResult) {
         String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
-        restTemplate.postForEntity(uri, lastVote, Object.class);
+        restTemplate.postForEntity(uri, voteResult, Object.class);
     }
 
     public void startNewVote(String voteType) {
@@ -44,7 +48,6 @@ public class VotingService {
 
     public void processVote(Vote vote) {
 
-
         if(votingManager.getTempVote() == null){
             votingManager.setTempVote(vote);
             votingManager.setCurrentSingleVote(vote.getVoteStr());
@@ -52,6 +55,12 @@ public class VotingService {
             for(SingleVote da : vote.getVotes()) {
                 if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
                     votingManager.getTempVote().addVote(da);
+                }else{
+//                    List<SingleVote> emptyVotes = votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").collect(Collectors.toList());
+                    SingleVote singleVote = votingManager.getTempVote().getVotes().stream().filter(e->e.equals(da)).findFirst().orElse(null);
+                    if(singleVote!=null) {
+                        singleVote.setAnswer(da.getAnswer());
+                    }
                 }
             }
         }
