@@ -26,10 +26,6 @@ public class StartVoteInterceptor implements HandlerInterceptor {
     @Autowired
     DeviceManager deviceManager;
 
-    @Autowired
-    VotingService votingService;
-
-
     // to check for previous votes that are not completed.
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -39,14 +35,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         }
 
         if(manager.hasVotes()) {
-            Vote lastVote = manager.getLastVote();
-            Map<Device, Object> nullValues = lastVote.getVoteMap().entrySet().stream()
-                    .filter(ent -> ent.getValue() == "").collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
-
-            // new vote should come if errors
-            if (nullValues.size() > 0) {
-                //nullValues.forEach((k, v) -> manager.sendNewVoteToDevices(deviceManager.getDevices().get(k)));
-                // request vote where it failed !
+            if (manager.getTempVote()!=null) {
                 return true;
             }
         }
@@ -56,11 +45,11 @@ public class StartVoteInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
     // send the vote to the rest of clients
-        for (Device device : deviceManager.getDevices()) {
-            if(!device.equals(deviceManager.getCurrentDevice())) {
-                votingService.sendVoteResult(device, manager.getTempVote());
-            }
-        }
+//        for (Device device : deviceManager.getDevices()) {
+//            if(!device.equals(deviceManager.getCurrentDevice())) {
+//                votingService.sendVoteResult(device, manager.getTempVote());
+//            }
+//        }
     }
 
     @Override

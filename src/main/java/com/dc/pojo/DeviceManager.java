@@ -68,8 +68,6 @@ public class DeviceManager {
             }
             List<Device> receivedDevices = deviceService.syncDevices(device, devices);
             receivedDevices.stream().filter(e->!getDevices().contains(e)).forEach(this::addDevice); // do voting for this shit
-
-//        }
     }
 
     public Device getServer() {
@@ -94,8 +92,8 @@ public class DeviceManager {
                     Device discoveredDevice = discoverDevice(address.toString().substring(1));
                     if (discoveredDevice != null) {
                         addDevice(discoveredDevice);
+                        break;
                     }
-                    break;
                 }
                 //                }
             } catch (Exception e) {
@@ -130,4 +128,8 @@ public class DeviceManager {
             }
             return null;
         }
+
+    public void startLeaderVote() {
+
+    }
 }

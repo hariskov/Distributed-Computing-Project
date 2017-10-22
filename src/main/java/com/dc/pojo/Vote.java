@@ -1,5 +1,7 @@
 package com.dc.pojo;
 
+import org.springframework.security.access.method.P;
+
 import java.util.*;
 
 /**
@@ -11,6 +13,7 @@ public class Vote {
     private List<SingleVote> votes = new ArrayList<SingleVote>();
     private String voteStr;
     private Device creator;
+    private Vote currentVote = null;
 
     public Vote(){
     }
@@ -29,7 +32,6 @@ public class Vote {
         return false;
     }
 
-
     public String getVoteStr() {
         return voteStr;
     }
@@ -40,7 +42,6 @@ public class Vote {
         da.setAnswer(body);
         da.setDevice(device);
         votes.add(da);
-
     }
 
 //    public Object calculateVote() {
@@ -67,5 +68,22 @@ public class Vote {
 
     public void addVote(SingleVote da) {
         votes.add(da);
+    }
+
+    public Vote getCurrentVote() {
+        return currentVote;
+    }
+
+    public void setCurrentVote(String voteStr, SingleVote currentVote) {
+        Vote vote = new Vote();
+        vote.setVoteStr(voteStr);
+        vote.addVote(currentVote);
+    }
+
+    public boolean hasCurrentSingleVote() {
+        if(currentVote == null){
+            return false;
+        }
+        return true;
     }
 }

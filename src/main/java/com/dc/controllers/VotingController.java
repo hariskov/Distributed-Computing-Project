@@ -1,6 +1,7 @@
 package com.dc.controllers;
 
 import com.dc.pojo.*;
+import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,29 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class VotingController {
 
     @Autowired
-    VotingManager votingManager;
+    VotingService votingService;
 
     @PostMapping("/startVote")
     public ResponseEntity startVote(@RequestBody String voteType){
-        Vote vote = votingManager.createVote(voteType);
-        if(vote!=null) {
-            votingManager.sendVotes(vote);
-        }
+        votingService.startNewVote(voteType);
         return ResponseEntity.ok(null);
     }
 
     @PostMapping("/receiveNewTempVote")
     public ResponseEntity newVote(@RequestBody Vote vote){
 
-        if(votingManager.getTempVote() == null){
-            votingManager.setTempVote(vote);
-        }else{
-            for(SingleVote da : vote.getVotes()) {
-                if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
-                    votingManager.getTempVote().addVote(da);
-                }
-            }
-        }
+        votingService.processVote(vote);
 
         //TODO fix this
         // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !

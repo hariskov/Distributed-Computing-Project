@@ -1,6 +1,8 @@
 package com.dc.interceptors;
 
 import com.dc.pojo.DeviceManager;
+import com.dc.services.DeviceService;
+import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,6 +18,9 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     @Autowired
     DeviceManager deviceManager;
 
+    @Autowired
+    VotingService votingService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;
@@ -29,6 +34,10 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
             deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
 //            deviceManager.syncDevices(); //votingManager.getVotes()
         }
+
+        deviceManager.startLeaderVote();
+        votingService.startNewVote("LeaderSelect");
+
     }
 
     @Override

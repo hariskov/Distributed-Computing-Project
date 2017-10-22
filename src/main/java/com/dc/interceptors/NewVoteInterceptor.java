@@ -28,23 +28,34 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        request.getParameterMap().forEach((k,v) -> System.out.println(k + " " + v));
+        if(votingManager.getTempVote() == null){
+            return true;
+        }
+
+        if(deviceManager.getDevices().size() == votingManager.getTempVote().getVotes().size()){
+
+            if(votingManager.getTempVote().getCreator().equals(deviceManager.getCurrentDevice())){
+//                votingService.sendVoteResult();
+            }
+//            votingManager.applyVote(votingManager.getTempVote());
+            if(votingManager.getTempVote().getVoteStr() == "LeaderSelect"){
+                System.out.println("abcde");
+            }
+            votingManager.setTempVote(null);
+            return false;
+        }
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-//        calculateVote
-        // send Current Temp Vote to all machines to verify !
-        // call receiveVote with updated temp vote.
-
-        if(deviceManager.getDevices().size() == votingManager.getTempVote().getVoteMap().size()){
-            return; // solved
-        }
 
         for (Device device : deviceManager.getDevices()) {
             if(device!=deviceManager.getCurrentDevice()) {
-                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
+                if(!votingService.sendNewVoteToDevices(device, votingManager.getCurrentSingleVote())){
+                    // get rid of device ! -> fault tolerance;
+
+                }
             }
         }
 

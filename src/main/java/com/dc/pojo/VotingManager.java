@@ -36,6 +36,7 @@ public class VotingManager {
             Vote newVote = new Vote(voteStr);
             newVote.setCreator(deviceManager.getCurrentDevice());
             newVote.addVote(deviceManager.getCurrentDevice(),"");
+            tempVote = newVote;
 //            deviceManager.getDevices().forEach(d -> tempVote.addVote(d, ""));
             return newVote;
         }
@@ -99,10 +100,26 @@ public class VotingManager {
 
     public void setTempVote(Vote currentCirculatingVote) {
         this.tempVote = currentCirculatingVote;
-        addValueToCurrentTempVote();
+//        addValueToCurrentTempVote();
     }
 
-    public void addValueToCurrentTempVote() {
-        tempVote.addVote(deviceManager.getCurrentDevice(),"");
+    public void addValueToCurrentTempVote(SingleVote vote) {
+        tempVote.addVote(vote);
+    }
+
+    public Vote getCurrentSingleVote(){
+        return tempVote.getCurrentVote();
+    }
+
+    public boolean hasCurrentSingleVote(){
+        return tempVote.hasCurrentSingleVote();
+    }
+
+    public void setCurrentSingleVote(String voteStr){
+        SingleVote sv = new SingleVote();
+        sv.setDevice(deviceManager.getCurrentDevice());
+        sv.setAnswer("");
+        tempVote.setCurrentVote(voteStr,sv);
+        addValueToCurrentTempVote(sv);
     }
 }
