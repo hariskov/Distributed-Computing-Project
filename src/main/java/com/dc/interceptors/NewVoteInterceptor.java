@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Random;
 
 /**
  * Created by xumepa on 10/4/17.
@@ -38,8 +39,12 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 //                votingService.sendVoteResult();
             }
 //            votingManager.applyVote(votingManager.getTempVote());
-            if(votingManager.getTempVote().getVoteStr() == "LeaderSelect"){
-                System.out.println("abcde");
+            if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
+                Device leader = deviceManager.getDevices().get(new Random().nextInt(deviceManager.getDevices().size()));
+                for (Device device : deviceManager.getDevices()) {
+                    votingService.sendVoteResult(device,leader);
+                }
+                System.out.println();
             }
             votingManager.setTempVote(null);
             return false;
@@ -52,7 +57,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 
         for (Device device : deviceManager.getDevices()) {
             if(device!=deviceManager.getCurrentDevice()) {
-                if(!votingService.sendNewVoteToDevices(device, votingManager.getCurrentSingleVote())){
+                if(!votingService.sendNewVoteToDevices(device, votingManager.getTempVote())){
                     // get rid of device ! -> fault tolerance;
 
                 }

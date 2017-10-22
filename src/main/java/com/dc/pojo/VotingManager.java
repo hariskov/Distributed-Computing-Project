@@ -55,7 +55,7 @@ public class VotingManager {
         return getVotes().stream().filter(e->e.getVoteStr().equals(vote.getVoteStr())).findFirst().orElse(null);
     }
 
-    public void generateVoteResult(Vote vote) {
+    public Device generateVoteResult(Vote vote) {
         Object result;
         if(getVoteResults(vote) == null){
             result = null;
@@ -64,6 +64,7 @@ public class VotingManager {
             Device random = deviceManager.getDevices().get(randomizer.nextInt(deviceManager.getDevices().size()));
             result = random;
         }
+        return null;
     }
 
     public void applyVote(Vote vote){
@@ -105,14 +106,6 @@ public class VotingManager {
 
     public void addValueToCurrentTempVote(SingleVote vote) {
         tempVote.addVote(vote);
-    }
-
-    public Vote getCurrentSingleVote(){
-        return tempVote.getCurrentVote();
-    }
-
-    public boolean hasCurrentSingleVote(){
-        return tempVote.hasCurrentSingleVote();
     }
 
     public void setCurrentSingleVote(String voteStr){

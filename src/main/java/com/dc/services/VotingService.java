@@ -3,14 +3,7 @@ package com.dc.services;
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import javax.inject.Inject;
-import javax.xml.ws.Response;
-import java.util.Random;
 
 /**
  * Created by xumepa on 10/19/17.
@@ -30,7 +23,7 @@ public class VotingService {
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
 //        ResponseEntity<Object> response =
             restTemplate.postForEntity(uri, vote, Object.class);
-            return true;
+        return true;
         }catch(Exception e){
             e.printStackTrace();
             return false;
@@ -50,10 +43,10 @@ public class VotingService {
     }
 
     public void processVote(Vote vote) {
-        if(votingManager.getTempVote()==null){
+
+
+        if(votingManager.getTempVote() == null){
             votingManager.setTempVote(vote);
-        }
-        if(!votingManager.hasCurrentSingleVote()){
             votingManager.setCurrentSingleVote(vote.getVoteStr());
         }else{
             for(SingleVote da : vote.getVotes()) {
@@ -63,4 +56,5 @@ public class VotingService {
             }
         }
     }
+
 }

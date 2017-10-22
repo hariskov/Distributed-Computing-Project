@@ -3,6 +3,7 @@ package com.dc.pojo;
 import org.springframework.security.access.method.P;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by xumepa on 10/3/17.
@@ -13,7 +14,6 @@ public class Vote {
     private List<SingleVote> votes = new ArrayList<SingleVote>();
     private String voteStr;
     private Device creator;
-    private Vote currentVote = null;
 
     public Vote(){
     }
@@ -70,24 +70,9 @@ public class Vote {
         votes.add(da);
     }
 
-    public Vote getCurrentVote() {
-        return currentVote;
-    }
-
     public void setCurrentVote(String voteStr, SingleVote currentVote) {
         Vote vote = new Vote();
         vote.setVoteStr(voteStr);
         vote.addVote(currentVote);
-    }
-
-    public boolean hasCurrentSingleVote() {
-        try {
-            if (currentVote == null) {
-                return false;
-            }
-            return true;
-        } catch (NullPointerException npe) {
-            return false;
-        }
     }
 }
