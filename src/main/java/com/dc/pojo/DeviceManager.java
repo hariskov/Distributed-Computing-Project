@@ -71,11 +71,6 @@ public class DeviceManager {
 
     public void syncDevices(Device device){
             List<Device> receivedDevices = deviceService.syncDevices(device, devices);
-//            Device d = receivedDevices.stream().filter(e->e.getIp().equals(currentDevice.getIp())).findFirst().orElse(null);
-//            if(d!=null){
-//                getDevices().remove(currentDevice);
-//                setCurrentDevice(d);
-//            }
             receivedDevices.stream().filter(e->!getDevices().contains(e)).collect(Collectors.toList()).forEach(this::addDevice); // do voting for this shit
     }
 

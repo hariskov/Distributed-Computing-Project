@@ -11,7 +11,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Random;
 
 /**
  * Created by xumepa on 10/22/17.
@@ -25,10 +24,14 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
-
+            if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()>0){
+                return true;
+            }
+            Object result = votingManager.getTempVote().calculateVote().getAnswer();
+            System.out.println(result);
         }
 
-            votingManager.setTempVote(null);
+//            votingManager.setTempVote(null);
         /// check for values in received vote -> follow logic of NewVoteInterceptor
         return true;
     }
@@ -36,7 +39,9 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         Vote v = votingManager.getTempVote();
-        System.out.println(v.getCreator());
+        // compute shit -> if all correct -> apply localy
+        //                  if not all correct -> re-send current computed value to all other machines -> votingService.sendVoteResult()
+
     }
 
     @Override

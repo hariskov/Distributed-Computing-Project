@@ -37,7 +37,7 @@ public class EchoController {
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)
     public ResponseEntity discover() throws IOException {
-        deviceManager.discoverDevices();
+//        deviceManager.discoverDevices();
 
         return ResponseEntity.ok(null);
     }

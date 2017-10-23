@@ -46,6 +46,7 @@ public class VotingService {
     public void startNewVote(String voteType) {
         Vote vote = votingManager.createVote(voteType);
         if(vote!=null) {
+//            votingManager.setTempVote(vote);
             votingManager.sendVotes(vote);
         }
     }
