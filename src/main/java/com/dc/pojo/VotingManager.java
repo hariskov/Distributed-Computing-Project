@@ -115,4 +115,5 @@ public class VotingManager {
 //        tempVote.setCurrentVote(voteStr,sv);
         addValueToCurrentTempVote(sv);
     }
+
 }

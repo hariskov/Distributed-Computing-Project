@@ -33,7 +33,18 @@ public class NewVoteInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if(deviceManager.getDevices().size() == votingManager.getTempVote().getVotes().size()){
+        if(deviceManager.getDevices().size() == votingManager.getTempVote().getVotes().size()) {
+
+//            votingManager.applyVote(votingManager.getTempVote());
+            if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
+//                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
+//                for (Device device : deviceManager.getDevices()) {
+                    votingService.sendVoteResult(deviceManager.getCurrentDevice(), votingManager.getTempVote());
+//                }
+            }
+
+            if (votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()) != null) {
+            }
             return false;
         }
         return true;
@@ -54,18 +65,6 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        if(deviceManager.getDevices().size() == votingManager.getTempVote().getVotes().size()) {
 
-            if (votingManager.getTempVote().getCreator().equals(deviceManager.getCurrentDevice())) {
-//                votingService.sendVoteResult();
-            }
-//            votingManager.applyVote(votingManager.getTempVote());
-            if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
-                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
-                for (Device device : deviceManager.getDevices()) {
-                    votingService.sendVoteResult(device, votingManager.getTempVote());
-                }
-            }
-        }
     }
 }

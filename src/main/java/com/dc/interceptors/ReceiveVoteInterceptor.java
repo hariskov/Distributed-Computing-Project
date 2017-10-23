@@ -1,9 +1,6 @@
 package com.dc.interceptors;
 
-import com.dc.pojo.Device;
-import com.dc.pojo.DeviceManager;
-import com.dc.pojo.Vote;
-import com.dc.pojo.VotingManager;
+import com.dc.pojo.*;
 import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,15 +17,32 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
     @Autowired
     VotingManager votingManager;
 
+    @Autowired
+    DeviceManager deviceManager;
+
+    @Autowired
+    GameManager gameManager;
+
+    @Autowired
+    VotingService votingService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
+            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice())==null){
+                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
+            }
             if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()>0){
                 return true;
             }
-            Object result = votingManager.getTempVote().calculateVote().getAnswer();
-            System.out.println(result);
+//            Object result = votingManager.getTempVote().calculateVote().getAnswer();
+
+            Object a = votingManager.getTempVote().getOrderedVotes();
+
+            // decide game order !
+//            gameManager.setPlayerOrder();
+//            System.out.println(result);
         }
 
 //            votingManager.setTempVote(null);
