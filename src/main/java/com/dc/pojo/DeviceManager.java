@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.net.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by xumepa on 9/24/17.
@@ -38,10 +38,18 @@ public class DeviceManager {
     public void addDevice(Device device){
         // should be unique
 //        devices.forEach(e->e.equals(device));
-
-        if(devices.stream().filter(e->e.equals(device)).count()==0){
+        Device localDevice = getDevice(device);
+        if(localDevice==null){
             devices.add(device);
+        }else{
+            if((localDevice.getIp().equals(device.getIp())) && (localDevice.getUuid() != device.getUuid())){
+                localDevice.setUuid(device.getUuid());
+            }
         }
+    }
+
+    public Device getDevice(Device device){
+        return devices.stream().filter(e->e.equals(device)).findFirst().orElse(null);
     }
 
     public List<Device> getDevices(){
@@ -62,12 +70,13 @@ public class DeviceManager {
     }
 
     public void syncDevices(Device device){
-//        for (Device device : devices) {
-            if(device.equals(currentDevice)){
-                return;
-            }
             List<Device> receivedDevices = deviceService.syncDevices(device, devices);
-            receivedDevices.stream().filter(e->!getDevices().contains(e)).forEach(this::addDevice); // do voting for this shit
+//            Device d = receivedDevices.stream().filter(e->e.getIp().equals(currentDevice.getIp())).findFirst().orElse(null);
+//            if(d!=null){
+//                getDevices().remove(currentDevice);
+//                setCurrentDevice(d);
+//            }
+            receivedDevices.stream().filter(e->!getDevices().contains(e)).collect(Collectors.toList()).forEach(this::addDevice); // do voting for this shit
     }
 
     public Device getServer() {
@@ -132,4 +141,5 @@ public class DeviceManager {
     public void startLeaderVote() {
 
     }
+
 }

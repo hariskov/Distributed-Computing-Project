@@ -28,8 +28,6 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        // this should send the current state of the deviceManager to all deviceManager.
-//        deviceManager.getDevices().forEach(device -> deviceManager.syncDevices());
         if(deviceManager.getDevices().size()>1) {
             deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
 //            deviceManager.syncDevices(); //votingManager.getVotes()

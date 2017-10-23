@@ -47,16 +47,8 @@ public class VotingController {
 
         logger.info("entered Voting : " + vote.getVoteStr());
         votingService.processVote(vote);
-        //        this should put the Vote
-
-//        HashMap<Device, Object> receivedVotes = votingManager.getLastVote().getVoteMap();
-//        HashMap<Device, Object> currentVotes = vote.getVoteMap();
 
 
-        // when receive vote -> calculate it against current vote
-//        if(sameVotes) {
-//            votingManager.applyVote(vote);
-//        }
         return ResponseEntity.ok(null);
     }
 

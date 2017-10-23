@@ -40,14 +40,11 @@ public class NewVoteInterceptor implements HandlerInterceptor {
             }
 //            votingManager.applyVote(votingManager.getTempVote());
             if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
-                Device leader = deviceManager.getDevices().get(new Random().nextInt(deviceManager.getDevices().size()));
-                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(leader);
+                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
                 for (Device device : deviceManager.getDevices()) {
                     votingService.sendVoteResult(device,votingManager.getTempVote());
                 }
-                System.out.println();
             }
-            votingManager.setTempVote(null);
             return false;
         }
         return true;
@@ -57,12 +54,12 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
         for (Device device : deviceManager.getDevices()) {
-            if(!device.equals(deviceManager.getCurrentDevice())) {
+//            if(!device.equals(deviceManager.getCurrentDevice())) {
                 if(!votingService.sendNewVoteToDevices(device, votingManager.getTempVote())){
                     // get rid of device ! -> fault tolerance;
 
                 }
-            }
+//            }
         }
 
     }

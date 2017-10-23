@@ -45,16 +45,14 @@ public class EchoController {
 //    @PostMapping(value="/syncDevices", produces = "application/json", consumes = "application/json")
     @PostMapping("/getDevices")
     public ResponseEntity<Object> syncDevices(@RequestBody List<Device> devices){
-        long counter = deviceManager.getDevices().stream().filter(e-> !devices.contains(e)).count();
         devices.forEach(e->deviceManager.addDevice(e));
-
         return ResponseEntity.ok().body(deviceManager.getDevices());
     }
 
-    @PostMapping("/requestSyncDevices")
-    public void requestSyncDevices(){
-        deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
-    }
+//    @PostMapping("/requestSyncDevices")
+//    public void requestSyncDevices(){
+//        deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
+//    }
 
     @PostMapping("/syncVotes")
     public ResponseEntity<String> syncVotes(@RequestBody List<Vote> votes){

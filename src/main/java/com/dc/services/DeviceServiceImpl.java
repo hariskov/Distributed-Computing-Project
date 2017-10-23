@@ -24,6 +24,7 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     CustomRestTemplate restTemplate;
 
+    @Override
     public Device discoverDevice(String address) {
         String uri = "http://" + address + ":8080/project/echo/";
 
@@ -37,6 +38,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
 
+    @Override
     public List<Device> syncDevices(Device targetDevice, List<Device> deviceList) {
 
         try {

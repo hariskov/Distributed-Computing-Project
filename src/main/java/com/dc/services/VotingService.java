@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,9 @@ public class VotingService {
 
     @Autowired
     VotingManager votingManager;
+
+    @Autowired
+    DeviceManager deviceManager;
 
     public boolean sendNewVoteToDevices(Device device, Vote vote) {
         try {
@@ -64,6 +68,11 @@ public class VotingService {
                 }
             }
         }
+    }
+
+    public Device generateLeader(){
+        Device leader = deviceManager.getDevices().get(new Random().nextInt(deviceManager.getDevices().size()));
+        return leader;
     }
 
 }

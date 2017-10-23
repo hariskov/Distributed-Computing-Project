@@ -33,7 +33,7 @@ public class Device {
     public boolean equals(Object var1) {
         if(var1 instanceof Device){
             Device newDevice = (Device)var1;
-            if(newDevice.getUuid().equals(this.getUuid()) && newDevice.getIp().equals(this.getIp())){
+            if(newDevice.getUuid().equals(this.getUuid()) || newDevice.getIp().equals(this.getIp())){
                 return true;
             }
             return false;
