@@ -38,17 +38,17 @@ public class VotingService {
     public void sendNewVoteToDevices(Device device, Vote vote) {
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage1Vote";
-            restTemplate.put(uri, vote, Object.class);
+            restTemplate.put(uri, vote);
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
     @Async
-    public void sendVoteResult(Device device, Object voteResult) {
+    public void sendVoteResult(Device device, SingleVote voteResult) {
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage2Vote";
-            restTemplate.put(uri, voteResult, Object.class);
+            restTemplate.put(uri, voteResult);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -173,7 +173,11 @@ public class VotingService {
 //            result.stream().max(e->e.getDevice().getIp());
             for (SingleVote singleVote : result) {
                 try {
-                    int lastDigit = Integer.parseInt(singleVote.getDevice().getIp().split(".")[3]);
+                    String ip = singleVote.getDevice().getIp();
+
+                    String numbers = ip.substring(ip.lastIndexOf(".")+1);
+
+                    int lastDigit = Integer.parseInt(numbers);
                     if (lastDigit > maxIp) {
                         returnSingleVote = singleVote;
                     }

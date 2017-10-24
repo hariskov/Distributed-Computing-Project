@@ -40,7 +40,12 @@ public class Stage2Interceptor implements HandlerInterceptor {
 
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
             if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer() == ""){
-                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
+                logger.info("Stage 2 Vote Interceptor - Pre Handler - set answer");
+                SingleVote deviceVote = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+
+                deviceVote.setAnswer(votingService.generateLeader());
+                deviceVote.setSequence(deviceVote.getSequence() + 1);
+                logger.info("Stage 2 Vote Interceptor - Pre Handler - get answer " + votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer());
             }
 
             if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()>0){
@@ -72,13 +77,17 @@ public class Stage2Interceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.info("Stage 2 Interceptor - After Completion");
 
+        if(votingManager.getTempVote()==null){
+            logger.error("fucked up heavily");
+        }
+
         if (deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())) {
 
 //            for (Device device : deviceManager.getDevices()) {
 //                votingService.sendGetCalculatedResult(device, votingManager.getTempVote().getVoteStr());
 //            }
 //
-            if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()==0){
+            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
                 logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
 
                 SingleVote v = new SingleVote();

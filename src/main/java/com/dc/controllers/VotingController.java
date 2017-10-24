@@ -45,8 +45,9 @@ public class VotingController {
 
     @Async
     @PutMapping(value = "/receiveStage2Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void voting(@RequestBody SingleVote vote){
+    public ResponseEntity voting(@RequestBody SingleVote vote){
         votingService.processVote(vote);
+        return ResponseEntity.ok(null);
     }
 
 }
