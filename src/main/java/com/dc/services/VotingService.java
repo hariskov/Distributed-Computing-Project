@@ -30,11 +30,18 @@ public class VotingService {
     @Async
     public void sendNewVoteToDevices(Device device, Vote vote) {
         try {
-//            new Thread(() -> {
-                String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
-                restTemplate.put(uri, vote, Object.class);
-//            }).start();
+            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
+            restTemplate.put(uri, vote, Object.class);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
+    @Async
+    public void sendNewSingleVote(Device device, SingleVote vote){
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewSingleVote";
+            restTemplate.put(uri, vote, Object.class);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -42,10 +49,8 @@ public class VotingService {
 
     @Async
     public void sendVoteResult(Device device, Object voteResult) {
-//        new Thread(() -> {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
-            restTemplate.put(uri, voteResult, Object.class);
-//        }).start();
+        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
+        restTemplate.put(uri, voteResult, Object.class);
     }
 
     public void startNewVote(String voteType) {
@@ -54,15 +59,26 @@ public class VotingService {
 //            votingManager.setTempVote(vote);
 //            votingManager.setCurrentSingleVote();
             votingManager.sendVotes(vote);
+
+        }
+    }
+
+    public void processTempVote(Vote vote) {
+        if (votingManager.getTempVote() == null) {
+            votingManager.setTempVote(vote);
+            votingManager.setCurrentSingleVote();
+        }
+    }
+
+    public void processSingleVote(SingleVote vote) {
+        if (!votingManager.getTempVote().containsDevice(vote.getDevice())) {
+            votingManager.getTempVote().addVote(vote);
         }
     }
 
     public void processVote(Vote vote) {
 
-        if (votingManager.getTempVote() == null) {
-            votingManager.setTempVote(vote);
-            votingManager.setCurrentSingleVote();
-        }
+
 
         Vote localVote = votingManager.containsVote(vote.getVoteStr());
         // check for actual vote in progress
@@ -82,12 +98,6 @@ public class VotingService {
                 }
             }
 
-        }else {
-            for (SingleVote da : vote.getVotes()) {
-                if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
-                    votingManager.getTempVote().addVote(da);
-                }
-            }
         }
 
 
@@ -104,7 +114,7 @@ public class VotingService {
 //                    }
 //                }
 //            }
-        }
+//        }
     }
 
     public Device generateLeader(){

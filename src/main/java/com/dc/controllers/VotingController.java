@@ -31,10 +31,26 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
+    @PutMapping("/receiveNewSingleVote")
+    public ResponseEntity newSingleVote(@RequestBody SingleVote vote){
+
+        votingService.processSingleVote(vote);
+
+//        votingService.processTempVote(vote);
+
+        //TODO fix this
+        // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !
+        // possibility : another machine doesnt have it YET -> keep requesting till it receives -> this will fix reliability issue !
+
+        return ResponseEntity.ok(null);
+    }
+
     @PutMapping("/receiveNewTempVote")
     public ResponseEntity newVote(@RequestBody Vote vote){
 
-        votingService.processVote(vote);
+        votingService.processTempVote(vote);
+
+//        votingService.processTempVote(vote);
 
         //TODO fix this
         // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !

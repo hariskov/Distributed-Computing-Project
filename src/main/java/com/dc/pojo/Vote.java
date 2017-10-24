@@ -1,5 +1,8 @@
 package com.dc.pojo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,6 +15,8 @@ public class Vote {
     private List<SingleVote> votes = new ArrayList<SingleVote>();
     private String voteStr;
     private Device creator;
+
+    private final Logger logger = LoggerFactory.getLogger(Vote.class);
 
     public Vote(){
     }
@@ -90,6 +95,7 @@ public class Vote {
     }
 
     public void addVote(SingleVote da) {
+        logger.info(da.getDevice().getIp() + " " + containsDevice(da.getDevice()));
         votes.add(da);
     }
 

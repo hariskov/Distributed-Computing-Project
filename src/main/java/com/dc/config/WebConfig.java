@@ -30,6 +30,8 @@ import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 @EnableAsync
 public class WebConfig extends WebMvcConfigurerAdapter{
 
+    private HandlerInterceptor newSingleInterceptor;
+
     @Bean
     public UrlBasedViewResolver viewResolver(){
         UrlBasedViewResolver resolver = new UrlBasedViewResolver();
@@ -100,6 +102,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/echo/discovery");
         registry.addInterceptor(getStartVoteInterceptor()).addPathPatterns("/voting/startVote");
         registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/receiveNewTempVote");
+        registry.addInterceptor(getNewSingleInterceptor()).addPathPatterns("/voting/receiveNewSingleVote");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
         registry.addInterceptor(getReceiveVoteInterceptor()).addPathPatterns("/voting/receiveVote");
     }
@@ -126,6 +129,10 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     @Bean
     public ReceiveVoteInterceptor getReceiveVoteInterceptor() {
         return new ReceiveVoteInterceptor();
+    }
+
+    public NewSingleVoteInterceptor getNewSingleInterceptor() {
+        return new NewSingleVoteInterceptor();
     }
 
 //    @Bean

@@ -39,7 +39,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         }
 
         // assume all devices have the temp vote !
-        if(deviceManager.getDevices().size() == votingManager.getTempVote().getVotes().size()) {
+        if(deviceManager.getDevices().size() <= votingManager.getTempVote().getVotes().size()) {
             Vote storeTempVoteTemporary = votingManager.getTempVote();
             votingManager.applyTempVote();
 
@@ -53,12 +53,9 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 //                }
             }
 //
-
-//            if (votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()) != null) {
-//            }
             return false;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -71,11 +68,10 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         logger.info("New Vote Interceptor - After Completion");
 
         for (Device device : deviceManager.getDevices()) {
-//            if(!device.equals(deviceManager.getCurrentDevice())) {
-                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
-                    // get rid of device ! -> fault tolerance;
-
-//            }
+            if(!device.equals(deviceManager.getCurrentDevice())) {
+//                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
+                votingService.sendNewSingleVote(device,votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
+            }
         }
     }
 }
