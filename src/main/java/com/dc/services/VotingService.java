@@ -46,8 +46,12 @@ public class VotingService {
 
     @Async
     public void sendVoteResult(Device device, Object voteResult) {
-        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage2Vote";
-        restTemplate.put(uri, voteResult, Object.class);
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage2Vote";
+            restTemplate.put(uri, voteResult, Object.class);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void startNewVote(String voteType) {
@@ -92,12 +96,11 @@ public class VotingService {
         SingleVote singleVote = votingManager.getTempVote().getVoteOfDevice(vote.getDevice());
 //        if(singleVote.getAnswer() == ""){
 
-        if(vote.getSequence()<=singleVote.getSequence()){
+        if(vote.getSequence()<singleVote.getSequence()){
             singleVote.setAnswer(vote.getAnswer());
             singleVote.setSequence(singleVote.getSequence()+1);
         }
 
-//        }
 
     }
 

@@ -3,6 +3,7 @@ package com.dc.controllers;
 import com.dc.pojo.*;
 import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
@@ -29,7 +30,7 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
-    @PutMapping("/receiveStage1Vote")
+    @PutMapping(value="/receiveStage1Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity newVote(@RequestBody Vote vote){
 
         votingService.processTempVote(vote);
@@ -43,7 +44,7 @@ public class VotingController {
 
 
     @Async
-    @PutMapping("/receiveStage2Vote")
+    @PutMapping(value = "/receiveStage2Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void voting(@RequestBody SingleVote vote){
         votingService.processVote(vote);
     }
