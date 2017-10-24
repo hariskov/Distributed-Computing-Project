@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -30,8 +31,8 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
-    @PostMapping("/receiveNewTempVote")
-    public ResponseEntity newVote(@RequestBody Vote vote){
+    @PutMapping("/receiveNewTempVote")
+    public void newVote(@RequestBody Vote vote){
 
         votingService.processVote(vote);
 
@@ -39,17 +40,13 @@ public class VotingController {
         // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !
         // possibility : another machine doesnt have it YET -> keep requesting till it receives -> this will fix reliability issue !
 
-        return ResponseEntity.ok(null);
     }
 
-    @PostMapping("/receiveVote")
-    public ResponseEntity<Object> voting(@RequestBody Vote vote){
+    @PutMapping("/receiveVote")
+    public void voting(@RequestBody Vote vote){
 
         logger.info("entered Voting : " + vote.getVoteStr());
         votingService.processVote(vote);
-
-
-        return ResponseEntity.ok(null);
     }
 
 }

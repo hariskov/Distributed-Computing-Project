@@ -108,7 +108,7 @@ public class VotingManager {
         tempVote.addVote(vote);
     }
 
-    public void setCurrentSingleVote(String voteStr){
+    public void setCurrentSingleVote(){
         SingleVote sv = new SingleVote();
         sv.setDevice(deviceManager.getCurrentDevice());
         sv.setAnswer("");
