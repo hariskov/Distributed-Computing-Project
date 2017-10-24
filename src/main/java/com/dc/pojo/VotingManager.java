@@ -22,6 +22,7 @@ public class VotingManager {
 
     private List<Vote> manager;
     private Vote tempVote;
+    private Vote calcVote;
 
     public VotingManager(){
         manager = new LinkedList<Vote>();
@@ -104,10 +105,25 @@ public class VotingManager {
         return manager.stream().filter(e->e.getVoteStr().equals(voteStr)).findFirst().orElse(null);
     }
 
-    public Vote containsTempVote(String voteString) {
-        if(tempVote.getVoteStr().equals(voteString)){
-            return tempVote;
-        }
-        return null;
+    public Vote getCalcVote() {
+        return calcVote;
     }
+
+    public void setCalcVote(Vote calcVote) {
+        this.calcVote = calcVote;
+    }
+
+    public Vote getCopyOfVote(Vote vote){
+        Vote newVote = new Vote();
+        newVote.setVoteStr(vote.getVoteStr());
+        newVote.setCreator(vote.getCreator());
+        for (Device device : vote.getDevices()) {
+            SingleVote singleVote = new SingleVote();
+            singleVote.setDevice(device);
+            singleVote.setAnswer("");
+            newVote.addVote(singleVote);
+        }
+        return newVote;
+    }
+
 }

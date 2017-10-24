@@ -30,7 +30,7 @@ public class Stage1Interceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        logger.info("New Vote Interceptor - Pre Handler");
+        logger.info("Stage 1 Vote Interceptor - Pre Handler");
         if(votingManager.getTempVote() == null){
             return true;
         }
@@ -63,12 +63,12 @@ public class Stage1Interceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        logger.info("New Vote Interceptor - Post Handler");
+        logger.info("Stage 1 Vote Interceptor - Post Handler");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        logger.info("New Vote Interceptor - After Completion");
+        logger.info("Stage 1 Vote Interceptor - After Completion");
 
         if(votingManager.getTempVote()==null){
             return;
@@ -86,6 +86,7 @@ public class Stage1Interceptor implements HandlerInterceptor {
 //                if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
 //                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
                 for (Device device : deviceManager.getDevices()) {
+//                    votingService.sendVoteResult3(device, storeTempVoteTemporary);
                     votingService.sendVoteResult(device, storeTempVoteTemporary.getVoteOfDevice(deviceManager.getCurrentDevice()));
                 }
 //                }

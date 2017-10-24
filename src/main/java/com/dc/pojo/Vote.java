@@ -1,6 +1,5 @@
 package com.dc.pojo;
 
-import org.apache.commons.collections.ArrayStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
  */
 
 //@JsonSerialize(include=JsonSerialize.Inclusion.ALWAYS)
-public class Vote {
+public class Vote implements Cloneable{
     private List<SingleVote> votes = new ArrayList<SingleVote>();
     private String voteStr;
     private Device creator;
@@ -41,14 +40,6 @@ public class Vote {
         return voteStr;
     }
     public void setVoteStr(String str){this.voteStr=str;}
-
-    public void addVote(Device device, Object body) {
-        SingleVote da = new SingleVote();
-        da.setAnswer(body);
-        da.setDevice(device);
-        da.setQuestion(this.getVoteStr());
-        votes.add(da);
-    }
 
     public Device getCreator() {
         return creator;
@@ -97,6 +88,6 @@ public class Vote {
         List<Device> devs = new ArrayList<Device>();
         votes.stream().forEach(e->devs.add(e.getDevice()));
         return devs;
-
     }
+
 }

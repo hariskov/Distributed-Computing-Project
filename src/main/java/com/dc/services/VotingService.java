@@ -46,10 +46,6 @@ public class VotingService {
         restTemplate.put(uri, voteResult, Object.class);
     }
 
-    public boolean containsVote(SingleVote vote){
-        return votingManager.getTempVote().getVoteOfDevice(vote.getDevice()) == null;
-    }
-
     public void startNewVote(String voteType) {
         Vote vote = votingManager.createVote(voteType);
         if(vote!=null) {
@@ -76,7 +72,7 @@ public class VotingService {
         }
     }
 
-        public void processVote(SingleVote vote){
+    public void processVote(SingleVote vote){
         if(votingManager.getTempVote()==null){
             Vote prevVote = votingManager.containsVote(vote.getQuestion());
             if(prevVote!=null){
@@ -90,10 +86,14 @@ public class VotingService {
 //        }
 
         SingleVote singleVote = votingManager.getTempVote().getVoteOfDevice(vote.getDevice());
-        if(singleVote.getAnswer() == ""){
+//        if(singleVote.getAnswer() == ""){
             singleVote.setAnswer(vote.getAnswer());
-        }
+//        }
+
     }
+
+
+
 
 //    public void processVote(Vote vote) {
 //        Vote localVote = votingManager.containsVote(vote.getVoteStr());
@@ -175,4 +175,5 @@ public class VotingService {
     public void calculateTempVote(String voteString) {
         calculateVote(voteString);
     }
+
 }

@@ -45,10 +45,4 @@ public class VotingController {
         votingService.processVote(vote);
     }
 
-
-    @PostMapping("/getCalculatedVote")
-    public void calculatedVote(@RequestBody String voteString){
-        votingService.calculateTempVote(voteString);
-    }
-
 }
