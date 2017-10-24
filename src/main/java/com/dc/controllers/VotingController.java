@@ -4,6 +4,7 @@ import com.dc.pojo.*;
 import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,8 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
+
+    @Async
     @PutMapping("/receiveStage2Vote")
     public void voting(@RequestBody SingleVote vote){
         votingService.processVote(vote);

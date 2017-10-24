@@ -7,6 +7,7 @@ public class SingleVote {
     private Device device;
     private Object answer;
     private String question;
+    private int sequence = 1;
 
     public SingleVote(){
 
@@ -46,5 +47,13 @@ public class SingleVote {
 
     public void setQuestion(String question) {
         this.question = question;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 }

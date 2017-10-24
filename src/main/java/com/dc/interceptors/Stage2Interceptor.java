@@ -34,9 +34,9 @@ public class Stage2Interceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         logger.info("Stage 2 Vote Interceptor - Pre Handler");
 
-//        if(votingManager.getTempVote() == null){
-//            return true;
-//        }
+        if(votingManager.getTempVote() == null){
+            return true;
+        }
 
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
             if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer() == ""){
@@ -81,7 +81,10 @@ public class Stage2Interceptor implements HandlerInterceptor {
             if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()==0){
                 logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
 
-                SingleVote v = votingService.calculateVote(votingManager.getTempVote().getVoteStr());
+                SingleVote v = new SingleVote();
+                v.setDevice(deviceManager.getCurrentDevice());
+                v.setAnswer(votingService.calculateVote(votingManager.getTempVote().getVoteStr()));
+                v.setSequence(v.getSequence()+1);
 
                 for (SingleVote singleVote : votingManager.getTempVote().getVotes()) {
                     if(v.getAnswer() == singleVote.getAnswer()){

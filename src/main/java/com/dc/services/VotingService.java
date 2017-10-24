@@ -2,6 +2,8 @@ package com.dc.services;
 
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service(value="votingService")
 public class VotingService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     CustomRestTemplate restTemplate;
@@ -87,7 +91,12 @@ public class VotingService {
 
         SingleVote singleVote = votingManager.getTempVote().getVoteOfDevice(vote.getDevice());
 //        if(singleVote.getAnswer() == ""){
+
+        if(vote.getSequence()<=singleVote.getSequence()){
             singleVote.setAnswer(vote.getAnswer());
+            singleVote.setSequence(singleVote.getSequence()+1);
+        }
+
 //        }
 
     }
@@ -138,8 +147,7 @@ public class VotingService {
         return leader;
     }
 
-    public SingleVote calculateVote(String voteString) {
-
+    public Object calculateVote(String voteString) {
         List<SingleVote> votes = votingManager.getTempVote().getVotes();
 
 //        Vote receivedVote = manager.stream().filter(e->e.getVoteStr().equals(voteMap)).findFirst().get();
@@ -152,7 +160,9 @@ public class VotingService {
                 .collect(Collectors.toList());
 
         if(result.size()==1){
-            return result.get(0);
+            logger.info("calculateVote returns with : " + result.get(0).getAnswer());
+
+            return result.get(0).getAnswer();
         }
         else{
             SingleVote returnSingleVote = null;
@@ -168,7 +178,9 @@ public class VotingService {
                     e.printStackTrace();
                 }
             }
-            return returnSingleVote;
+            logger.info("calculateVote returns with : " + returnSingleVote.getAnswer());
+
+            return returnSingleVote.getAnswer();
         }
     }
 
