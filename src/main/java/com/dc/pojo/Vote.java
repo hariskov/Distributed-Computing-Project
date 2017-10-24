@@ -46,6 +46,7 @@ public class Vote {
         SingleVote da = new SingleVote();
         da.setAnswer(body);
         da.setDevice(device);
+        da.setQuestion(this.getVoteStr());
         votes.add(da);
     }
 

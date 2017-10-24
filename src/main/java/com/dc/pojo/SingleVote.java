@@ -6,6 +6,7 @@ package com.dc.pojo;
 public class SingleVote {
     private Device device;
     private Object answer;
+    private String question;
 
     public SingleVote(){
 
@@ -37,5 +38,13 @@ public class SingleVote {
             return false;
         }
         return false;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
     }
 }

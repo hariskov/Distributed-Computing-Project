@@ -70,6 +70,11 @@ public class Stage1Interceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.info("New Vote Interceptor - After Completion");
 
+        if(votingManager.getTempVote()==null){
+            return;
+        }
+
+
         if(deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
             if (deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())) {
                 // only leader can progress !!!!!!!!!!!! -> starting stage 2
@@ -79,29 +84,20 @@ public class Stage1Interceptor implements HandlerInterceptor {
 
 //                if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
 //                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
-//                for (Device device : deviceManager.getDevices()) {
-
-//                votingService.sendVoteResult(deviceManager.getCurrentDevice(), storeTempVoteTemporary);
-
-//                }
+                for (Device device : deviceManager.getDevices()) {
+                    votingService.sendVoteResult(device, storeTempVoteTemporary.getVoteOfDevice(deviceManager.getCurrentDevice()));
+                }
 //                }
 //            return false;
             } else {
                 // are all done ? - check
                 votingManager.applyTempVote();
             }
-        }
-
-
-//        if(votingManager.getTempVote()!=null){
-//            if(votingManager.containsVote(votingManager.getTempVote().getVoteStr())!=null){
-//                return;
-//            }
-//        }
-
-        for (Device device : deviceManager.getDevices()) {
-            if(!device.equals(deviceManager.getCurrentDevice())) {
-                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
+        }else {
+            for (Device device : deviceManager.getDevices()) {
+                if (!device.equals(deviceManager.getCurrentDevice())) {
+                    votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
+                }
             }
         }
     }

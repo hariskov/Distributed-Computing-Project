@@ -32,11 +32,16 @@ public class Stage2Interceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        if(votingManager.getTempVote() == null){
+            return true;
+        }
+
         logger.info("Receive Vote Interceptor - Pre Handler");
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
-//            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
-//                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
-//            }
+            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
+                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
+            }
             if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()>0){
                 return true;
             }

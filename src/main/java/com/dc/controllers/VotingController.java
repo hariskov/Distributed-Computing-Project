@@ -43,9 +43,9 @@ public class VotingController {
     }
 
     @PutMapping("/receiveStage2Vote")
-    public void voting(@RequestBody Vote vote){
+    public void voting(@RequestBody SingleVote vote){
 
-        logger.info("entered Voting : " + vote.getVoteStr());
+//        logger.info("entered Voting : " + vote.getVoteStr());
         votingService.processVote(vote);
     }
 

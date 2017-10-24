@@ -75,6 +75,26 @@ public class VotingService {
         }
     }
 
+    public void processVote(SingleVote vote){
+        if(votingManager.getTempVote()==null){
+            Vote prevVote = votingManager.containsVote(vote.getQuestion());
+            if(prevVote!=null){
+                votingManager.setTempVote(prevVote);
+            }
+        }
+
+//        SingleVote currentDeviceSingleVote = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+//        if(currentDeviceSingleVote.getAnswer()==""){
+//            currentDeviceSingleVote.setAnswer(generateLeader());
+//        }
+
+        SingleVote singleVote = votingManager.getTempVote().getVoteOfDevice(vote.getDevice());
+        if(singleVote.getAnswer() == ""){
+            singleVote.setAnswer(vote.getAnswer());
+        }
+
+    }
+
     public void processVote(Vote vote) {
         Vote localVote = votingManager.containsVote(vote.getVoteStr());
         // check for actual vote in progress
