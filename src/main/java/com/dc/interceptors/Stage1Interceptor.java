@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by xumepa on 10/4/17.
  */
 
-public class NewVoteInterceptor implements HandlerInterceptor {
+public class Stage1Interceptor implements HandlerInterceptor {
 
     @Autowired
     VotingService votingService;
@@ -26,7 +26,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     @Autowired
     VotingManager votingManager;
 
-    private Logger logger = LoggerFactory.getLogger(NewVoteInterceptor.class);
+    private Logger logger = LoggerFactory.getLogger(Stage1Interceptor.class);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -34,9 +34,11 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         if(votingManager.getTempVote() == null){
             return true;
         }
+        if(!deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
+            return true;
+        }else if(deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())){
 
         // assume all devices have the temp vote !
-        if(deviceManager.getDevices().size() <= votingManager.getTempVote().getVotes().size()) {
             Vote storeTempVoteTemporary = votingManager.getTempVote();
             votingManager.applyTempVote();
 
@@ -49,10 +51,9 @@ public class NewVoteInterceptor implements HandlerInterceptor {
                 }
 //                }
             }
-//
-            return false;
+//            return false;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -65,13 +66,9 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         logger.info("New Vote Interceptor - After Completion");
 
         for (Device device : deviceManager.getDevices()) {
-            SingleVote voteToSend = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
-            if(votingService.sendValidationRequest(device,voteToSend)){
-                votingService.sendNewSingleVote(device,voteToSend);
+//            if(!device.equals(deviceManager.getCurrentDevice())) {
+                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
             }
-            if(!device.equals(deviceManager.getCurrentDevice())) {
-//                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
-            }
-        }
+//        }
     }
 }

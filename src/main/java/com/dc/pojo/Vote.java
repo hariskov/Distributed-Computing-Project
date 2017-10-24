@@ -1,5 +1,6 @@
 package com.dc.pojo;
 
+import org.apache.commons.collections.ArrayStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ public class Vote {
     private Device creator;
 
     private final Logger logger = LoggerFactory.getLogger(Vote.class);
+    private List<Vote> devices;
 
     public Vote(){
     }
@@ -119,5 +121,12 @@ public class Vote {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (oldValue, newValue) -> oldValue, LinkedHashMap::new));
         return result;
+    }
+
+    public List<Device> getDevices() {
+        List<Device> devs = new ArrayList<Device>();
+        votes.stream().forEach(e->devs.add(e.getDevice()));
+        return devs;
+
     }
 }

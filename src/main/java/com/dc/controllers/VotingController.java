@@ -28,31 +28,7 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
-    @PutMapping("/receiveNewSingleVote")
-    public ResponseEntity newSingleVote(@RequestBody SingleVote vote){
-
-        votingService.processSingleVote(vote);
-
-//        votingService.processTempVote(vote);
-
-        //TODO fix this
-        // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !
-        // possibility : another machine doesnt have it YET -> keep requesting till it receives -> this will fix reliability issue !
-
-        return ResponseEntity.ok(null);
-    }
-
-    @PostMapping("/canISend")
-    public ResponseEntity<Boolean> checkSend(@RequestBody SingleVote vote){
-        boolean contains = votingService.containsVote(vote);
-        if(contains){
-            return ResponseEntity.ok(null);
-        }else{
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @PutMapping("/receiveNewTempVote")
+    @PutMapping("/receiveStage1Vote")
     public ResponseEntity newVote(@RequestBody Vote vote){
 
         votingService.processTempVote(vote);
@@ -66,7 +42,7 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
-    @PutMapping("/receiveVote")
+    @PutMapping("/receiveStage2Vote")
     public void voting(@RequestBody Vote vote){
 
         logger.info("entered Voting : " + vote.getVoteStr());

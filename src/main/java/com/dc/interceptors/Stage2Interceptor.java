@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by xumepa on 10/22/17.
  */
-public class ReceiveVoteInterceptor implements HandlerInterceptor {
+public class Stage2Interceptor implements HandlerInterceptor {
 
     @Autowired
     VotingManager votingManager;
@@ -28,7 +28,7 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
     @Autowired
     VotingService votingService;
 
-    private Logger logger = LoggerFactory.getLogger(ReceiveVoteInterceptor.class);
+    private Logger logger = LoggerFactory.getLogger(Stage2Interceptor.class);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -50,7 +50,7 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
         }
 
 //            votingManager.setTempVote(null);
-        /// check for values in received vote -> follow logic of NewVoteInterceptor
+        /// check for values in received vote -> follow logic of Stage1Interceptor
         return true;
     }
 

@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -101,15 +103,14 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 
         registry.addInterceptor(getDeviceCheckerInterceptor()).addPathPatterns("/echo/discovery");
         registry.addInterceptor(getStartVoteInterceptor()).addPathPatterns("/voting/startVote");
-        registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/receiveNewTempVote");
-        registry.addInterceptor(getNewSingleInterceptor()).addPathPatterns("/voting/receiveNewSingleVote");
+        registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/receiveStage1Vote");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
-        registry.addInterceptor(getReceiveVoteInterceptor()).addPathPatterns("/voting/receiveVote");
+        registry.addInterceptor(getReceiveVoteInterceptor()).addPathPatterns("/voting/receiveStage2Vote");
     }
 
     @Bean
-    public NewVoteInterceptor getNewVoteInterceptor() {
-        return new NewVoteInterceptor();
+    public Stage1Interceptor getNewVoteInterceptor() {
+        return new Stage1Interceptor();
     }
 
     @Bean
@@ -118,8 +119,16 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean
-    public StartVoteInterceptor getStartVoteInterceptor(){return new StartVoteInterceptor();
-    }
+    public StartVoteInterceptor getStartVoteInterceptor(){return new StartVoteInterceptor();}
+
+    @Bean
+    public TaskExecutor taskExecutor(){
+
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(50);
+        return executor;    }
 
     @Bean
     public DeviceCheckerInterceptor getDeviceCheckerInterceptor() {
@@ -127,21 +136,8 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     }
 
     @Bean
-    public ReceiveVoteInterceptor getReceiveVoteInterceptor() {
-        return new ReceiveVoteInterceptor();
+    public Stage2Interceptor getReceiveVoteInterceptor() {
+        return new Stage2Interceptor();
     }
-
-    public NewSingleVoteInterceptor getNewSingleInterceptor() {
-        return new NewSingleVoteInterceptor();
-    }
-
-//    @Bean
-//    public ObjectMapper mapper(){
-//        Map<Class<?>,Class<?>> mix = new HashMap<Class<?>,Class<?>>();
-//        return new Jackson2ObjectMapperBuilder().featuresToDisable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS)
-//                .dateFormat(new ISO8601DateFormat())
-//                .mixIns(mix)
-//                .build();
-//    }
 
 }

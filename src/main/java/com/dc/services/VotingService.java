@@ -32,17 +32,7 @@ public class VotingService {
     @Async
     public void sendNewVoteToDevices(Device device, Vote vote) {
         try {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
-            restTemplate.put(uri, vote, Object.class);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Async
-    public void sendNewSingleVote(Device device, SingleVote vote){
-        try {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewSingleVote";
+            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage1Vote";
             restTemplate.put(uri, vote, Object.class);
         }catch(Exception e){
             e.printStackTrace();
@@ -51,18 +41,8 @@ public class VotingService {
 
     @Async
     public void sendVoteResult(Device device, Object voteResult) {
-        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
+        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage2Vote";
         restTemplate.put(uri, voteResult, Object.class);
-    }
-
-    public boolean sendValidationRequest(Device device, SingleVote voteToSend) {
-        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
-        ResponseEntity e = restTemplate.postForEntity(uri, voteToSend, Object.class);
-        if(e.getStatusCode()== HttpStatus.OK){
-            return true;
-        }else{
-            return false;
-        }
     }
 
     public boolean containsVote(SingleVote vote){

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.net.*;
 import java.util.*;
@@ -133,8 +134,21 @@ public class DeviceManager {
             return null;
         }
 
-    public void startLeaderVote() {
-
+    public boolean containsAllDevices(List<Device> devices) {
+        for (Device device : this.devices) {
+            if(!contains(devices,device)){
+                return false;
+            }
+        }
+        return true;
     }
 
+    private boolean contains(List<Device> devices, Device device) {
+        for (Device device1 : devices) {
+            if(device1.equals(device)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
