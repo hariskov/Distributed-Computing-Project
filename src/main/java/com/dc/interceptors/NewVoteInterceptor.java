@@ -58,7 +58,7 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 //            }
             return false;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -71,11 +71,11 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         logger.info("New Vote Interceptor - After Completion");
 
         for (Device device : deviceManager.getDevices()) {
-            if(!device.equals(deviceManager.getCurrentDevice())) {
-                if(!votingService.sendNewVoteToDevices(device, votingManager.getTempVote())){
+//            if(!device.equals(deviceManager.getCurrentDevice())) {
+                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
                     // get rid of device ! -> fault tolerance;
-                }
-            }
+
+//            }
         }
     }
 }

@@ -26,28 +26,30 @@ public class VotingService {
     @Autowired
     DeviceManager deviceManager;
 
-    public boolean sendNewVoteToDevices(Device device, Vote vote) {
+    public void sendNewVoteToDevices(Device device, Vote vote) {
         try {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
-//        ResponseEntity<Object> response =
-            restTemplate.put(uri, vote, Object.class);
-        return true;
+            new Thread(() -> {
+                String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
+                restTemplate.put(uri, vote, Object.class);
+            }).start();
+
         }catch(Exception e){
             e.printStackTrace();
-            return false;
         }
     }
 
     public void sendVoteResult(Device device, Object voteResult) {
-        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
-        restTemplate.put(uri, voteResult, Object.class);
+        new Thread(() -> {
+            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
+            restTemplate.put(uri, voteResult, Object.class);
+        }).start();
     }
 
     public void startNewVote(String voteType) {
         Vote vote = votingManager.createVote(voteType);
         if(vote!=null) {
-            votingManager.setTempVote(vote);
-            votingManager.setCurrentSingleVote();
+//            votingManager.setTempVote(vote);
+//            votingManager.setCurrentSingleVote();
             votingManager.sendVotes(vote);
         }
     }

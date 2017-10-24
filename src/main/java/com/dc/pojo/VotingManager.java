@@ -44,11 +44,11 @@ public class VotingManager {
 
     public void sendVotes(Vote vote) {
         for (Device device : deviceManager.getDevices()) {
-            if (device != deviceManager.getCurrentDevice()) {
+//            if (device != deviceManager.getCurrentDevice()) {
                 votingService.sendNewVoteToDevices(device, vote);
 //                manager.putVote(voteType, device, result);
             }
-        }
+//        }
     }
 
     public Vote getVoteResults(Vote vote) {
