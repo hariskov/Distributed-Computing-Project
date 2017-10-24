@@ -60,15 +60,18 @@ public class VotingService {
     }
 
     public void processTempVote(Vote vote) {
+        if(votingManager.containsVote(vote.getVoteStr())!=null){
+            return;
+        }
         if (votingManager.getTempVote() == null) {
             votingManager.setTempVote(vote);
             votingManager.setCurrentSingleVote();
-        }
-    }
-
-    public void processSingleVote(SingleVote vote) {
-        if (!votingManager.getTempVote().containsDevice(vote.getDevice())) {
-            votingManager.getTempVote().addVote(vote);
+        }else{
+            for (SingleVote da : vote.getVotes()) {
+                if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
+                    votingManager.getTempVote().addVote(da);
+                }
+            }
         }
     }
 

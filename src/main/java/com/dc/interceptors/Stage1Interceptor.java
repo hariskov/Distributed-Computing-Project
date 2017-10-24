@@ -36,22 +36,27 @@ public class Stage1Interceptor implements HandlerInterceptor {
         }
         if(!deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
             return true;
-        }else if(deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())){
-
-        // assume all devices have the temp vote !
-            Vote storeTempVoteTemporary = votingManager.getTempVote();
-            votingManager.applyTempVote();
-
-            // only leader can progress !!!!!!!!!!!! -> starting stage 2
-            if(storeTempVoteTemporary.getCreator().equals(deviceManager.getCurrentDevice())){
-//                if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
-//                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
-                for (Device device : deviceManager.getDevices()) {
-                    votingService.sendVoteResult(deviceManager.getCurrentDevice(), storeTempVoteTemporary);
-                }
+        }else {
+//            if (deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())) {
+//                // only leader can progress !!!!!!!!!!!! -> starting stage 2
+//
+//                if (votingManager.getTempVote() == null) {
+//                    return false;
 //                }
-            }
-//            return false;
+//
+//                Vote storeTempVoteTemporary = votingManager.getTempVote();
+//                votingManager.applyTempVote();
+//
+////                if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
+////                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
+//                for (Device device : deviceManager.getDevices()) {
+//                    votingService.sendVoteResult(deviceManager.getCurrentDevice(), storeTempVoteTemporary);
+//                }
+////                }
+////            return false;
+//            } else {
+//                votingManager.applyTempVote();
+//            }
         }
         return false;
     }
@@ -65,10 +70,39 @@ public class Stage1Interceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.info("New Vote Interceptor - After Completion");
 
+        if(deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
+            if (deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())) {
+                // only leader can progress !!!!!!!!!!!! -> starting stage 2
+
+                Vote storeTempVoteTemporary = votingManager.getTempVote();
+                votingManager.applyTempVote();
+
+//                if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
+//                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
+//                for (Device device : deviceManager.getDevices()) {
+
+//                votingService.sendVoteResult(deviceManager.getCurrentDevice(), storeTempVoteTemporary);
+
+//                }
+//                }
+//            return false;
+            } else {
+                // are all done ? - check
+                votingManager.applyTempVote();
+            }
+        }
+
+
+//        if(votingManager.getTempVote()!=null){
+//            if(votingManager.containsVote(votingManager.getTempVote().getVoteStr())!=null){
+//                return;
+//            }
+//        }
+
         for (Device device : deviceManager.getDevices()) {
-//            if(!device.equals(deviceManager.getCurrentDevice())) {
+            if(!device.equals(deviceManager.getCurrentDevice())) {
                 votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
             }
-//        }
+        }
     }
 }
