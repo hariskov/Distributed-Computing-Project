@@ -1,9 +1,6 @@
 package com.dc.interceptors;
 
-import com.dc.pojo.Device;
-import com.dc.pojo.DeviceManager;
-import com.dc.pojo.Vote;
-import com.dc.pojo.VotingManager;
+import com.dc.pojo.*;
 import com.dc.services.VotingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +65,12 @@ public class NewVoteInterceptor implements HandlerInterceptor {
         logger.info("New Vote Interceptor - After Completion");
 
         for (Device device : deviceManager.getDevices()) {
+            SingleVote voteToSend = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+            if(votingService.sendValidationRequest(device,voteToSend)){
+                votingService.sendNewSingleVote(device,voteToSend);
+            }
             if(!device.equals(deviceManager.getCurrentDevice())) {
 //                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
-                votingService.sendNewSingleVote(device,votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
             }
         }
     }

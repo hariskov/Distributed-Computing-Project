@@ -3,6 +3,8 @@ package com.dc.services;
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +55,20 @@ public class VotingService {
         restTemplate.put(uri, voteResult, Object.class);
     }
 
+    public boolean sendValidationRequest(Device device, SingleVote voteToSend) {
+        String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
+        ResponseEntity e = restTemplate.postForEntity(uri, voteToSend, Object.class);
+        if(e.getStatusCode()== HttpStatus.OK){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean containsVote(SingleVote vote){
+        return votingManager.getTempVote().getVoteOfDevice(vote.getDevice()) == null;
+    }
+
     public void startNewVote(String voteType) {
         Vote vote = votingManager.createVote(voteType);
         if(vote!=null) {
@@ -77,9 +93,6 @@ public class VotingService {
     }
 
     public void processVote(Vote vote) {
-
-
-
         Vote localVote = votingManager.containsVote(vote.getVoteStr());
         // check for actual vote in progress
         if(localVote!=null){

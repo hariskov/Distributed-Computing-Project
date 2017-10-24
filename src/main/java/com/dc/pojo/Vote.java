@@ -114,7 +114,6 @@ public class Vote {
     public Map<Object, Long> getOrderedVotes() {
         Map<Object,Long> a = votes.parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
 
-
         Map<Object,Long> result = a.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,

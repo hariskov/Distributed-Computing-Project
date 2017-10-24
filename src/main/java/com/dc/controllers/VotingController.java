@@ -5,10 +5,7 @@ import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -43,6 +40,16 @@ public class VotingController {
         // possibility : another machine doesnt have it YET -> keep requesting till it receives -> this will fix reliability issue !
 
         return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/canISend")
+    public ResponseEntity<Boolean> checkSend(@RequestBody SingleVote vote){
+        boolean contains = votingService.containsVote(vote);
+        if(contains){
+            return ResponseEntity.ok(null);
+        }else{
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PutMapping("/receiveNewTempVote")
