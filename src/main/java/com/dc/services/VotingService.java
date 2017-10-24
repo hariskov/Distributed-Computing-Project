@@ -46,28 +46,50 @@ public class VotingService {
     public void startNewVote(String voteType) {
         Vote vote = votingManager.createVote(voteType);
         if(vote!=null) {
-//            votingManager.setTempVote(vote);
+            votingManager.setTempVote(vote);
             votingManager.sendVotes(vote);
         }
     }
 
     public void processVote(Vote vote) {
 
-        if(votingManager.getTempVote() == null){
+        if (votingManager.getTempVote() == null) {
             votingManager.setTempVote(vote);
             votingManager.setCurrentSingleVote(vote.getVoteStr());
-        }else{
-            for(SingleVote da : vote.getVotes()) {
-                if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
-                    votingManager.getTempVote().addVote(da);
-                }else{
-//                    List<SingleVote> emptyVotes = votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").collect(Collectors.toList());
-                    SingleVote singleVote = votingManager.getTempVote().getVotes().stream().filter(e->e.equals(da)).findFirst().orElse(null);
-                    if(singleVote!=null) {
-                        singleVote.setAnswer(da.getAnswer());
-                    }
+        }
+
+        Vote localVote = votingManager.containsVote(vote.getVoteStr());
+        // check for actual vote in progress
+        if(localVote!=null){
+            // second stage processing start
+            // either create new Vote with only one SingleVote for the current machine to be passed , or fill -> check
+
+            SingleVote currentDeviceSingleVote = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+            if(currentDeviceSingleVote.getAnswer()==""){
+                currentDeviceSingleVote.setAnswer(generateLeader());
+            }
+
+            for (SingleVote singleVote : vote.getVotes()) {
+                SingleVote localSingleVote = votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").findFirst().orElse(null);
+                if (localSingleVote != null && localSingleVote.getDevice().equals(singleVote.getDevice())) {
+                    localSingleVote.setAnswer(singleVote.getAnswer());
                 }
             }
+
+        }else {
+//             else {
+//                for (SingleVote da : vote.getVotes()) {
+//                    if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
+//                        votingManager.getTempVote().addVote(da);
+//                    } else {
+////                    List<SingleVote> emptyVotes = votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").collect(Collectors.toList());
+////                    SingleVote singleVote = votingManager.getTempVote().getVotes().stream().filter(e->e.equals(da)).findFirst().orElse(null);
+////                    if(singleVote!=null) {
+////                        singleVote.setAnswer(da.getAnswer());
+////                    }
+//                    }
+//                }
+//            }
         }
     }
 

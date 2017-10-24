@@ -44,11 +44,11 @@ public class VotingManager {
 
     public void sendVotes(Vote vote) {
         for (Device device : deviceManager.getDevices()) {
-//            if (device != deviceManager.getCurrentDevice()) {
+            if (device != deviceManager.getCurrentDevice()) {
                 votingService.sendNewVoteToDevices(device, vote);
 //                manager.putVote(voteType, device, result);
             }
-//        }
+        }
     }
 
     public Vote getVoteResults(Vote vote) {
@@ -67,8 +67,9 @@ public class VotingManager {
         return null;
     }
 
-    public void applyVote(Vote vote){
-        manager.add(vote);
+    public void applyTempVote(){
+        manager.add(getTempVote());
+        setTempVote(null);
     }
 
     public List<Vote> getVotes(){
@@ -101,7 +102,6 @@ public class VotingManager {
 
     public void setTempVote(Vote currentCirculatingVote) {
         this.tempVote = currentCirculatingVote;
-//        addValueToCurrentTempVote();
     }
 
     public void addValueToCurrentTempVote(SingleVote vote) {
@@ -116,4 +116,7 @@ public class VotingManager {
         addValueToCurrentTempVote(sv);
     }
 
+    public Vote containsVote(String voteStr) {
+        return manager.stream().filter(e->e.getVoteStr().equals(voteStr)).findFirst().orElse(null);
+    }
 }
