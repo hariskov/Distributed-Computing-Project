@@ -5,6 +5,8 @@ import com.dc.pojo.DeviceManager;
 import com.dc.pojo.Vote;
 import com.dc.pojo.VotingManager;
 import com.dc.services.VotingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,8 +29,11 @@ public class NewVoteInterceptor implements HandlerInterceptor {
     @Autowired
     VotingManager votingManager;
 
+    private Logger logger = LoggerFactory.getLogger(NewVoteInterceptor.class);
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        logger.info("New Vote Interceptor - Pre Handler");
         if(votingManager.getTempVote() == null){
             return true;
         }
@@ -58,11 +63,13 @@ public class NewVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
+        logger.info("New Vote Interceptor - Post Handler");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        logger.info("New Vote Interceptor - After Completion");
+
         for (Device device : deviceManager.getDevices()) {
             if(!device.equals(deviceManager.getCurrentDevice())) {
                 if(!votingService.sendNewVoteToDevices(device, votingManager.getTempVote())){

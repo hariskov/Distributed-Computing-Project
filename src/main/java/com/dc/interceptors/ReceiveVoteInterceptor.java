@@ -2,6 +2,8 @@ package com.dc.interceptors;
 
 import com.dc.pojo.*;
 import com.dc.services.VotingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,9 +28,11 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
     @Autowired
     VotingService votingService;
 
+    private Logger logger = LoggerFactory.getLogger(ReceiveVoteInterceptor.class);
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+        logger.info("Receive Vote Interceptor - Pre Handler");
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
 //            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
 //                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
@@ -52,6 +56,8 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        logger.info("Receive Vote Interceptor - Post Handler");
+
         Vote v = votingManager.getTempVote();
         // compute shit -> if all correct -> apply localy
         //                  if not all correct -> re-send current computed value to all other machines -> votingService.sendVoteResult()
@@ -60,6 +66,7 @@ public class ReceiveVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        logger.info("Receive Vote Interceptor - After Completion");
 
     }
 }
