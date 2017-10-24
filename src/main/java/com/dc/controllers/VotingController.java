@@ -33,8 +33,6 @@ public class VotingController {
 
         votingService.processTempVote(vote);
 
-//        votingService.processTempVote(vote);
-
         //TODO fix this
         // do interceptor to requrest all other devices for their temp votes -> make sure they are the same !
         // possibility : another machine doesnt have it YET -> keep requesting till it receives -> this will fix reliability issue !
@@ -44,9 +42,13 @@ public class VotingController {
 
     @PutMapping("/receiveStage2Vote")
     public void voting(@RequestBody SingleVote vote){
-
-//        logger.info("entered Voting : " + vote.getVoteStr());
         votingService.processVote(vote);
+    }
+
+
+    @PostMapping("/getCalculatedVote")
+    public void calculatedVote(@RequestBody String voteString){
+        votingService.calculateTempVote(voteString);
     }
 
 }

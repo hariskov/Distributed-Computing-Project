@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by xumepa on 10/3/17.
@@ -51,22 +50,6 @@ public class VotingManager {
 //        }
     }
 
-    public Vote getVoteResults(Vote vote) {
-        return getVotes().stream().filter(e->e.getVoteStr().equals(vote.getVoteStr())).findFirst().orElse(null);
-    }
-
-    public Device generateVoteResult(Vote vote) {
-        Object result;
-        if(getVoteResults(vote) == null){
-            result = null;
-        }else {
-            Random randomizer = new Random();
-            Device random = deviceManager.getDevices().get(randomizer.nextInt(deviceManager.getDevices().size()));
-            result = random;
-        }
-        return null;
-    }
-
     public void applyTempVote(){
         manager.add(getTempVote());
         setTempVote(null);
@@ -87,14 +70,14 @@ public class VotingManager {
     public boolean hasVotes(){
         return !manager.isEmpty();
     }
-
-    public void putVote(String vote, Device device, Object body) {
-        List<Vote> a = manager.parallelStream().filter(e->e.getVoteStr().equals(vote)).collect(Collectors.toList());
-        if(a.size()>0){
-            Vote returnedVote = a.get(0);
-            returnedVote.addVote(device,body);
-        }
-    }
+//
+//    public void putVote(String vote, Device device, Object body) {
+//        List<Vote> a = manager.parallelStream().filter(e->e.getVoteStr().equals(vote)).collect(Collectors.toList());
+//        if(a.size()>0){
+//            Vote returnedVote = a.get(0);
+//            returnedVote.addVote(device,body);
+//        }
+//    }
 
     public void setVotes(List<Vote> votes) {
         this.manager = votes;
@@ -108,15 +91,23 @@ public class VotingManager {
         tempVote.addVote(vote);
     }
 
-    public void setCurrentSingleVote(){
+    public void setCurrentSingleVote(String str){
         SingleVote sv = new SingleVote();
         sv.setDevice(deviceManager.getCurrentDevice());
         sv.setAnswer("");
+        sv.setQuestion(str);
 //        tempVote.setCurrentVote(voteStr,sv);
         addValueToCurrentTempVote(sv);
     }
 
     public Vote containsVote(String voteStr) {
         return manager.stream().filter(e->e.getVoteStr().equals(voteStr)).findFirst().orElse(null);
+    }
+
+    public Vote containsTempVote(String voteString) {
+        if(tempVote.getVoteStr().equals(voteString)){
+            return tempVote;
+        }
+        return null;
     }
 }

@@ -39,15 +39,15 @@ public class Stage2Interceptor implements HandlerInterceptor {
 
         logger.info("Receive Vote Interceptor - Pre Handler");
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
-            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
+            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer() == ""){
                 votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
             }
+
             if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()>0){
                 return true;
             }
-//            Object result = votingManager.getTempVote().calculateVote().getAnswer();
 
-            Object a = votingManager.getTempVote().getOrderedVotes();
+//            Object result = votingManager.getTempVote().calculateVote().getAnswer();
 
             // decide game order !
 //            gameManager.setPlayerOrder();
@@ -63,7 +63,6 @@ public class Stage2Interceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         logger.info("Receive Vote Interceptor - Post Handler");
 
-        Vote v = votingManager.getTempVote();
         // compute shit -> if all correct -> apply localy
         //                  if not all correct -> re-send current computed value to all other machines -> votingService.sendVoteResult()
 
@@ -73,5 +72,24 @@ public class Stage2Interceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.info("Receive Vote Interceptor - After Completion");
 
+        if (deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())) {
+
+//            for (Device device : deviceManager.getDevices()) {
+//                votingService.sendGetCalculatedResult(device, votingManager.getTempVote().getVoteStr());
+//            }
+//
+            if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()!="").count()==0){
+                logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
+                if(votingManager.getTempVote().getCreator().equals(deviceManager.getCurrentDevice())){
+                    for (Device device : deviceManager.getDevices()) {
+//                        votingService.sendApplyTemp(device, votingManager.getTempVote().getVoteStr());
+                    }
+                }
+            }else {
+                for (Device device : deviceManager.getDevices()) {
+                    votingService.sendVoteResult(device, votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
+                }
+            }
+        }
     }
 }

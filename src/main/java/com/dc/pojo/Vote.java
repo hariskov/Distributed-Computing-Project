@@ -50,37 +50,6 @@ public class Vote {
         votes.add(da);
     }
 
-    public SingleVote calculateVote() {
-//        Vote receivedVote = manager.stream().filter(e->e.getVoteStr().equals(voteMap)).findFirst().get();
-        Map<Object,Long> a = votes.parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
-
-        Map.Entry<Object, Long> maxValue = a.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null); // assumes n/2 + 1
-
-        List<SingleVote> result = votes.stream()
-                .filter(s -> s.getAnswer()==maxValue.getKey())
-                .collect(Collectors.toList());
-
-        if(result.size()==1){
-            return result.get(0);
-        }
-        else{
-            SingleVote returnSingleVote = null;
-            int maxIp = 0;
-//            result.stream().max(e->e.getDevice().getIp());
-            for (SingleVote singleVote : result) {
-                try {
-                    int lastDigit = Integer.parseInt(singleVote.getDevice().getIp().split(".")[3]);
-                    if (lastDigit > maxIp) {
-                        returnSingleVote = singleVote;
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return returnSingleVote;
-        }
-    }
-
     public Device getCreator() {
         return creator;
     }
