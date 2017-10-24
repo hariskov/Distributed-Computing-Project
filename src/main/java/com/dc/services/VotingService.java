@@ -3,6 +3,7 @@ package com.dc.services;
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,23 +27,25 @@ public class VotingService {
     @Autowired
     DeviceManager deviceManager;
 
+    @Async
     public void sendNewVoteToDevices(Device device, Vote vote) {
         try {
-            new Thread(() -> {
+//            new Thread(() -> {
                 String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewTempVote";
                 restTemplate.put(uri, vote, Object.class);
-            }).start();
+//            }).start();
 
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
+    @Async
     public void sendVoteResult(Device device, Object voteResult) {
-        new Thread(() -> {
+//        new Thread(() -> {
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVote";
             restTemplate.put(uri, voteResult, Object.class);
-        }).start();
+//        }).start();
     }
 
     public void startNewVote(String voteType) {
@@ -80,6 +83,14 @@ public class VotingService {
             }
 
         }else {
+            for (SingleVote da : vote.getVotes()) {
+                if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
+                    votingManager.getTempVote().addVote(da);
+                }
+            }
+        }
+
+
 //             else {
 //                for (SingleVote da : vote.getVotes()) {
 //                    if (!votingManager.getTempVote().containsDevice(da.getDevice())) {

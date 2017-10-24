@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 @ImportResource("classpath:dc-servlet.xml")
 @ComponentScan(basePackages = { "com.dc" },
         useDefaultFilters = false, includeFilters = @ComponentScan.Filter({Controller.class, Component.class}))
+@EnableAsync
 public class WebConfig extends WebMvcConfigurerAdapter{
 
     @Bean
