@@ -4,6 +4,8 @@ import com.dc.services.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.messaging.core.MessageSendingOperations;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -22,6 +24,9 @@ public class DeviceManager {
     @Autowired
     @Qualifier(value="deviceService")
     private DeviceService deviceService;
+
+    @Autowired
+    MessageSendingOperations<String> messageSendingOperations;
 
     InetAddress localhost = getLocalAddress();
     List<Device> devices = new ArrayList<>();
@@ -107,32 +112,28 @@ public class DeviceManager {
         }
     }
 
-        private InetAddress getLocalAddress(){
-            try {
-                Enumeration<NetworkInterface> b = NetworkInterface.getNetworkInterfaces();
-                while( b.hasMoreElements()) {
-                    for (InterfaceAddress f : b.nextElement().getInterfaceAddresses()) {
-                        if (f.getAddress().isSiteLocalAddress()) {
-                            return f.getAddress();
-                        }
-
-//                    if(f.getAddress().isLoopbackAddress()){
-//                        return f.getAddress();
-//                    }
+    private InetAddress getLocalAddress(){
+        try {
+            Enumeration<NetworkInterface> b = NetworkInterface.getNetworkInterfaces();
+            while( b.hasMoreElements()) {
+                for (InterfaceAddress f : b.nextElement().getInterfaceAddresses()) {
+                    if (f.getAddress().isSiteLocalAddress()) {
+                        return f.getAddress();
                     }
                 }
-            } catch (SocketException e) {
-                e.printStackTrace();
             }
-
-
-            try {
-                return InetAddress.getByName("145.97.145.112");
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-            return null;
+        } catch (SocketException e) {
+            e.printStackTrace();
         }
+
+
+        try {
+            return InetAddress.getByName("145.97.145.112");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public boolean containsAllDevices(List<Device> devices) {
         for (Device device : this.devices) {
@@ -150,5 +151,11 @@ public class DeviceManager {
             }
         }
         return false;
+    }
+
+    @MessageMapping(value="/hello")
+    public void callPlayersToNotDiscover() {
+        String destination = "/broker/discoveryInProgress";
+        this.messageSendingOperations.convertAndSend(destination);
     }
 }

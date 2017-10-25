@@ -6,6 +6,7 @@ import com.dc.pojo.Vote;
 import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,18 +46,16 @@ public class EchoController {
 //    @PostMapping(value="/syncDevices", produces = "application/json", consumes = "application/json")
     @PostMapping("/getDevices")
     public ResponseEntity<Object> syncDevices(@RequestBody List<Device> devices){
+        deviceManager.callPlayersToNotDiscover();
         devices.forEach(e->deviceManager.addDevice(e));
         return ResponseEntity.ok().body(deviceManager.getDevices());
     }
 
-//    @PostMapping("/requestSyncDevices")
-//    public void requestSyncDevices(){
-//        deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
-//    }
 
     @PostMapping("/syncVotes")
     public ResponseEntity<String> syncVotes(@RequestBody List<Vote> votes){
         votes.forEach(e->votingManager.setVotes(votes));
         return ResponseEntity.ok().body(null);
     }
+
 }

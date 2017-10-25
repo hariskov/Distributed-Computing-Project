@@ -4,6 +4,7 @@
 
 var mainFunction = function(mainService, $scope, $http, $location){
     var self = this;
+    var stompClient = null;
 
     self.card = {
         cardSign:"3",
@@ -33,8 +34,40 @@ var mainFunction = function(mainService, $scope, $http, $location){
                 console.log(error)
             }
         );
-    }
-}
+    };
+
+    var socket = new SockJS('http://localhost:8080/project/project/p2-websocket');
+
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        console.log('attempt subscribe started');
+        stompClient.subscribe('/broker/turn', function (graphResult) {
+            console.log('subscribe succeeded');
+            var resultMap = JSON.parse(graphResult.body);
+
+            console.log('result ' + resultMap);
+
+            $scope.$apply();
+        });
+
+        stompClient.subscribe('/broker/discoveryInProgress', function (graphResult) {
+            console.log('subscribe succeeded');
+            var resultMap = JSON.parse(graphResult.body);
+            self.discoverDone = true;
+
+            $scope.$apply();
+        });
+
+        stompClient.send("project/hello", {}, "");
+
+    }, function (message) {
+        // disconnect();
+        // noServersPopUp();
+        console.log(message);
+    });
+
+};
+
 
 var app = angular.module('mainApp');
 

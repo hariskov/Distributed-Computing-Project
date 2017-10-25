@@ -106,6 +106,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
         registry.addInterceptor(getNewVoteInterceptor()).addPathPatterns("/voting/receiveStage1Vote");
         registry.addInterceptor(getCardInterceptor()).addPathPatterns("/card/playCard");
         registry.addInterceptor(getReceiveVoteInterceptor()).addPathPatterns("/voting/receiveStage2Vote");
+        registry.addInterceptor(getNewRoundInterceptor()).addPathPatterns("/game/applyPlayOrder");
     }
 
     @Bean
@@ -121,6 +122,10 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     @Bean
     public StartVoteInterceptor getStartVoteInterceptor(){return new StartVoteInterceptor();}
 
+    @Bean
+    public NewRoundInterceptor getNewRoundInterceptor(){
+        return new NewRoundInterceptor();
+    }
     @Bean
     public TaskExecutor taskExecutor(){
 

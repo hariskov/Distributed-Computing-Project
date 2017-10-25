@@ -9,7 +9,7 @@
 <tiles:importAttribute name="angularGlobal"/>
 <tiles:importAttribute name="angularBootstrap"/>
 <tiles:importAttribute name="nonAngularJS"/>
-<tiles:importAttribute name="javascripts_custom"/>
+<tiles:importAttribute name="custom_javascript"/>
 
 <!DOCTYPE html>
 <html lang="en">

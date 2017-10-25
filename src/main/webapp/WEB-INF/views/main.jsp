@@ -5,6 +5,7 @@
 <tiles:importAttribute name="controllers"/>
 <tiles:importAttribute name="application"/>
 <tiles:importAttribute name="services"/>
+<tiles:importAttribute name="custom_javascript"/>
 
 <html>
   <head>
@@ -28,6 +29,10 @@
         <script src="<c:url value="${controller}"/>" type="text/javascript"></script>
     </c:forEach>
 
-  <ng-view></ng-view>
+    <c:forEach var="angJs" items="${custom_javascript}">
+        <script src="<c:url value="${angJs}"/>" type="text/javascript"></script>
+    </c:forEach>
+
+    <ng-view></ng-view>
   </body>
 </html>

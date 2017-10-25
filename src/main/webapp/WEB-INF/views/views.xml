@@ -25,6 +25,10 @@
             <add-attribute value="/resources/js/main/mainApp.js"/>
         </put-list-attribute>
 
+        <put-list-attribute name="custom_javascript">
+            <add-attribute value="/resources/js/sockets/stomp.js"/>
+            <add-attribute value="/resources/js/sockets/sockjs.js"/>
+        </put-list-attribute>
 
     </definition>
 
