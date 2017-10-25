@@ -64,17 +64,20 @@ public class Stage1Interceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         logger.info("Stage 1 Vote Interceptor - Post Handler");
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        logger.info("Stage 1 Vote Interceptor - After Completion");
-
         if(votingManager.getTempVote()==null){
+            logger.error("temp null -> breaking");
             return;
         }
 
         if(deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
+
+            if(deviceManager.getCurrentDevice() == null){
+                logger.error("currentDevice null -> breaking");
+            }
+            if(votingManager.getTempVote().getCreator() == null){
+                logger.error("Creator null -> breaking");
+            }
+
             if (deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())) {
                 // only leader can progress !!!!!!!!!!!! -> starting stage 2
 
@@ -102,5 +105,12 @@ public class Stage1Interceptor implements HandlerInterceptor {
                 }
             }
         }
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        logger.info("Stage 1 Vote Interceptor - After Completion");
+
+
     }
 }
