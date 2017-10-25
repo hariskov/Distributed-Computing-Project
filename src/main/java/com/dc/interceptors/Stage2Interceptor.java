@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xumepa on 10/22/17.
@@ -35,7 +37,11 @@ public class Stage2Interceptor implements HandlerInterceptor {
         logger.info("Stage 2 Vote Interceptor - Pre Handler");
 
         if(votingManager.getTempVote() == null){
-            return true;
+            Vote prevVote = votingManager.getCopyOfVote(votingManager.getLastVote());
+            if(prevVote!=null){
+                votingManager.setTempVote(prevVote);
+            }
+            return  true;
         }
 
         if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
@@ -46,21 +52,22 @@ public class Stage2Interceptor implements HandlerInterceptor {
                 deviceVote.setAnswer(votingService.generateLeader());
                 deviceVote.setSequence(deviceVote.getSequence() + 1);
                 logger.info("Stage 2 Vote Interceptor - Pre Handler - get answer " + votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer());
-            }
 
-            if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()>0){
                 return true;
             }
-
-//            Object result = votingManager.getTempVote().calculateVote().getAnswer();
-
-            // decide game order !
-//            gameManager.setPlayerOrder();
-//            System.out.println(result);
         }
 
-//            votingManager.setTempVote(null);
-        /// check for values in received vote -> follow logic of Stage1Interceptor
+        //check for empty votes
+        if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()==0){
+            Object answer = votingService.calculateVote(votingManager.getTempVote().getVoteStr());
+
+            if(checkVoteIssues(answer)) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -68,8 +75,6 @@ public class Stage2Interceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         logger.info("Stage 2 Vote Interceptor - Post Handler");
 
-        // compute shit -> if all correct -> apply localy
-        //                  if not all correct -> re-send current computed value to all other machines -> votingService.sendVoteResult()
 
     }
 
@@ -82,55 +87,56 @@ public class Stage2Interceptor implements HandlerInterceptor {
         }
 
         if (deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())) {
-
-//            for (Device device : deviceManager.getDevices()) {
-//                votingService.sendGetCalculatedResult(device, votingManager.getTempVote().getVoteStr());
-//            }
-//
-            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
-                logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
+            if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()>0){
+                for (Device device : deviceManager.getDevices()) {
+                    votingService.sendVoteResult(device, votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
+                }
+            }else{
+                Object answer = votingService.calculateVote(votingManager.getTempVote().getVoteStr());
 
                 SingleVote v = new SingleVote();
                 v.setDevice(deviceManager.getCurrentDevice());
-                v.setAnswer(votingService.calculateVote(votingManager.getTempVote().getVoteStr()));
+                v.setAnswer(answer);
                 v.setSequence(v.getSequence()+1);
 
-                for (SingleVote singleVote : votingManager.getTempVote().getVotes()) {
-                    if(v.getAnswer() == singleVote.getAnswer()){
-                        logger.info("ASFGDFGSFGHFDH SWET$TSHdt y3it9rfksjfvbp n0b6s");
-                        // all local ones have the same answer -> continue to stage 3
-                    }
+                if(checkVoteIssues(answer)){
+                    // all answers are the same :) woohoo
+                    logger.info(" all answers are the same :) ");
+
                 }
-
-                //reset temp vote to blank answers;
-//                votingManager.setTempVote(votingManager.getCopyOfVote(votingManager.getTempVote()));
-
-//                votingManager.getCalcVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(v.getAnswer());
-
-//                for(Device device : deviceManager.getDevices()){
-//                    votingService.sendCalculatedVote(device,votingManager.getCalcVote());
-//                }
-
-//                if(votingManager.getTempVote().getCreator().equals(deviceManager.getCurrentDevice())){
-//                    for (Device device : deviceManager.getDevices()) {
-
-//                        votingService.sendApplyTemp(device, votingManager.getTempVote().getVoteStr());
-//                    }
-//                }
 
                 for (Device device : deviceManager.getDevices()) {
-                    if(!deviceManager.getCurrentDevice().equals(device)){
-                        votingService.sendVoteResult(device, v);
-                    }
+                    votingService.sendVoteResult(device, v);
                 }
+            }
+
+            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
+                logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
 
             }else {
                 for (Device device : deviceManager.getDevices()) {
-                    if(!deviceManager.getCurrentDevice().equals(device)){
-                        votingService.sendVoteResult(device, votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
-                    }
+                    votingService.sendVoteResult(device, votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
                 }
             }
         }
+    }
+
+    private boolean checkVoteIssues(Object answer) {
+
+        List<Device> wrongDevices = new ArrayList<Device>();
+
+        for(Device dev : votingManager.getTempVote().getDevices()) {
+            Object devAnswer = votingManager.getTempVote().getVoteOfDevice(dev).getAnswer();
+            if(answer instanceof Device && devAnswer instanceof Device){
+                if(!((Device)answer).equals((Device) devAnswer)){
+                    wrongDevices.add(dev);
+                }
+            }
+        }
+
+        if(wrongDevices.size()>0){
+            return false;
+        }
+        return true;
     }
 }

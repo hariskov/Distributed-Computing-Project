@@ -32,7 +32,7 @@ public class VotingController {
 
     @PutMapping(value="/receiveStage1Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity newVote(@RequestBody Vote vote){
-
+        logger.info("New Vote");
         votingService.processTempVote(vote);
 
         //TODO fix this
@@ -46,6 +46,8 @@ public class VotingController {
     @Async
     @PutMapping(value = "/receiveStage2Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity voting(@RequestBody SingleVote vote){
+        logger.info("Old Vote");
+
         votingService.processVote(vote);
         return ResponseEntity.ok(null);
     }

@@ -56,4 +56,5 @@ public class SingleVote {
     public void setSequence(int sequence) {
         this.sequence = sequence;
     }
+
 }

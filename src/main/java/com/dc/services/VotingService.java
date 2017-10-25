@@ -37,8 +37,10 @@ public class VotingService {
     @Async
     public void sendNewVoteToDevices(Device device, Vote vote) {
         try {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage1Vote";
-            restTemplate.put(uri, vote);
+            if (!device.equals(deviceManager.getCurrentDevice())) {
+                String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage1Vote";
+                restTemplate.put(uri, vote);
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -47,8 +49,10 @@ public class VotingService {
     @Async
     public void sendVoteResult(Device device, SingleVote voteResult) {
         try {
-            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage2Vote";
-            restTemplate.put(uri, voteResult);
+            if (!device.equals(deviceManager.getCurrentDevice())) {
+                String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage2Vote";
+                restTemplate.put(uri, voteResult);
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -81,12 +85,6 @@ public class VotingService {
     }
 
     public void processVote(SingleVote vote){
-        if(votingManager.getTempVote()==null){
-            Vote prevVote = votingManager.containsVote(vote.getQuestion());
-            if(prevVote!=null){
-                votingManager.setTempVote(prevVote);
-            }
-        }
 
 //        SingleVote currentDeviceSingleVote = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
 //        if(currentDeviceSingleVote.getAnswer()==""){
@@ -96,7 +94,7 @@ public class VotingService {
         SingleVote singleVote = votingManager.getTempVote().getVoteOfDevice(vote.getDevice());
 //        if(singleVote.getAnswer() == ""){
 
-        if(vote.getSequence()<singleVote.getSequence()){
+        if(vote.getSequence()>singleVote.getSequence()){
             singleVote.setAnswer(vote.getAnswer());
             singleVote.setSequence(singleVote.getSequence()+1);
         }
