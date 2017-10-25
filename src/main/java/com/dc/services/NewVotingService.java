@@ -86,6 +86,7 @@ public class NewVotingService {
         SingleVote result = null;
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVoteAnswer";
+            System.out.println(voteStr);
             result = restTemplate.postForEntity(uri, voteStr, SingleVote.class).getBody();
         }catch(Exception e){
             e.printStackTrace();
@@ -112,6 +113,17 @@ public class NewVotingService {
         }
     }
 
+    private String sendAskLeader(Device device, String voteStr) {
+        String result = null;
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/card/askForCard";
+            result =  restTemplate.postForEntity(uri, voteStr, String.class).getBody();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public Vote applyTempVote(Vote vote) {
         for(SingleVote singleVote : vote.getVotes()){
             if(!votingManager.getTempVote().containsDevice(singleVote.getDevice())){
@@ -126,6 +138,9 @@ public class NewVotingService {
         if(currentAnswer.getAnswer()==null){
             if(voteStr.equals("LeaderSelect")){
                 currentAnswer.setAnswer(generateLeader());
+            }else{
+                String answer = sendAskLeader(votingManager.getTempVote().getCreator(),voteStr);
+                currentAnswer.setAnswer(answer);
             }
         }
         return ResponseEntity.ok(currentAnswer);

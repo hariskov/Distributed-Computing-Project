@@ -51,7 +51,6 @@ public class MessagingController {
 
     @PostMapping(value="/receiveVoteAnswer")
     public ResponseEntity<SingleVote> receiveVote(@RequestBody String voteStr){
-        logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         return newVotingService.getVoteAnswer(voteStr);
     }
 
