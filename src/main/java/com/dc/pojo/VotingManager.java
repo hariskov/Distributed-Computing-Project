@@ -22,6 +22,7 @@ public class VotingManager {
 
     private List<Vote> manager;
     private Vote tempVote;
+    private Vote calcVote;
 
     public VotingManager(){
         manager = new LinkedList<Vote>();

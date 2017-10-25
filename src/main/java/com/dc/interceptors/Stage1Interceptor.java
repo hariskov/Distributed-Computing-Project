@@ -36,6 +36,27 @@ public class Stage1Interceptor implements HandlerInterceptor {
         }
         if(!deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
             return true;
+        }else {
+//            if (deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())) {
+//                // only leader can progress !!!!!!!!!!!! -> starting stage 2
+//
+//                if (votingManager.getTempVote() == null) {
+//                    return false;
+//                }
+//
+//                Vote storeTempVoteTemporary = votingManager.getTempVote();
+//                votingManager.applyTempVote();
+//
+////                if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
+////                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
+//                for (Device device : deviceManager.getDevices()) {
+//                    votingService.sendVoteResult(deviceManager.getCurrentDevice(), storeTempVoteTemporary);
+//                }
+////                }
+////            return false;
+//            } else {
+//                votingManager.applyTempVote();
+//            }
         }
         return false;
     }
@@ -56,21 +77,29 @@ public class Stage1Interceptor implements HandlerInterceptor {
         if(deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
             if (deviceManager.getCurrentDevice().equals(votingManager.getTempVote().getCreator())) {
                 // only leader can progress !!!!!!!!!!!! -> starting stage 2
+
                 Vote storeTempVoteTemporary = votingManager.getTempVote();
 
                 // make sure all devices have consensus
                 votingManager.applyTempVote();
 
+//                if (votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
+//                votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(votingService.generateLeader());
                 for (Device device : deviceManager.getDevices()) {
+//                    votingService.sendVoteResult3(device, storeTempVoteTemporary);
                     votingService.sendVoteResult(device, storeTempVoteTemporary.getVoteOfDevice(deviceManager.getCurrentDevice()));
                 }
+//                }
+//            return false;
             } else {
                 // are all done ? - check
                 votingManager.applyTempVote();
             }
         }else {
             for (Device device : deviceManager.getDevices()) {
-                votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
+                if (!device.equals(deviceManager.getCurrentDevice())) {
+                    votingService.sendNewVoteToDevices(device, votingManager.getTempVote());
+                }
             }
         }
     }

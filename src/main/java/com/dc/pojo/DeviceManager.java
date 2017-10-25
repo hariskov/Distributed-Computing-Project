@@ -97,8 +97,10 @@ public class DeviceManager {
                     Device discoveredDevice = discoverDevice(address.toString().substring(1));
                     if (discoveredDevice != null) {
                         addDevice(discoveredDevice);
+                        break;
                     }
                 }
+                //                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
