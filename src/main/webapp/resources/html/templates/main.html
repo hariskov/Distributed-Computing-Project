@@ -7,7 +7,7 @@
 <form ng-if="mnCtrl.discoverDone">
     <input type="text" ng-model="mnCtrl.card.cardValue"/>
     <input type="text" ng-model="mnCtrl.card.cardSign"/>
-    <input type="button" ng-click="mnCtrl.submit()" value="submit">
+    <input type="button" ng-click="mnCtrl.submit()" value="submit" ng-if="mnCtrl.canPlay==true">
 </form>
 
 

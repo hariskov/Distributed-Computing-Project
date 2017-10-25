@@ -156,6 +156,6 @@ public class DeviceManager {
     @MessageMapping(value="/hello")
     public void callPlayersToNotDiscover() {
         String destination = "/broker/discoveryInProgress";
-        this.messageSendingOperations.convertAndSend(destination);
+        this.messageSendingOperations.convertAndSend(destination,"true");
     }
 }

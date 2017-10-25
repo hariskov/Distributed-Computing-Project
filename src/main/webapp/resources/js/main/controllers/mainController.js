@@ -12,7 +12,7 @@ var mainFunction = function(mainService, $scope, $http, $location){
     };
 
     self.discoverDone=false;
-
+    self.canPlay=false;
 
     self.discover = function(){
         mainService.discover().then(
@@ -45,7 +45,7 @@ var mainFunction = function(mainService, $scope, $http, $location){
             console.log('subscribe succeeded');
             var resultMap = JSON.parse(graphResult.body);
 
-            console.log('result ' + resultMap);
+            self.canPlay=resultMap;
 
             $scope.$apply();
         });
