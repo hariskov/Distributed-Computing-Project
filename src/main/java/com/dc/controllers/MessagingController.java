@@ -16,7 +16,7 @@ public class MessagingController {
     @Autowired
     NewVotingService newVotingService;
 
-    @PostMapping
+    @PostMapping(value="/startVote")
     public void startVote(@RequestBody String newVote){
         Vote vote = newVotingService.creatVote(newVote);
         newVotingService.sendVote(vote);

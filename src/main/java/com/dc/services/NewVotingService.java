@@ -1,10 +1,7 @@
 package com.dc.services;
 
 import com.dc.components.CustomRestTemplate;
-import com.dc.pojo.Device;
-import com.dc.pojo.DeviceManager;
-import com.dc.pojo.Vote;
-import com.dc.pojo.VotingManager;
+import com.dc.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +22,9 @@ public class NewVotingService {
     @Autowired
     CustomRestTemplate restTemplate;
 
-    public Vote process(Vote vote) {
+    public SingleVote process(Vote vote) {
         votingManager.setTempVote(vote);
-        return votingManager.getTempVote();
+        return votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
     }
 
     public Vote creatVote(String newVote) {
@@ -42,8 +39,8 @@ public class NewVotingService {
             try {
                 logger.info("sending to " + device.getIp() + " value : " + vote.getVoteStr());
                 String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewVote";
-                ResponseEntity result = restTemplate.postForEntity(uri, vote, Object.class);
-                result.getBody();
+                ResponseEntity<SingleVote> result = restTemplate.postForEntity(uri, vote, SingleVote.class);
+                votingManager.getTempVote().addVote(result.getBody());
             } catch (Exception e) {
                 e.printStackTrace();
             }

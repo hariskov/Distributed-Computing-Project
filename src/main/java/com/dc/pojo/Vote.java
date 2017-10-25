@@ -69,9 +69,7 @@ public class Vote implements Cloneable{
     }
 
     public SingleVote getVoteOfDevice(Device currentDevice) {
-        Optional<SingleVote> result = votes.stream().filter(e->e.getDevice().equals(currentDevice)).findFirst();
-        SingleVote vote = result.get();
-        return vote;
+        return votes.stream().filter(e->e.getDevice().equals(currentDevice)).findFirst().orElse(null);
     }
 
     public Map<Object, Long> getOrderedVotes() {
