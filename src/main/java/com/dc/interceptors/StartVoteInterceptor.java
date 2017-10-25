@@ -101,7 +101,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
 
             for(Device device : deviceManager.getDevices()){
-                Map<Device,Integer> result = newVotingService.calculateOrder(votingManager.getTempVote());
+                List<Device> result = newVotingService.calculateOrder(votingManager.getTempVote());
 
                 newVotingService.sendApplyVote(device, calculatedVote);
                 newVotingService.sendApplyPlayOrder(device, result);

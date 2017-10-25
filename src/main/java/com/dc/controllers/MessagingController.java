@@ -53,9 +53,11 @@ public class MessagingController {
     }
 
     @PutMapping(value="/applyVote")
-    public void applyVote(@RequestBody SingleVote vote){
+    public ResponseEntity applyVote(@RequestBody SingleVote vote){
         logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         newVotingService.applyVote(vote);
+
+        return ResponseEntity.ok(null);
     }
 
 //    @PostMapping("/receiveInfo")

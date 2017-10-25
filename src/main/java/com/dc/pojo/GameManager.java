@@ -2,6 +2,7 @@ package com.dc.pojo;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,9 +11,9 @@ import java.util.Map;
 
 @Service
 public class GameManager {
-    private Map<Device, Integer> playingOrder;
+    private List<Device> playingOrder;
 
-    public void setPlayingOrder(Map<Device, Integer> playingOrder) {
+    public void setPlayingOrder(List<Device> playingOrder) {
         this.playingOrder = playingOrder;
     }
 }

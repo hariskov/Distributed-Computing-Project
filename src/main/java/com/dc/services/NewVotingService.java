@@ -103,7 +103,7 @@ public class NewVotingService {
         }
     }
 
-    public void sendApplyPlayOrder(Device device, Map<Device,Integer> order){
+    public void sendApplyPlayOrder(Device device, List<Device> order){
         try {
             String uri = "http://" + device.getIp() + ":8080/project/game/applyPlayOrder";
             restTemplate.put(uri, order);
@@ -136,23 +136,27 @@ public class NewVotingService {
         return leader;
     }
 
-    public Map<Device,Integer> calculateOrder(Vote vote){
-        Map<Object,Long> a = vote.getVotes().parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
-        Map.Entry<Object, Long> maxValue = a.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null); // assumes n/2 + 1
-        List<SingleVote> result = vote.getVotes().stream()
-                .filter(s -> s.getAnswer()==maxValue.getKey())
-                .collect(Collectors.toList());
+    public List<Device> calculateOrder(Vote vote){
+//        Map<Object,Long> a = vote.getVotes().parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
+//        Map.Entry<Object, Long> maxValue = a.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null); // assumes n/2 + 1
+//        List<SingleVote> result = vote.getVotes().stream()
+//                .filter(s -> s.getAnswer()==maxValue.getKey())
+//                .collect(Collectors.toList());
+//
+//        Map<Device,Integer> resultedOrder = new LinkedHashMap<>();
+//        int sequence = 0;
+//        while(result.size()>=0){
+//            int dev = new Random().nextInt(deviceManager.getDevices().size()+1);
+//            Device leader = result.get(dev).getDevice();
+//            resultedOrder.put(leader,sequence++);
+//            result.remove(leader);
+//        }
 
-        Map<Device,Integer> resultedOrder = new LinkedHashMap<>();
-        int sequence = 0;
-        while(result.size()>=0){
-            int dev = new Random().nextInt(deviceManager.getDevices().size());
-            Device leader = result.get(dev).getDevice();
-            resultedOrder.put(leader,sequence++);
-            result.remove(leader);
+        List<Device> resultedOrder = new LinkedList<>();
+
+        for (Device device : deviceManager.getDevices()) {
+            resultedOrder.add(device);
         }
-
-
 
         return resultedOrder;
     }

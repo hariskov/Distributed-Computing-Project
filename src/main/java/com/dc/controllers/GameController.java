@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +33,7 @@ public class GameController {
     }
 
     @PutMapping("/applyPlayOrder")
-    public void applyPlayOrder(@RequestBody Map<Device,Integer> order){
+    public void applyPlayOrder(@RequestBody List<Device> order){
         logger.info("APPLY ORDER WOORHHOOOOOO" );
         gameManager.setPlayingOrder(order);
     }
