@@ -52,6 +52,10 @@ public class VotingManager {
     }
 
     public void applyTempVote(){
+        Vote v = manager.stream().filter(e->e.getVoteStr().equals(getTempVote().getVoteStr())).findFirst().orElse(null);
+        if(v!=null){
+            manager.remove(v);
+        }
         manager.add(getTempVote());
         setTempVote(null);
     }

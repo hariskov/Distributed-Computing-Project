@@ -41,16 +41,17 @@ public class Stage2Interceptor implements HandlerInterceptor {
                     votingManager.setTempVote(prevVote);
                 }
             }
-            return true;
+//            return true;
         }
 
-        if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")){
             if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer() == ""){
                 logger.info("Stage 2 Vote Interceptor - Pre Handler - set answer");
                 SingleVote deviceVote = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+                if(votingManager.getTempVote().getVoteStr().equals("LeaderSelect")) {
+                    deviceVote.setAnswer(votingService.generateLeader());
+                    deviceVote.setSequence(deviceVote.getSequence() + 1);
+                }
 
-                deviceVote.setAnswer(votingService.generateLeader());
-                deviceVote.setSequence(deviceVote.getSequence() + 1);
                 logger.info("Stage 2 Vote Interceptor - Pre Handler - get answer " + votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer());
             }
 
@@ -63,7 +64,6 @@ public class Stage2Interceptor implements HandlerInterceptor {
             // decide game order !
 //            gameManager.setPlayerOrder();
 //            System.out.println(result);
-        }
 
 //            votingManager.setTempVote(null);
         /// check for values in received vote -> follow logic of Stage1Interceptor
@@ -76,13 +76,6 @@ public class Stage2Interceptor implements HandlerInterceptor {
 
         // compute shit -> if all correct -> apply localy
         //                  if not all correct -> re-send current computed value to all other machines -> votingService.sendVoteResult()
-
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        logger.info("Stage 2 Interceptor - After Completion");
-
         if(votingManager.getTempVote()==null){
             logger.error("fucked up heavily");
         }
@@ -93,22 +86,24 @@ public class Stage2Interceptor implements HandlerInterceptor {
 //                votingService.sendGetCalculatedResult(device, votingManager.getTempVote().getVoteStr());
 //            }
 //
-            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
-                logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
 
-                SingleVote v = new SingleVote();
-                v.setDevice(deviceManager.getCurrentDevice());
-                v.setAnswer(votingService.calculateVote(votingManager.getTempVote().getVoteStr()));
-                v.setSequence(v.getSequence()+1);
+//            if(votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()).getAnswer()==""){
+//                logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
+//
+//                SingleVote v = new SingleVote();
+//                v.setDevice(deviceManager.getCurrentDevice());
+//                v.setAnswer(votingService.calculateVote(votingManager.getTempVote().getVoteStr()));
+//                v.setSequence(v.getSequence()+1);
+//
+//                for (SingleVote singleVote : votingManager.getTempVote().getVotes()) {
+//                    if(v.getAnswer() == singleVote.getAnswer()){
+//                        logger.info("empty votes : " + v.getDevice().getIp());
+//                        // all local ones have the same answer -> continue to stage 3
+//                    }
+//                }
 
-                for (SingleVote singleVote : votingManager.getTempVote().getVotes()) {
-                    if(v.getAnswer() == singleVote.getAnswer()){
-                        logger.info("ASFGDFGSFGHFDH SWET$TSHdt y3it9rfksjfvbp n0b6s");
-                        // all local ones have the same answer -> continue to stage 3
-                    }
-                }
 
-                //reset temp vote to blank answers;
+            //reset temp vote to blank answers;
 //                votingManager.setTempVote(votingManager.getCopyOfVote(votingManager.getTempVote()));
 
 //                votingManager.getCalcVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(v.getAnswer());
@@ -124,19 +119,59 @@ public class Stage2Interceptor implements HandlerInterceptor {
 //                    }
 //                }
 
-                for (Device device : deviceManager.getDevices()) {
-                    if(!deviceManager.getCurrentDevice().equals(device)){
-                        votingService.sendVoteResult(device, v);
+            if(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").count()==0) {
+                logger.info(votingManager.getTempVote().getVoteStr() + " parteh");
+
+                Object calculatedVote = votingService.calculateVote(votingManager.getTempVote().getVoteStr());
+
+                if(calculatedVote instanceof Device){
+                    if(votingManager.getTempVote().getVotes().stream().filter(e->calculatedVote.equals(e.getAnswer())).count()>0) {
+                        SingleVote v = new SingleVote();
+                        v.setDevice(deviceManager.getCurrentDevice());
+                        v.setAnswer(calculatedVote);
+                        v.setSequence(v.getSequence() + 1);
+
+                        for (Device device : deviceManager.getDevices()) {
+                            if (!deviceManager.getCurrentDevice().equals(device)) {
+                                votingService.sendVoteResult(device, votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
+                            }
+                        }
+                    }else{
+                        // finish
+
+                        logger.info(votingManager.getTempVote().toString());
+                        votingManager.applyTempVote();
                     }
                 }
 
+//                for (SingleVote singleVote : votingManager.getTempVote().getVotes()) {
+//                    if (v.getAnswer() == singleVote.getAnswer()) {
+//                        logger.info("empty votes : " + v.getDevice().getIp());
+//                        // all local ones have the same answer -> continue to stage 3
+//                    }
+//                }
             }else {
                 for (Device device : deviceManager.getDevices()) {
-                    if(!deviceManager.getCurrentDevice().equals(device)){
+                    if (!deviceManager.getCurrentDevice().equals(device)) {
                         votingService.sendVoteResult(device, votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
                     }
                 }
             }
+
+//            }else {
+//                for (Device device : deviceManager.getDevices()) {
+//                    if(!deviceManager.getCurrentDevice().equals(device)){
+//                        votingService.sendVoteResult(device, votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice()));
+//                    }
+//                }
+//            }
         }
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        logger.info("Stage 2 Interceptor - After Completion");
+
+
     }
 }
