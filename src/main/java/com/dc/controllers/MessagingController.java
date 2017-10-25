@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.xml.ws.Response;
 import java.util.Arrays;
 
 @Controller
@@ -23,10 +24,12 @@ public class MessagingController {
     NewVotingService newVotingService;
 
     @PostMapping(value="/startVote")
-    public void startVote(@RequestBody String newVote){
+    public ResponseEntity startVote(@RequestBody String newVote){
         logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
         Vote vote = newVotingService.createVote(newVote);
         newVotingService.sendVote(vote);
+
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping("/receiveNewVote")
@@ -35,10 +38,14 @@ public class MessagingController {
         return ResponseEntity.ok(newVotingService.setTempVote(vote));
     }
 
-    @PostMapping(value="applyTempVote")
+    @PostMapping(value="/applyTempVote")
     public ResponseEntity applyTempVote(@RequestBody Vote tempVote){
         logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
         return ResponseEntity.ok(newVotingService.applyTempVote(tempVote));
+    }
+
+    @PostMapping(value="receiveVote")
+    public void receiveVote(){
 
     }
 

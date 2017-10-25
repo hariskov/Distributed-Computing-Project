@@ -62,11 +62,16 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             //apply
 
             List<Vote> listTempVotesReceived = new ArrayList<>();
-
-            listTempVotesReceived.add(newVotingService.sendApplyVote(votingManager.getTempVote()));
-//            System.out.println("go to stage 2");
-
-            while(listTempVotesReceived.size()!=deviceManager.getDevices().size()){
+            if(listTempVotesReceived.size()!=deviceManager.getDevices().size()) {
+                while (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
+                    for (Device device : deviceManager.getDevices()) {
+                        Vote result = newVotingService.sendApplyVote(device, votingManager.getTempVote());
+                        if (result != null) {
+                            listTempVotesReceived.add(result);
+                        }
+                    }
+                    Thread.sleep(1000);
+                }
                 System.out.println("still not time for stage 2");
             }
         }

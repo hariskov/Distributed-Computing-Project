@@ -40,7 +40,7 @@ public class NewVotingService {
         return vote;
     }
 
-    @Async
+//    @Async
     public void sendVote(Vote vote) {
         for (Device device: deviceManager.getDevices()) {
             try {
@@ -54,20 +54,19 @@ public class NewVotingService {
         }
     }
 
-    @Async
-    public Vote sendApplyVote(Vote vote) {
+//    @Async
+    public Vote sendApplyVote(Device device, Vote vote) {
         Vote result = null;
 
-        for (Device device: deviceManager.getDevices()) {
-            try {
-                logger.info("sending to " + device.getIp() + " value : " + vote.getVoteStr());
-                String uri = "http://" + device.getIp() + ":8080/project/voting/applyTempVote";
-                result = restTemplate.postForEntity(uri, vote, Vote.class).getBody();
+        try {
+            logger.info("sending to " + device.getIp() + " value : " + vote.getVoteStr());
+            String uri = "http://" + device.getIp() + ":8080/project/voting/applyTempVote";
+            result = restTemplate.postForEntity(uri, vote, Vote.class).getBody();
 //                votingManager.getTempVote().addVote(result.getBody());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return result;
     }
 
@@ -88,4 +87,5 @@ public class NewVotingService {
         }
         return votingManager.getTempVote();
     }
+
 }
