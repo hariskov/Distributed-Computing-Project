@@ -25,6 +25,8 @@ public class VotingManager {
     private Vote tempVote;
     private Vote calcVote;
 
+    private List<SingleVote> decidedVote = new ArrayList<>();
+
     public VotingManager(){
         manager = new LinkedList<Vote>();
     }
@@ -119,6 +121,14 @@ public class VotingManager {
             newVote.addVote(singleVote);
         }
         return newVote;
+    }
+
+    public List<SingleVote> getDecidedVote() {
+        return decidedVote;
+    }
+
+    public void setDecidedVote(List<SingleVote> decidedVote) {
+        this.decidedVote = decidedVote;
     }
 
 }

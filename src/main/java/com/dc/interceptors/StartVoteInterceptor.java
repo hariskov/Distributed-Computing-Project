@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +29,9 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
     @Autowired
     NewVotingService newVotingService;
+
+    @Autowired
+    GameManager gameManager;
 
     // to check for previous votes that are not completed.
     @Override
@@ -62,7 +66,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             if(listTempVotesReceived.size()!=deviceManager.getDevices().size()) {
                 while (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
                     for (Device device : deviceManager.getDevices()) {
-                        Vote result = newVotingService.sendApplyVote(device, votingManager.getTempVote());
+                        Vote result = newVotingService.sendApplyTempVote(device, votingManager.getTempVote());
                         if (result != null) {
                             listTempVotesReceived.add(result);
                         }
@@ -82,6 +86,29 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
                 Thread.sleep(1000);
             }
+
+            // calculate votes
+
+//                Object calculatedResult = newVotingService.calculateOrder(votingManager.getTempVote());
+//                SingleVote calculatedVote = new SingleVote();
+//                calculatedVote.setDevice(deviceManager.getCurrentDevice());
+//                calculatedVote.setAnswer(calculatedResult);
+//
+            Object calculatedResult = newVotingService.calculateVote(votingManager.getTempVote());
+            SingleVote calculatedVote = new SingleVote();
+            calculatedVote.setDevice(deviceManager.getCurrentDevice());
+            calculatedVote.setAnswer(calculatedResult);
+
+
+            for(Device device : deviceManager.getDevices()){
+                Map<Device,Integer> result = newVotingService.calculateOrder(votingManager.getTempVote());
+
+                newVotingService.sendApplyVote(device, calculatedVote);
+                newVotingService.sendApplyPlayOrder(device, result);
+            }
+
+            // lets say it worked
+
         }
     }
 

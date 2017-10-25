@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -26,7 +27,7 @@ public class MessagingController {
 
     @PostMapping(value="/startVote")
     public ResponseEntity startVote(@RequestBody String newVote){
-        logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
+        logger.info("got in : " + Thread.currentThread().getStackTrace()[0]);
         Vote vote = newVotingService.createVote(newVote);
         newVotingService.sendVote(vote);
 
@@ -35,20 +36,26 @@ public class MessagingController {
 
     @PostMapping("/receiveNewVote")
     public ResponseEntity sendIt(@RequestBody Vote vote){
-        logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
+        logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         return ResponseEntity.ok(newVotingService.setTempVote(vote));
     }
 
     @PostMapping(value="/applyTempVote")
     public ResponseEntity applyTempVote(@RequestBody Vote tempVote){
-        logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
+        logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         return ResponseEntity.ok(newVotingService.applyTempVote(tempVote));
     }
 
     @PostMapping(value="/receiveVoteAnswer")
     public ResponseEntity<SingleVote> receiveVote(@RequestBody String voteStr){
-        logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
+        logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         return newVotingService.getVoteAnswer(voteStr);
+    }
+
+    @PutMapping(value="/applyVote")
+    public void applyVote(@RequestBody SingleVote vote){
+        logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
+        newVotingService.applyVote(vote);
     }
 
 //    @PostMapping("/receiveInfo")
