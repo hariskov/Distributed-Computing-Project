@@ -94,7 +94,7 @@ public class NewVotingService {
     }
 
 
-    public void sendApplyVote(Device device, SingleVote calculatedVote) {
+    public void sendApplyVote(Device device, Vote calculatedVote) {
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/applyVote";
             restTemplate.put(uri, calculatedVote);
@@ -200,8 +200,8 @@ public class NewVotingService {
         }
     }
 
-    public void applyVote(SingleVote vote) {
-        votingManager.getDecidedVote().add(vote);
+    public void applyVote(Vote vote) {
+        votingManager.addToDecidedVote(vote);
         votingManager.setTempVote(null);
     }
 
