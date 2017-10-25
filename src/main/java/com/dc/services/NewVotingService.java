@@ -24,6 +24,10 @@ public class NewVotingService {
 
     public SingleVote process(Vote vote) {
         votingManager.setTempVote(vote);
+        SingleVote v = new SingleVote();
+        v.setDevice(deviceManager.getCurrentDevice());
+        v.setAnswer("");
+        votingManager.getTempVote().addVote(v);
         return votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
     }
 
@@ -46,4 +50,6 @@ public class NewVotingService {
             }
         }
     }
+
+
 }

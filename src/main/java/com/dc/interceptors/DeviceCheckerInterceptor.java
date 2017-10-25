@@ -2,6 +2,7 @@ package com.dc.interceptors;
 
 import com.dc.pojo.DeviceManager;
 import com.dc.services.DeviceService;
+import com.dc.services.NewVotingService;
 import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -21,6 +22,10 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     @Autowired
     VotingService votingService;
 
+    @Autowired
+    NewVotingService newVotingService;
+
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;
@@ -34,7 +39,7 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
         }
 
 //        deviceManager.startLeaderVote();
-        votingService.startNewVote("LeaderSelect");
+        newVotingService.sendVote(newVotingService.creatVote("LeaderSelect"));
 
     }
 
