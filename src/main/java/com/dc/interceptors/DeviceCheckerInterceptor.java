@@ -38,8 +38,9 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
 //            deviceManager.syncDevices(); //votingManager.getVotes()
         }
 
+        newVotingService.sendStartVote("LeaderSelect");
 //        deviceManager.startLeaderVote();
-        newVotingService.sendVote(newVotingService.creatVote("LeaderSelect"));
+//        newVotingService.sendVote(newVotingService.creatVote());
 
     }
 

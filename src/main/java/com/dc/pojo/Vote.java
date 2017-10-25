@@ -58,7 +58,7 @@ public class Vote implements Cloneable{
     }
 
     public void addVote(SingleVote da) {
-        logger.info(da.getDevice().getIp() + " " + containsDevice(da.getDevice()));
+//        logger.info(da.getDevice().getIp() + " " + containsDevice(da.getDevice()));
         votes.add(da);
     }
 

@@ -13,6 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -37,12 +39,6 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         if(deviceManager.getDevices().size()==0) {
             throw new NoDevicesException();
         }
-//
-//        if(manager.hasVotes()) {
-//            if (manager.getTempVote()!=null) {
-//                return true;
-//            }
-//        }
         return true;
     }
 
@@ -53,21 +49,31 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         while(!deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())) {
             for (Device device : deviceManager.getDevices()) {
                 if (votingManager.getTempVote().getVoteOfDevice(device) == null) {
-                    newVotingService.sendVote(votingManager.getTempVote());
+                    Vote blankVote = new Vote();
+                    blankVote.setCreator(votingManager.getTempVote().getCreator());
+                    blankVote.setVoteStr(votingManager.getTempVote().getVoteStr());
+                    newVotingService.sendVote(blankVote);
                 }
                 Thread.sleep(1000);
             }
         }
 
         if(deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
-            System.out.println("go to stage 2");
+            //apply
+
+            List<Vote> listTempVotesReceived = new ArrayList<>();
+
+            listTempVotesReceived.add(newVotingService.sendApplyVote(votingManager.getTempVote()));
+//            System.out.println("go to stage 2");
+
+            while(listTempVotesReceived.size()!=deviceManager.getDevices().size()){
+                System.out.println("still not time for stage 2");
+            }
         }
-//            return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 //        manager.putVote(voteType, device, result);
-
     }
 }

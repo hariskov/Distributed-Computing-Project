@@ -25,14 +25,21 @@ public class MessagingController {
     @PostMapping(value="/startVote")
     public void startVote(@RequestBody String newVote){
         logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
-        Vote vote = newVotingService.creatVote(newVote);
+        Vote vote = newVotingService.createVote(newVote);
         newVotingService.sendVote(vote);
     }
 
     @PostMapping("/receiveNewVote")
     public ResponseEntity sendIt(@RequestBody Vote vote){
         logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
-        return ResponseEntity.ok(newVotingService.process(vote));
+        return ResponseEntity.ok(newVotingService.setTempVote(vote));
+    }
+
+    @PostMapping(value="applyTempVote")
+    public ResponseEntity applyTempVote(@RequestBody Vote tempVote){
+        logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
+        return ResponseEntity.ok(newVotingService.applyTempVote(tempVote));
+
     }
 
 //    @PostMapping("/receiveInfo")
