@@ -16,7 +16,7 @@ import org.slf4j.Logger;
  */
 
 @Controller
-@RequestMapping(value = "/voting")
+@RequestMapping(value = "/a")
 public class VotingController {
 
     private final static Logger logger = LoggerFactory.getLogger(VotingController.class);
@@ -30,7 +30,7 @@ public class VotingController {
         return ResponseEntity.ok(null);
     }
 
-    @PutMapping(value="/receiveStage1Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/receiveStage1Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity newVote(@RequestBody Vote vote){
         return ResponseEntity.ok(votingService.processTempVote(vote));
 //        return ResponseEntity.ok(null);
