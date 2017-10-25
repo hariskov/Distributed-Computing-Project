@@ -61,10 +61,7 @@ public class VotingService {
     public void startNewVote(String voteType) {
         Vote vote = votingManager.createVote(voteType);
         if(vote!=null) {
-//            votingManager.setTempVote(vote);
-//            votingManager.setCurrentSingleVote();
             votingManager.sendVotes(vote);
-
         }
     }
 
@@ -85,63 +82,13 @@ public class VotingService {
     }
 
     public void processVote(SingleVote vote){
-
-//        SingleVote currentDeviceSingleVote = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
-//        if(currentDeviceSingleVote.getAnswer()==""){
-//            currentDeviceSingleVote.setAnswer(generateLeader());
-//        }
-
         SingleVote singleVote = votingManager.getTempVote().getVoteOfDevice(vote.getDevice());
-//        if(singleVote.getAnswer() == ""){
 
         if(vote.getSequence()>singleVote.getSequence()){
             singleVote.setAnswer(vote.getAnswer());
             singleVote.setSequence(singleVote.getSequence()+1);
         }
-
-
     }
-
-
-
-
-//    public void processVote(Vote vote) {
-//        Vote localVote = votingManager.containsVote(vote.getVoteStr());
-//        // check for actual vote in progress
-//        if(localVote!=null){
-//            // second stage processing start
-//            // either create new Vote with only one SingleVote for the current machine to be passed , or fill -> check
-//
-//            SingleVote currentDeviceSingleVote = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
-//            if(currentDeviceSingleVote.getAnswer()==""){
-//                currentDeviceSingleVote.setAnswer(generateLeader());
-//            }
-//
-//            for (SingleVote singleVote : vote.getVotes()) {
-//                SingleVote localSingleVote = votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").findFirst().orElse(null);
-//                if (localSingleVote != null && localSingleVote.getDevice().equals(singleVote.getDevice())) {
-//                    localSingleVote.setAnswer(singleVote.getAnswer());
-//                }
-//            }
-//
-//        }
-
-
-//             else {
-//                for (SingleVote da : vote.getVotes()) {
-//                    if (!votingManager.getTempVote().containsDevice(da.getDevice())) {
-//                        votingManager.getTempVote().addVote(da);
-//                    } else {
-////                    List<SingleVote> emptyVotes = votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()=="").collect(Collectors.toList());
-////                    SingleVote singleVote = votingManager.getTempVote().getVotes().stream().filter(e->e.equals(da)).findFirst().orElse(null);
-////                    if(singleVote!=null) {
-////                        singleVote.setAnswer(da.getAnswer());
-////                    }
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     public Device generateLeader(){
         Device leader = deviceManager.getDevices().get(new Random().nextInt(deviceManager.getDevices().size()));
@@ -151,7 +98,6 @@ public class VotingService {
     public Object calculateVote(String voteString) {
         List<SingleVote> votes = votingManager.getTempVote().getVotes();
 
-//        Vote receivedVote = manager.stream().filter(e->e.getVoteStr().equals(voteMap)).findFirst().get();
         Map<Object,Long> a = votes.parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
 
         Map.Entry<Object, Long> maxValue = a.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null); // assumes n/2 + 1
@@ -188,9 +134,4 @@ public class VotingService {
             return returnSingleVote.getAnswer();
         }
     }
-
-    public void calculateTempVote(String voteString) {
-        calculateVote(voteString);
-    }
-
 }
