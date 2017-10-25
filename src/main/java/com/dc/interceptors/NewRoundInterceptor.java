@@ -1,6 +1,5 @@
 package com.dc.interceptors;
 
-import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.GameManager;
 import org.slf4j.Logger;

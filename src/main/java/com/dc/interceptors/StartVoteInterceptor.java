@@ -3,7 +3,6 @@ package com.dc.interceptors;
 import com.dc.exceptions.NoDevicesException;
 import com.dc.pojo.*;
 import com.dc.services.NewVotingService;
-import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -11,10 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by xumepa on 10/3/17.
@@ -22,7 +18,7 @@ import java.util.stream.Collectors;
 public class StartVoteInterceptor implements HandlerInterceptor {
 
     @Autowired
-    VotingManager votingManager;
+    NewVotingManager votingManager;
 
     @Autowired
     DeviceManager deviceManager;
@@ -50,7 +46,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         while(!deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())) {
             for (Device device : deviceManager.getDevices()) {
                 if (votingManager.getTempVote().getVoteOfDevice(device) == null) {
-                    Vote blankVote = new Vote();
+                    NewVote blankVote = new NewVote();
                     blankVote.setCreator(votingManager.getTempVote().getCreator());
                     blankVote.setVoteStr(votingManager.getTempVote().getVoteStr());
                     newVotingService.sendVote(blankVote);
@@ -62,11 +58,11 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         if(deviceManager.containsAllDevices(votingManager.getTempVote().getDevices())){
             //apply
 
-            List<Vote> listTempVotesReceived = new ArrayList<>();
+            List<NewVote> listTempVotesReceived = new ArrayList<>();
             if(listTempVotesReceived.size()!=deviceManager.getDevices().size()) {
                 while (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
                     for (Device device : deviceManager.getDevices()) {
-                        Vote result = newVotingService.sendApplyTempVote(device, votingManager.getTempVote());
+                        NewVote result = newVotingService.sendApplyTempVote(device, votingManager.getTempVote());
                         if (result != null) {
                             listTempVotesReceived.add(result);
                         }
@@ -103,7 +99,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             for(Device device : deviceManager.getDevices()){
                 List<Device> result = newVotingService.calculateOrder(votingManager.getTempVote());
 
-                Vote newVote = new Vote();
+                NewVote newVote = new NewVote();
                 newVote.addVote(calculatedVote);
                 newVote.setCreator(votingManager.getTempVote().getCreator());
                 newVote.setVoteStr(votingManager.getTempVote().getVoteStr());

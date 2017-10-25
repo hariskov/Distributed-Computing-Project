@@ -2,12 +2,10 @@ package com.dc.services;
 
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,7 +17,7 @@ public class NewVotingService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    VotingManager votingManager;
+    NewVotingManager votingManager;
 
     @Autowired
     DeviceManager deviceManager;
@@ -27,7 +25,7 @@ public class NewVotingService {
     @Autowired
     CustomRestTemplate restTemplate;
 
-    public SingleVote setTempVote(Vote vote) {
+    public SingleVote setTempVote(NewVote vote) {
         votingManager.setTempVote(vote);
         SingleVote v = new SingleVote();
         v.setDevice(deviceManager.getCurrentDevice());
@@ -36,16 +34,16 @@ public class NewVotingService {
         return votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
     }
 
-    public Vote createVote(String newVote) {
-        Vote vote = new Vote();
+    public NewVote createVote(Object newVote) {
+        NewVote vote = new NewVote();
         vote.setVoteStr(newVote);
         vote.setCreator(deviceManager.getCurrentDevice());
         return vote;
     }
 
 //    @Async
-    public void sendVote(Vote vote) {
-        for (Device device: deviceManager.getDevices()) {
+    public void sendVote(NewVote vote) {
+        for (Device device: deviceManager.getDevices())
             try {
                 logger.info("sending to " + device.getIp() + " value : " + vote.getVoteStr());
                 String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewVote";
@@ -54,17 +52,16 @@ public class NewVotingService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
     }
 
 //    @Async
-    public Vote sendApplyTempVote(Device device, Vote vote) {
-        Vote result = null;
+    public NewVote sendApplyTempVote(Device device, NewVote vote) {
+        NewVote result = null;
 
         try {
             logger.info("sending to " + device.getIp() + " value : " + vote.getVoteStr());
             String uri = "http://" + device.getIp() + ":8080/project/voting/applyTempVote";
-            result = restTemplate.postForEntity(uri, vote, Vote.class).getBody();
+            result = restTemplate.postForEntity(uri, vote, NewVote.class).getBody();
 //                votingManager.getTempVote().addVote(result.getBody());
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,7 +79,7 @@ public class NewVotingService {
         }
     }
 
-    public SingleVote sendValueRequest(Device device, String voteStr){
+    public SingleVote sendValueRequest(Device device, Object voteStr){
         SingleVote result = null;
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVoteAnswer";
@@ -94,7 +91,7 @@ public class NewVotingService {
     }
 
 
-    public void sendApplyVote(Device device, Vote calculatedVote) {
+    public void sendApplyVote(Device device, NewVote calculatedVote) {
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/applyVote";
             restTemplate.put(uri, calculatedVote);
@@ -112,7 +109,18 @@ public class NewVotingService {
         }
     }
 
-    public Vote applyTempVote(Vote vote) {
+    private Object askDealer(Object voteStr) {
+        Object result = null;
+        try {
+            String uri = "http://" + votingManager.getTempVote().getCreator().getIp() + ":8080/project/card/getPlayedCard";
+            result = restTemplate.postForEntity(uri, voteStr, Object.class).getBody();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public NewVote applyTempVote(NewVote vote) {
         for(SingleVote singleVote : vote.getVotes()){
             if(!votingManager.getTempVote().containsDevice(singleVote.getDevice())){
                 votingManager.getTempVote().addVote(singleVote);
@@ -121,11 +129,16 @@ public class NewVotingService {
         return votingManager.getTempVote();
     }
 
-    public ResponseEntity<SingleVote> getVoteAnswer(String voteStr) {
+    public ResponseEntity<SingleVote> getVoteAnswer(Object voteStr) {
         SingleVote currentAnswer = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
-        if(currentAnswer.getAnswer()==null){
-            if(voteStr.equals("LeaderSelect")){
-                currentAnswer.setAnswer(generateLeader());
+        if(currentAnswer.getAnswer()==null) {
+            if (voteStr instanceof String) {
+                if (voteStr.equals("LeaderSelect")) {
+                    currentAnswer.setAnswer(generateLeader());
+                }
+            }
+            if (voteStr instanceof Card) {
+                Object answer = askDealer(voteStr);
             }
         }
         return ResponseEntity.ok(currentAnswer);
@@ -136,7 +149,7 @@ public class NewVotingService {
         return leader;
     }
 
-    public List<Device> calculateOrder(Vote vote){
+    public List<Device> calculateOrder(NewVote vote){
 //        Map<Object,Long> a = vote.getVotes().parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
 //        Map.Entry<Object, Long> maxValue = a.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null); // assumes n/2 + 1
 //        List<SingleVote> result = vote.getVotes().stream()
@@ -161,7 +174,7 @@ public class NewVotingService {
         return resultedOrder;
     }
 
-    public Object calculateVote(Vote vote) {
+    public Object calculateVote(NewVote vote) {
         List<SingleVote> votes = vote.getVotes();
 
         Map<Object,Long> a = votes.parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
@@ -200,7 +213,7 @@ public class NewVotingService {
         }
     }
 
-    public void applyVote(Vote vote) {
+    public void applyVote(NewVote vote) {
         votingManager.addToDecidedVote(vote);
         votingManager.setTempVote(null);
     }

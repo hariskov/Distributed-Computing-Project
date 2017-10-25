@@ -1,5 +1,6 @@
 package com.dc.controllers;
 
+import com.dc.pojo.NewVote;
 import com.dc.pojo.SingleVote;
 import com.dc.pojo.Vote;
 import com.dc.services.NewVotingService;
@@ -29,34 +30,34 @@ public class MessagingController {
     NewVotingService newVotingService;
 
     @PostMapping(value="/startVote")
-    public ResponseEntity startVote(@RequestBody String newVote){
+    public ResponseEntity startVote(@RequestBody Object newVote){
         logger.info("got in : " + Thread.currentThread().getStackTrace()[0]);
-        Vote vote = newVotingService.createVote(newVote);
+        NewVote vote = newVotingService.createVote(newVote);
         newVotingService.sendVote(vote);
 
         return ResponseEntity.ok(null);
     }
 
     @PostMapping("/receiveNewVote")
-    public ResponseEntity sendIt(@RequestBody Vote vote){
+    public ResponseEntity sendIt(@RequestBody NewVote vote){
         logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         return ResponseEntity.ok(newVotingService.setTempVote(vote));
     }
 
     @PostMapping(value="/applyTempVote")
-    public ResponseEntity applyTempVote(@RequestBody Vote tempVote){
+    public ResponseEntity applyTempVote(@RequestBody NewVote tempVote){
         logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         return ResponseEntity.ok(newVotingService.applyTempVote(tempVote));
     }
 
     @PostMapping(value="/receiveVoteAnswer")
-    public ResponseEntity<SingleVote> receiveVote(@RequestBody String voteStr){
+    public ResponseEntity<SingleVote> receiveVote(@RequestBody Object voteStr){
         logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         return newVotingService.getVoteAnswer(voteStr);
     }
 
     @PutMapping(value="/applyVote")
-    public ResponseEntity applyVote(@RequestBody Vote vote){
+    public ResponseEntity applyVote(@RequestBody NewVote vote){
         logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         newVotingService.applyVote(vote);
 
