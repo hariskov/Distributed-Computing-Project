@@ -5,7 +5,7 @@ import com.dc.services.VotingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by xumepa on 10/22/17.
  */
-public class Stage2Interceptor implements HandlerInterceptor {
+public class Stage2Interceptor implements AsyncHandlerInterceptor {
 
     @Autowired
     VotingManager votingManager;
@@ -139,7 +139,7 @@ public class Stage2Interceptor implements HandlerInterceptor {
                     }else{
                         // finish
 
-                        logger.info(votingManager.getTempVote().toString());
+                        logger.info(votingManager.getTempVote().toString()  );
                         votingManager.applyTempVote();
                     }
                 }
@@ -171,7 +171,10 @@ public class Stage2Interceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.info("Stage 2 Interceptor - After Completion");
+    }
 
-
+    @Override
+    public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        logger.info("Stage 2 Vote Interceptor - After Concurrent Handling Started");
     }
 }

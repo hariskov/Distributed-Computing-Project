@@ -3,6 +3,7 @@ package com.dc.pojo;
 import com.dc.exceptions.ExistingVoteException;
 import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -44,11 +45,9 @@ public class VotingManager {
 
     public void sendVotes(Vote vote) {
         for (Device device : deviceManager.getDevices()) {
-//            if (device != deviceManager.getCurrentDevice()) {
-                votingService.sendNewVoteToDevices(device, vote);
-//                manager.putVote(voteType, device, result);
-            }
-//        }
+            ResponseEntity a = votingService.sendNewVoteToDevices(device, vote);
+            System.out.println(a.getBody());
+        }
     }
 
     public void applyTempVote(){

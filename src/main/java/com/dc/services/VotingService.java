@@ -5,6 +5,7 @@ import com.dc.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -32,18 +33,21 @@ public class VotingService {
     DeviceManager deviceManager;
 
     @Async
-    public void sendNewVoteToDevices(Device device, Vote vote) {
+    public ResponseEntity sendNewVoteToDevices(Device device, Vote vote) {
+        ResponseEntity result = null;
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage1Vote";
-            restTemplate.put(uri, vote);
+             result = restTemplate.postForEntity(uri, vote, Object.class);
         }catch(Exception e){
             e.printStackTrace();
         }
+        return result;
     }
 
     @Async
     public void sendVoteResult(Device device, SingleVote voteResult) {
         try {
+            logger.info("sending to " + device.getIp() + " value : " + voteResult.getDevice().getIp() + "," + voteResult.getAnswer());
             String uri = "http://" + device.getIp() + ":8080/project/voting/receiveStage2Vote";
             restTemplate.put(uri, voteResult);
         }catch(Exception e){
@@ -61,9 +65,9 @@ public class VotingService {
         }
     }
 
-    public void processTempVote(Vote vote) {
+    public Vote processTempVote(Vote vote) {
         if(votingManager.containsVote(vote.getVoteStr())!=null){
-            return;
+//            return;
         }
         if (votingManager.getTempVote() == null) {
             votingManager.setTempVote(vote);
@@ -75,6 +79,7 @@ public class VotingService {
                 }
             }
         }
+        return votingManager.getTempVote();
     }
 
     public void processVote(SingleVote vote){
