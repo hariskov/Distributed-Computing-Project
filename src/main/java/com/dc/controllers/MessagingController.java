@@ -1,5 +1,6 @@
 package com.dc.controllers;
 
+import com.dc.pojo.SingleVote;
 import com.dc.pojo.Vote;
 import com.dc.services.NewVotingService;
 import org.slf4j.Logger;
@@ -44,9 +45,10 @@ public class MessagingController {
         return ResponseEntity.ok(newVotingService.applyTempVote(tempVote));
     }
 
-    @PostMapping(value="receiveVote")
-    public void receiveVote(){
-
+    @PostMapping(value="/receiveVoteAnswer")
+    public ResponseEntity<SingleVote> receiveVote(@RequestBody String voteStr){
+        logger.info("got in :" + Arrays.toString(Thread.getAllStackTraces().get(0)));
+        return newVotingService.getVoteAnswer(voteStr);
     }
 
 //    @PostMapping("/receiveInfo")

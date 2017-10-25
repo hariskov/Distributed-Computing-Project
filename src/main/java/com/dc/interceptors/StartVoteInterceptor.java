@@ -1,10 +1,7 @@
 package com.dc.interceptors;
 
 import com.dc.exceptions.NoDevicesException;
-import com.dc.pojo.Device;
-import com.dc.pojo.DeviceManager;
-import com.dc.pojo.Vote;
-import com.dc.pojo.VotingManager;
+import com.dc.pojo.*;
 import com.dc.services.NewVotingService;
 import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +70,17 @@ public class StartVoteInterceptor implements HandlerInterceptor {
                     Thread.sleep(1000);
                 }
                 System.out.println("still not time for stage 2");
+            }
+
+            while(votingManager.getTempVote().getVotes().stream().filter(e->e.getAnswer()==null).count()>0) {
+                for (Device device : deviceManager.getDevices()) {
+                    if (votingManager.getTempVote().getVoteOfDevice(device).getAnswer() == null) {
+                        SingleVote singleVote = newVotingService.sendValueRequest(device, votingManager.getTempVote().getVoteStr());
+                        votingManager.getTempVote().getVoteOfDevice(device).setAnswer(singleVote.getAnswer());
+                    }
+                }
+
+                Thread.sleep(1000);
             }
         }
     }

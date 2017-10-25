@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
+
 @Service
 public class NewVotingService {
 
@@ -28,7 +30,7 @@ public class NewVotingService {
         votingManager.setTempVote(vote);
         SingleVote v = new SingleVote();
         v.setDevice(deviceManager.getCurrentDevice());
-        v.setAnswer("");
+        v.setAnswer(null);
         votingManager.getTempVote().addVote(v);
         return votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
     }
@@ -79,6 +81,18 @@ public class NewVotingService {
         }
     }
 
+    @Async
+    public SingleVote sendValueRequest(Device device, String voteStr){
+        SingleVote result = null;
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/voting/receiveVoteAnswer";
+            result = restTemplate.postForEntity(uri, voteStr, SingleVote.class).getBody();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public Vote applyTempVote(Vote vote) {
         for(SingleVote singleVote : vote.getVotes()){
             if(!votingManager.getTempVote().containsDevice(singleVote.getDevice())){
@@ -88,4 +102,18 @@ public class NewVotingService {
         return votingManager.getTempVote();
     }
 
+    public ResponseEntity<SingleVote> getVoteAnswer(String voteStr) {
+        SingleVote currentAnswer = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+        if(currentAnswer.getAnswer()!=null){
+            if(currentAnswer.getAnswer() instanceof Device){
+                currentAnswer.setAnswer(generateLeader());
+            }
+        }
+        return ResponseEntity.ok(currentAnswer);
+    }
+
+    public Device generateLeader(){
+        Device leader = deviceManager.getDevices().get(new Random().nextInt(deviceManager.getDevices().size()));
+        return leader;
+    }
 }

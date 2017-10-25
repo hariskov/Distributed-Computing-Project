@@ -59,7 +59,9 @@ public class Vote implements Cloneable{
 
     public void addVote(SingleVote da) {
 //        logger.info(da.getDevice().getIp() + " " + containsDevice(da.getDevice()));
-        votes.add(da);
+        if(votes.stream().filter(e->e.getDevice().equals(da.getDevice())).count()==0) {
+            votes.add(da);
+        }
     }
 
     public void setCurrentVote(String voteStr, SingleVote currentVote) {
