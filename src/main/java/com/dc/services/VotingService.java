@@ -88,7 +88,7 @@ public class VotingService {
         SingleVote singleVote = votingManager.getTempVote().getVoteOfDevice(vote.getDevice());
 //        if(singleVote.getAnswer() == ""){
 
-        if(vote.getSequence()<singleVote.getSequence()){
+        if(vote.getSequence()>singleVote.getSequence()){
             singleVote.setAnswer(vote.getAnswer());
             singleVote.setSequence(singleVote.getSequence()+1);
         }
