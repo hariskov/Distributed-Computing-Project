@@ -1,9 +1,8 @@
 package com.dc.interceptors;
 
+import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
-import com.dc.services.DeviceService;
 import com.dc.services.NewVotingService;
-import com.dc.services.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,11 +19,7 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     DeviceManager deviceManager;
 
     @Autowired
-    VotingService votingService;
-
-    @Autowired
     NewVotingService newVotingService;
-
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,14 +28,31 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        boolean gameAlreadyExists = false;
         if(deviceManager.getDevices().size()>1) {
-            deviceManager.getDevices().forEach(e->deviceManager.syncDevices(e));
-//            deviceManager.syncDevices(); //votingManager.getVotes()
+            for (Device device : deviceManager.getDevices()) {
+                if(newVotingService.sendCheckIfGameExists(device)){
+                    gameAlreadyExists=true;
+                    break;
+                }
+            }
+
         }
 
-        newVotingService.sendStartVote("LeaderSelect");
-//        deviceManager.startLeaderVote();
-//        newVotingService.sendVote(newVotingService.creatVote());
+        if(!gameAlreadyExists) {
+            newVotingService.sendStartVote("LeaderSelect");
+        }else{
+            Boolean freeToJoin = false;
+            for(Device dev : deviceManager.getDevices()) {
+                if(!dev.equals(deviceManager.getCurrentDevice())) {
+                    freeToJoin = newVotingService.sendJoinRequest(dev);
+                    break;
+                }
+            }
+            if(freeToJoin){
+                deviceManager.getDevices().forEach(e -> deviceManager.syncDevices(e));
+            }
+        }
 
     }
 

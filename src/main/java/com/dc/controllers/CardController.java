@@ -3,6 +3,7 @@ package com.dc.controllers;
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.Card;
 import com.dc.pojo.DeviceManager;
+import com.dc.pojo.NewVotingManager;
 import com.dc.pojo.VotingManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,10 @@ public class CardController {
     DeviceManager deviceManager;
 
     @Autowired
-    VotingManager votingManager;
+    NewVotingManager newVotingManager;
 
     @RequestMapping(value="/playCard",method = RequestMethod.POST)
-    public void playCard(@RequestBody Card card){
+    public ResponseEntity playCard(@RequestBody Card card){
         String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
 
         try {
@@ -37,11 +38,11 @@ public class CardController {
         }catch(Exception e){
             e.printStackTrace();
         }
-//        votingManager.createVote(card.getCardSign());
-//        System.out.println(card.getCardValue() + " " + card.getCardSign());
+        return ResponseEntity.ok(null);
     }
+
     @RequestMapping(value="/askForAnswer",method = RequestMethod.POST)
     public ResponseEntity<String> askAnswer(@RequestBody String voteStr){
-        return ResponseEntity.ok(votingManager.getTempVote().getVoteStr());
+        return ResponseEntity.ok(newVotingManager.getTempVote(voteStr).getVoteStr());
     }
 }

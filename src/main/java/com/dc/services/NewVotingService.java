@@ -2,15 +2,16 @@ package com.dc.services;
 
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +20,7 @@ public class NewVotingService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    VotingManager votingManager;
+    NewVotingManager votingManager;
 
     @Autowired
     DeviceManager deviceManager;
@@ -28,12 +29,12 @@ public class NewVotingService {
     CustomRestTemplate restTemplate;
 
     public SingleVote setTempVote(Vote vote) {
-        votingManager.setTempVote(vote);
+        votingManager.addTempVote(vote);
         SingleVote v = new SingleVote();
         v.setDevice(deviceManager.getCurrentDevice());
         v.setAnswer(null);
-        votingManager.getTempVote().addVote(v);
-        return votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+        votingManager.getTempVote(vote.getVoteStr()).addVote(v);
+        return votingManager.getTempVote(vote.getVoteStr()).getVoteOfDevice(deviceManager.getCurrentDevice());
     }
 
     public Vote createVote(String newVote) {
@@ -50,7 +51,7 @@ public class NewVotingService {
                 logger.info("sending to " + device.getIp() + " value : " + vote.getVoteStr());
                 String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewVote";
                 ResponseEntity<SingleVote> result = restTemplate.postForEntity(uri, vote, SingleVote.class);
-                votingManager.getTempVote().addVote(result.getBody());
+                votingManager.getTempVote(vote.getVoteStr()).addVote(result.getBody());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -95,10 +96,13 @@ public class NewVotingService {
     }
 
 
-    public void sendApplyVote(Device device, SingleVote calculatedVote) {
+    public void sendApplyVote(Device device, String voteStr, SingleVote calculatedVote) {
         try {
+            VoteApply voteApply = new VoteApply();
+            voteApply.setVoteStr(voteStr);
+            voteApply.setCalcVote(calculatedVote);
             String uri = "http://" + device.getIp() + ":8080/project/voting/applyVote";
-            restTemplate.put(uri, calculatedVote);
+            restTemplate.put(uri, voteApply);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -116,8 +120,32 @@ public class NewVotingService {
     private String sendAskLeader(Device device, String voteStr) {
         String result = null;
         try {
-            String uri = "http://" + device.getIp() + ":8080/project/card/askForCard";
+            String uri = "http://" + device.getIp() + ":8080/project/card/askForAnswer";
             result =  restTemplate.postForEntity(uri, voteStr, String.class).getBody();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+//    @Async
+    public boolean sendCheckIfGameExists(Device device) {
+        boolean result = false;
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/game/checkGameExists";
+            result =  restTemplate.getForEntity(uri, Boolean.class).getBody();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    public boolean sendJoinRequest(Device dev) {
+        boolean result = false;
+        try {
+            String uri = "http://" + dev.getIp() + ":8080/project/echo/joinRequest";
+            result =  restTemplate.postForEntity(uri, deviceManager.getCurrentDevice(), Boolean.class).getBody();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -126,20 +154,20 @@ public class NewVotingService {
 
     public Vote applyTempVote(Vote vote) {
         for(SingleVote singleVote : vote.getVotes()){
-            if(!votingManager.getTempVote().containsDevice(singleVote.getDevice())){
-                votingManager.getTempVote().addVote(singleVote);
+            if(!votingManager.getTempVote(vote.getVoteStr()).containsDevice(singleVote.getDevice())){
+                votingManager.getTempVote(vote.getVoteStr()).addVote(singleVote);
             }
         }
-        return votingManager.getTempVote();
+        return votingManager.getTempVote(vote.getVoteStr());
     }
 
     public ResponseEntity<SingleVote> getVoteAnswer(String voteStr) {
-        SingleVote currentAnswer = votingManager.getTempVote().getVoteOfDevice(deviceManager.getCurrentDevice());
+        SingleVote currentAnswer = votingManager.getTempVote(voteStr).getVoteOfDevice(deviceManager.getCurrentDevice());
         if(currentAnswer.getAnswer()==null){
             if(voteStr.equals("LeaderSelect")){
                 currentAnswer.setAnswer(generateLeader());
             }else{
-                String answer = sendAskLeader(votingManager.getTempVote().getCreator(),voteStr);
+                String answer = sendAskLeader(votingManager.getTempVote(voteStr).getCreator(),voteStr);
                 currentAnswer.setAnswer(answer);
             }
         }
@@ -179,7 +207,7 @@ public class NewVotingService {
     public Object calculateVote(Vote vote) {
         List<SingleVote> votes = vote.getVotes();
 
-        Map<Object,Long> a = votes.parallelStream().collect(Collectors.groupingBy(w->w.getAnswer(), Collectors.counting()));
+        Map<Object,Long> a = votes.parallelStream().collect(Collectors.groupingBy(SingleVote::getAnswer, Collectors.counting()));
         Map.Entry<Object, Long> maxValue = a.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null); // assumes n/2 + 1
         List<SingleVote> result = votes.stream()
                 .filter(s -> s.getAnswer()==maxValue.getKey())
@@ -215,9 +243,9 @@ public class NewVotingService {
         }
     }
 
-    public void applyVote(SingleVote vote) {
-        votingManager.getDecidedVote().add(vote);
-        votingManager.setTempVote(null);
+    public void applyVote(VoteApply vote) {
+        votingManager.getDecidedVote().add(vote.getCalcVote());
+        votingManager.removeTempVote(vote.getVoteStr());
     }
 
 }

@@ -3,6 +3,7 @@ package com.dc.config;
 import com.dc.components.CustomRestTemplate;
 import com.dc.interceptors.*;
 import com.dc.pojo.DeviceManager;
+import com.dc.pojo.NewVotingManager;
 import com.dc.pojo.VotingManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -85,6 +86,11 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     public VotingManager votingManager(){
         VotingManager vm = new VotingManager();
         return vm;
+    }
+
+    @Bean NewVotingManager newVotingManager(){
+        NewVotingManager nvm = new NewVotingManager();
+        return nvm;
     }
 
     @Bean

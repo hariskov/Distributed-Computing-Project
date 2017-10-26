@@ -21,26 +21,26 @@ public class VotingController {
 
     private final static Logger logger = LoggerFactory.getLogger(VotingController.class);
 
-    @Autowired
-    VotingService votingService;
+//    @Autowired
+//    VotingService votingService;
 
     @PostMapping("/startVote")
     public ResponseEntity startVote(@RequestBody String voteType){
-        votingService.startNewVote(voteType);
+//        votingService.startNewVote(voteType);
         return ResponseEntity.ok(null);
     }
 
     @PostMapping(value="/receiveStage1Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity newVote(@RequestBody Vote vote){
-        return ResponseEntity.ok(votingService.processTempVote(vote));
-//        return ResponseEntity.ok(null);
+//        return ResponseEntity.ok(votingService.processTempVote(vote));
+        return ResponseEntity.ok(null);
     }
 
 
     @Async
     @PutMapping(value = "/receiveStage2Vote", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity voting(@RequestBody SingleVote vote){
-        votingService.processVote(vote);
+//        votingService.processVote(vote);
         return ResponseEntity.ok(null);
     }
 

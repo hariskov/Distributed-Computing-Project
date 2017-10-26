@@ -32,7 +32,6 @@ public class NewRoundInterceptor implements HandlerInterceptor {
             gameManager.setCurrentPlayer(gameManager.getNextPlayer());
         }
 
-
         return true;
     }
 

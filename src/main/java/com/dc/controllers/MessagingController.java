@@ -2,22 +2,17 @@ package com.dc.controllers;
 
 import com.dc.pojo.SingleVote;
 import com.dc.pojo.Vote;
+import com.dc.pojo.VoteApply;
 import com.dc.services.NewVotingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.xml.ws.Response;
-import java.util.Arrays;
 
 @Controller
 @RequestMapping(value = "/voting")
@@ -33,7 +28,6 @@ public class MessagingController {
         logger.info("got in : " + Thread.currentThread().getStackTrace()[0]);
         Vote vote = newVotingService.createVote(newVote);
         newVotingService.sendVote(vote);
-
         return ResponseEntity.ok(null);
     }
 
@@ -55,10 +49,9 @@ public class MessagingController {
     }
 
     @PutMapping(value="/applyVote")
-    public ResponseEntity applyVote(@RequestBody SingleVote vote){
+    public ResponseEntity applyVote(@RequestBody VoteApply vote){
         logger.info("got in :" + Thread.currentThread().getStackTrace()[0]);
         newVotingService.applyVote(vote);
-
         return ResponseEntity.ok(null);
     }
 

@@ -1,17 +1,12 @@
 package com.dc.controllers;
 
-import com.dc.pojo.Device;
-import com.dc.pojo.DeviceManager;
-import com.dc.pojo.Vote;
-import com.dc.pojo.VotingManager;
+import com.dc.pojo.*;
+import com.dc.services.NewVotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.xml.ws.Response;
 import java.io.IOException;
@@ -29,7 +24,10 @@ public class EchoController {
     DeviceManager deviceManager;
 
     @Autowired
-    VotingManager votingManager;
+    NewVotingManager votingManager;
+
+    @Autowired
+    NewVotingService newVotingService;
 
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<Device> exists(){
@@ -56,6 +54,13 @@ public class EchoController {
     public ResponseEntity<String> syncVotes(@RequestBody List<Vote> votes){
         votes.forEach(e->votingManager.setVotes(votes));
         return ResponseEntity.ok().body(null);
+    }
+
+    @PostMapping("/joinRequest")
+    public ResponseEntity<Boolean> joinGameRequest(@RequestBody Device device){
+        newVotingService.sendStartVote("join : " + device.getIp());
+        return ResponseEntity.ok(null);
+
     }
 
 }

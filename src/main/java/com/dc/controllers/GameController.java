@@ -10,10 +10,12 @@ import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.xml.ws.Response;
 import java.util.List;
 
 /**
@@ -44,6 +46,11 @@ public class GameController {
         gameManager.getPlayingOrder().forEach(e->logger.info(e.getIp()));
 
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping(value="checkGameExists")
+    public ResponseEntity<Boolean> checkGameExists(){
+        return ResponseEntity.ok(gameManager.doesGameExist());
     }
 
 }

@@ -48,4 +48,8 @@ public class GameManager {
         String destination = "/broker/turn";
         this.messageSendingOperations.convertAndSend(destination, myTurn);
     }
+
+    public Boolean doesGameExist() {
+        return playingOrder != null;
+    }
 }

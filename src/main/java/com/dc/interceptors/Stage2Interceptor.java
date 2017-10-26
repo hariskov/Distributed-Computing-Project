@@ -65,7 +65,7 @@ public class Stage2Interceptor implements AsyncHandlerInterceptor {
 //            gameManager.setPlayerOrder();
 //            System.out.println(result);
 
-//            votingManager.setTempVote(null);
+//            votingManager.addTempVote(null);
         /// check for values in received vote -> follow logic of Stage1Interceptor
         return true;
     }
@@ -104,7 +104,7 @@ public class Stage2Interceptor implements AsyncHandlerInterceptor {
 
 
             //reset temp vote to blank answers;
-//                votingManager.setTempVote(votingManager.getCopyOfVote(votingManager.getTempVote()));
+//                votingManager.addTempVote(votingManager.getCopyOfVote(votingManager.getTempVote()));
 
 //                votingManager.getCalcVote().getVoteOfDevice(deviceManager.getCurrentDevice()).setAnswer(v.getAnswer());
 
