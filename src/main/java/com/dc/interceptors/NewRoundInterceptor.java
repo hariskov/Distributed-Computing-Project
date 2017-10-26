@@ -48,7 +48,13 @@ public class NewRoundInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.info("NewRoundInterceptor - after Completion");
         if (gameManager.getPlayingOrder() != null) {
-            if(gameManager.getCurrentPlayer().equals(deviceManager.getCurrentDevice())) {
+            if(gameManager.getCurrentPlayer()!=null) {
+                if (gameManager.getCurrentPlayer().equals(deviceManager.getCurrentDevice())){
+                    newVotingService.sendStartVote("getCurrentPlayer");
+                    Device currentPlayer = (Device) newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
+                    gameManager.setCurrentPlayer(currentPlayer);
+                }
+            }else if(gameManager.getPlayingOrder().get(0).equals(deviceManager.getCurrentDevice())){
                 newVotingService.sendStartVote("getCurrentPlayer");
                 Device currentPlayer = (Device) newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
                 gameManager.setCurrentPlayer(currentPlayer);
