@@ -1,6 +1,7 @@
 package com.dc.controllers;
 
 import com.dc.pojo.Device;
+import com.dc.pojo.DeviceManager;
 import com.dc.pojo.GameManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(GameController.class);
 
+    @Autowired
+    DeviceManager deviceManager;
 
     @Autowired
     GameManager gameManager;
@@ -50,7 +53,13 @@ public class GameController {
 
     @GetMapping(value="checkGameExists")
     public ResponseEntity<Boolean> checkGameExists(){
-        return ResponseEntity.ok(gameManager.doesGameExist());
+        boolean gameExists = gameManager.doesGameExist();
+        if (!gameExists) {
+            deviceManager.callPlayersToNotDiscover();
+        }
+        return ResponseEntity.ok(gameExists);
     }
+
+
 
 }

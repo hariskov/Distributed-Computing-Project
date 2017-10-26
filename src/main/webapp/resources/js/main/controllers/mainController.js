@@ -45,6 +45,8 @@ var mainFunction = function(mainService, $scope, $http, $location){
             console.log('subscribe succeeded');
             var resultMap = JSON.parse(graphResult.body);
 
+            // self.discoverDone=true;
+
             self.canPlay=resultMap;
 
             $scope.$apply();
