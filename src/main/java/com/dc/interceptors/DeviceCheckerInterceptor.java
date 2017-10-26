@@ -40,6 +40,8 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
         }
 
         if(!gameAlreadyExists) {
+            deviceManager.getDevices().forEach(e -> deviceManager.syncDevices(e));
+
             newVotingService.sendStartVote("LeaderSelect");
         }else{
             Boolean freeToJoin = false;

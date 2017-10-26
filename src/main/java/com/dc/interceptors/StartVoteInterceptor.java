@@ -97,7 +97,6 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             calculatedVote.setDevice(deviceManager.getCurrentDevice());
             calculatedVote.setAnswer(calculatedResult);
 
-
             for(Device device : deviceManager.getDevices()){
                 List<Device> result = newVotingService.calculateOrder(lastVote);
 
