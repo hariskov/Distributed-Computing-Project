@@ -74,13 +74,17 @@ public class NewVotingService {
         return result;
     }
 
-    public void sendStartVote(String leaderSelect) {
+    public Object sendStartVote(String voteString) {
+
+        Object result = null;
+
         try {
             String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
-            restTemplate.postForEntity(uri, leaderSelect, Object.class);
+            result = restTemplate.postForEntity(uri, voteString, Object.class).getBody();
         }catch(Exception e){
             e.printStackTrace();
         }
+        return result;
     }
 
     public SingleVote sendValueRequest(Device device, String voteStr){
@@ -120,7 +124,7 @@ public class NewVotingService {
     private String sendAskLeader(Device device, String voteStr) {
         String result = null;
         try {
-            String uri = "http://" + device.getIp() + ":8080/project/card/askForAnswer";
+            String uri = "http://" + device.getIp() + ":8080/project/voting/askForAnswer";
             result =  restTemplate.postForEntity(uri, voteStr, String.class).getBody();
         }catch(Exception e){
             e.printStackTrace();
@@ -161,11 +165,18 @@ public class NewVotingService {
         return votingManager.getTempVote(vote.getVoteStr());
     }
 
+    public Device getCurrentPlayer(){
+        String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/game/getCurrentPlayer";
+        return restTemplate.postForEntity(uri,null, Device.class).getBody();
+    }
+
     public ResponseEntity<SingleVote> getVoteAnswer(String voteStr) {
         SingleVote currentAnswer = votingManager.getTempVote(voteStr).getVoteOfDevice(deviceManager.getCurrentDevice());
         if(currentAnswer.getAnswer()==null){
             if(voteStr.equals("LeaderSelect")){
                 currentAnswer.setAnswer(generateLeader());
+            }else if(voteStr.equals("getCurrentPlayer")){
+                currentAnswer.setAnswer(getCurrentPlayer());
             }else{
                 String answer = sendAskLeader(votingManager.getTempVote(voteStr).getCreator(),voteStr);
                 currentAnswer.setAnswer(answer);
@@ -197,9 +208,7 @@ public class NewVotingService {
 
         List<Device> resultedOrder = new LinkedList<>();
 
-        for (Device device : deviceManager.getDevices()) {
-            resultedOrder.add(device);
-        }
+        resultedOrder.addAll(deviceManager.getDevices());
 
         return resultedOrder;
     }
@@ -244,8 +253,16 @@ public class NewVotingService {
     }
 
     public void applyVote(VoteApply vote) {
-        votingManager.getDecidedVote().add(vote.getCalcVote());
+//        votingManager.getDecidedVote(vote.getVoteStr()).add(vote.getCalcVote());
+        votingManager.addDecidedVote(vote.getVoteStr(),vote.getCalcVote());
         votingManager.removeTempVote(vote.getVoteStr());
     }
 
+
+    public Vote getTempVote(String voteStr) {
+        return votingManager.getTempVote(voteStr);
+    }
+    public SingleVote getDecidedVote(String voteString){
+        return votingManager.getDecidedVote(voteString);
+    }
 }

@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,7 +44,7 @@ public class GameController {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping(value="checkGameExists")
+    @GetMapping(value="/checkGameExists")
     public ResponseEntity<Boolean> checkGameExists(){
         boolean gameExists = gameManager.doesGameExist();
         if (!gameExists) {
@@ -56,6 +53,10 @@ public class GameController {
         return ResponseEntity.ok(gameExists);
     }
 
+        @PostMapping(value="/getCurrentPlayer")
+    public ResponseEntity<Device> getCurrentPlayer(){
+        return ResponseEntity.ok(gameManager.getCurrentPlayer());
+    }
 
 
 }

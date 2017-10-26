@@ -45,18 +45,19 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
         Vote lastVote = votingManager.getLastTempVote();
 
-        while(!deviceManager.containsAllDevices(lastVote.getDevices())) {
-            for (Device device : deviceManager.getDevices()) {
-                if (lastVote.getVoteOfDevice(device) == null) {
-                    Vote blankVote = new Vote();
-                    blankVote.setCreator(lastVote.getCreator());
-                    blankVote.setVoteStr(lastVote.getVoteStr());
-                    newVotingService.sendVote(blankVote);
+        if(!deviceManager.containsAllDevices(lastVote.getDevices())) {
+            while (!deviceManager.containsAllDevices(lastVote.getDevices())) {
+                for (Device device : deviceManager.getDevices()) {
+                    if (lastVote.getVoteOfDevice(device) == null) {
+                        Vote blankVote = new Vote();
+                        blankVote.setCreator(lastVote.getCreator());
+                        blankVote.setVoteStr(lastVote.getVoteStr());
+                        newVotingService.sendVote(blankVote);
+                    }
+                    Thread.sleep(1000);
                 }
-                Thread.sleep(1000);
             }
         }
-
         if(deviceManager.containsAllDevices(lastVote.getDevices())){
             //apply
 

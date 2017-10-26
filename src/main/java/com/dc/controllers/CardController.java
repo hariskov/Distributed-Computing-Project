@@ -40,9 +40,4 @@ public class CardController {
         }
         return ResponseEntity.ok(null);
     }
-
-    @RequestMapping(value="/askForAnswer",method = RequestMethod.POST)
-    public ResponseEntity<String> askAnswer(@RequestBody String voteStr){
-        return ResponseEntity.ok(newVotingManager.getTempVote(voteStr).getVoteStr());
-    }
 }

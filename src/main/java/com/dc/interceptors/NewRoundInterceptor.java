@@ -3,6 +3,7 @@ package com.dc.interceptors;
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.GameManager;
+import com.dc.services.NewVotingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class NewRoundInterceptor implements HandlerInterceptor {
     @Autowired
     GameManager gameManager;
 
+    @Autowired
+    NewVotingService newVotingService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -44,7 +48,13 @@ public class NewRoundInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         logger.info("NewRoundInterceptor - after Completion");
         if (gameManager.getPlayingOrder() != null) {
-            gameManager.setCurrentPlayer(gameManager.getNextPlayer());
+
+            newVotingService.sendStartVote("getCurrentPlayer");
+
+            Device currentPlayer = (Device)newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
+
+            gameManager.setCurrentPlayer(currentPlayer);
+
             gameManager.sendQuotes(deviceManager.getCurrentDevice().equals(gameManager.getCurrentPlayer()));
         }else{
             gameManager.setCurrentPlayer(gameManager.getPlayingOrder().get(0));
