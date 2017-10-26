@@ -99,10 +99,11 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             calculatedVote.setAnswer(calculatedResult);
 
             for(Device device : deviceManager.getDevices()){
-                List<Device> result = newVotingService.calculateOrder(lastVote);
 
+                List<Device> result = newVotingService.calculateOrder(lastVote);
                 newVotingService.sendApplyVote(device, lastVote.getVoteStr(), calculatedVote);
                 newVotingService.sendApplyPlayOrder(device, result);
+
             }
 
             // lets say it worked

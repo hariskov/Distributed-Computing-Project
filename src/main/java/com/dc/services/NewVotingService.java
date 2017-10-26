@@ -254,7 +254,6 @@ public class NewVotingService {
     }
 
     public void applyVote(VoteApply vote) {
-//        votingManager.getDecidedVote(vote.getVoteStr()).add(vote.getCalcVote());
         votingManager.addDecidedVote(vote.getVoteStr(),vote.getCalcVote());
         votingManager.removeTempVote(vote.getVoteStr());
     }
