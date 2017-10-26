@@ -53,9 +53,14 @@ public class GameController {
         return ResponseEntity.ok(gameExists);
     }
 
-        @PostMapping(value="/getCurrentPlayer")
+    @PostMapping(value="/getCurrentPlayer")
     public ResponseEntity<Device> getCurrentPlayer(){
-        return ResponseEntity.ok(gameManager.getCurrentPlayer());
+        Device currentPlayer = gameManager.getCurrentPlayer();
+        if(currentPlayer==null){
+            return ResponseEntity.ok(gameManager.getPlayingOrder().get(0));
+        }else{
+            return ResponseEntity.ok(currentPlayer);
+        }
     }
 
 

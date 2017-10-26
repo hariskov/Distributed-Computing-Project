@@ -176,7 +176,8 @@ public class NewVotingService {
             if(voteStr.equals("LeaderSelect")){
                 currentAnswer.setAnswer(generateLeader());
             }else if(voteStr.equals("getCurrentPlayer")){
-                currentAnswer.setAnswer(getCurrentPlayer());
+                Device currentPlayer = getCurrentPlayer();
+                currentAnswer.setAnswer(currentPlayer);
             }else{
                 String answer = sendAskLeader(votingManager.getTempVote(voteStr).getCreator(),voteStr);
                 currentAnswer.setAnswer(answer);
@@ -262,6 +263,7 @@ public class NewVotingService {
     public Vote getTempVote(String voteStr) {
         return votingManager.getTempVote(voteStr);
     }
+
     public SingleVote getDecidedVote(String voteString){
         return votingManager.getDecidedVote(voteString);
     }
