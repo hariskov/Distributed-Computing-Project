@@ -123,7 +123,6 @@ public class NewVotingService {
         }
     }
 
-
     @Async
     public void sendApplyPlayOrder(Device device, List<Device> order){
         try {

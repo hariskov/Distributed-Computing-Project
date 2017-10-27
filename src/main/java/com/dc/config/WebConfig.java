@@ -132,14 +132,15 @@ public class WebConfig extends WebMvcConfigurerAdapter{
     public NewRoundInterceptor getNewRoundInterceptor(){
         return new NewRoundInterceptor();
     }
+
     @Bean
     public TaskExecutor taskExecutor(){
-
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(50);
-        return executor;    }
+        return executor;
+    }
 
     @Bean
     public DeviceCheckerInterceptor getDeviceCheckerInterceptor() {

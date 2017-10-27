@@ -48,24 +48,18 @@ public class NewRoundInterceptor implements HandlerInterceptor {
         logger.info("NewRoundInterceptor - Post Handle");
 
         if (gameManager.getPlayingOrder() != null) {
-//            if(gameManager.getCurrentPlayer()!=null) {
-//                if (gameManager.getCurrentPlayer().equals(deviceManager.getCurrentDevice())){
-//                    newVotingService.sendStartVote("getCurrentPlayer");
-//                    Device currentPlayer = (Device) newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
-//                    gameManager.setCurrentPlayer(currentPlayer);
-//                }
-//            }else if(gameManager.getPlayingOrder().get(0).equals(deviceManager.getCurrentDevice())){
-//                newVotingService.sendStartVote("getCurrentPlayer");
-//                Device currentPlayer = (Device) newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
-//                gameManager.setCurrentPlayer(currentPlayer);
-//            }
-            Device currentPlayer = null;
+            Device currentPlayer = gameManager.getCurrentPlayer();
+            Device nextPlayer = gameManager.getNextPlayer();
 
-            if(gameManager.getPlayingOrder().get(0).equals(deviceManager.getCurrentDevice())){
+            if(currentPlayer!=null){
+                if(currentPlayer.equals(deviceManager.getCurrentDevice())){
+                    newVotingService.sendStartVote("getCurrentPlayer");
+                }
+            }else if(gameManager.getPlayingOrder().get(0).equals(deviceManager.getCurrentDevice())){
                 newVotingService.sendStartVote("getCurrentPlayer");
             }
 
-            while (currentPlayer == null) {
+            while (currentPlayer != nextPlayer) {
                 SingleVote singleVote = newVotingService.getDecidedVote("getCurrentPlayer");
 
                 if(singleVote!=null) {
@@ -73,17 +67,15 @@ public class NewRoundInterceptor implements HandlerInterceptor {
                     if(answer instanceof Device) {
                         currentPlayer = (Device) answer;
                     }else if(answer instanceof HashMap){
-                        HashMap<String,UUID> a = (HashMap<String, UUID>) answer;
+                        HashMap<String,String> a = (HashMap<String, String>) answer;
                         currentPlayer = new Device();
-                        for(Map.Entry<String,UUID> entry : a.entrySet()){
-                            currentPlayer.setIp(entry.getKey());
-                            currentPlayer.setUuid(entry.getValue());
-                            break;
-                        }
+                            currentPlayer.setIp(a.get("ip"));
+                            currentPlayer.setUuid(UUID.fromString(a.get("uuid")));
                     }
                 }
                 if(currentPlayer!=null) {
                     gameManager.setCurrentPlayer(currentPlayer);
+                    break;
                 }
 
                 Thread.sleep(1000);

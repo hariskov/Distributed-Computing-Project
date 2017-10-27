@@ -26,9 +26,6 @@ public class CardController {
     @Autowired
     DeviceManager deviceManager;
 
-    @Autowired
-    NewVotingManager newVotingManager;
-
     @RequestMapping(value="/playCard",method = RequestMethod.POST)
     public ResponseEntity playCard(@RequestBody Card card){
         String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
@@ -38,6 +35,7 @@ public class CardController {
         }catch(Exception e){
             e.printStackTrace();
         }
+
         return ResponseEntity.ok(null);
     }
 }
