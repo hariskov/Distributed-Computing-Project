@@ -3,6 +3,7 @@ package com.dc.interceptors;
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.GameManager;
+import com.dc.pojo.SingleVote;
 import com.dc.services.NewVotingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by xumepa on 10/25/17.
@@ -62,8 +66,22 @@ public class NewRoundInterceptor implements HandlerInterceptor {
             }
 
             while (currentPlayer == null) {
-                currentPlayer = (Device) newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
+                SingleVote singleVote = newVotingService.getDecidedVote("getCurrentPlayer");
 
+                if(singleVote!=null) {
+                    Object answer = singleVote.getAnswer();
+                    if(answer instanceof Device) {
+                        currentPlayer = (Device) answer;
+                    }else if(answer instanceof HashMap){
+                        HashMap<String,UUID> a = (HashMap<String, UUID>) answer;
+                        currentPlayer = new Device();
+                        for(Map.Entry<String,UUID> entry : a.entrySet()){
+                            currentPlayer.setIp(entry.getKey());
+                            currentPlayer.setUuid(entry.getValue());
+                            break;
+                        }
+                    }
+                }
                 if(currentPlayer!=null) {
                     gameManager.setCurrentPlayer(currentPlayer);
                 }

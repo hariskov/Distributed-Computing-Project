@@ -41,7 +41,7 @@ public class NewVotingManager {
     }
 
     public SingleVote getDecidedVote(String voteStr) {
-        Vote returnedVote = manager.stream().filter(e -> e.getVoteStr() == voteStr).findFirst().orElse(null);
+        Vote returnedVote = manager.stream().filter(e -> e.getVoteStr().equals(voteStr)).findFirst().orElse(null);
         if (returnedVote != null) {
             return returnedVote.getVotes().get(0);
         } else{

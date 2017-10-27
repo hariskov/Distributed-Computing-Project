@@ -87,7 +87,7 @@ public class NewVotingService {
     public Object sendStartVote(String voteString) {
 
         Object result = null;
-
+        logger.info("Started Vote : " + voteString);
         try {
             String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
             result = restTemplate.postForEntity(uri, voteString, Object.class).getBody();
@@ -124,7 +124,7 @@ public class NewVotingService {
     }
 
 
-//    @Async
+    @Async
     public void sendApplyPlayOrder(Device device, List<Device> order){
         try {
             String uri = "http://" + device.getIp() + ":8080/project/game/applyPlayOrder";

@@ -23,7 +23,7 @@ public class MessagingController {
 
     @PostMapping(value="/startVote")
     public ResponseEntity startVote(@RequestBody String newVote){
-        logger.info("got in : " + Thread.currentThread().getStackTrace()[0].getMethodName());
+        logger.info("got in : " + Thread.currentThread().getStackTrace()[1].getMethodName());
         Vote vote = newVotingService.createVote(newVote);
         newVotingService.sendVote(vote);
         return ResponseEntity.ok(null);
@@ -31,13 +31,13 @@ public class MessagingController {
 
     @PostMapping("/receiveNewVote")
     public ResponseEntity sendIt(@RequestBody Vote vote){
-        logger.info("got in :" + Thread.currentThread().getStackTrace()[0].getMethodName());
+        logger.info("got in :" + Thread.currentThread().getStackTrace()[1].getMethodName());
         return ResponseEntity.ok(newVotingService.setTempVote(vote));
     }
 
     @PostMapping(value="/applyTempVote")
     public ResponseEntity applyTempVote(@RequestBody Vote tempVote){
-        logger.info("got in :" + Thread.currentThread().getStackTrace()[0].getMethodName());
+        logger.info("got in :" + Thread.currentThread().getStackTrace()[1].getMethodName());
         return ResponseEntity.ok(newVotingService.applyTempVote(tempVote));
     }
 
@@ -48,7 +48,7 @@ public class MessagingController {
 
     @PutMapping(value="/applyVote")
     public ResponseEntity applyVote(@RequestBody VoteApply vote){
-        logger.info("got in :" + Thread.currentThread().getStackTrace()[0].getMethodName());
+        logger.info("got in :" + Thread.currentThread().getStackTrace()[1].getMethodName());
         newVotingService.applyVote(vote);
         return ResponseEntity.ok(null);
     }
