@@ -2,7 +2,10 @@ package com.dc.interceptors;
 
 import com.dc.exceptions.NoDevicesException;
 import com.dc.pojo.*;
+import com.dc.services.DeviceService;
 import com.dc.services.NewVotingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,6 +20,8 @@ import java.util.List;
  */
 public class StartVoteInterceptor implements HandlerInterceptor {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     NewVotingManager votingManager;
 
@@ -28,6 +33,9 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
     @Autowired
     GameManager gameManager;
+
+    @Autowired
+    DeviceService deviceService;
 
     // to check for previous votes that are not completed.
     @Override
@@ -47,14 +55,36 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
         if(!deviceManager.containsAllDevices(lastVote.getDevices())) {
             while (!deviceManager.containsAllDevices(lastVote.getDevices())) {
+                List<Device> devicesToRemove = new ArrayList<>();
+                devicesToRemove.addAll(deviceManager.getDevices());
+
                 for (Device device : deviceManager.getDevices()) {
                     if (lastVote.getVoteOfDevice(device) == null) {
+                        boolean received = false;
                         Vote blankVote = new Vote();
                         blankVote.setCreator(lastVote.getCreator());
                         blankVote.setVoteStr(lastVote.getVoteStr());
-                        newVotingService.sendVote(blankVote);
+                        received = newVotingService.sendVote(device, blankVote);
+                        if(!received){
+                            // the vote has been fucked up ! remove device if cant ping
+                            if(deviceService.discoverDevice(device.getIp())!=null){
+                                devicesToRemove.remove(device);
+                                // remove device and resync
+                                //TODO
+//                                if you remove - lasTVote should also be removed !!!
+                            }else{
+                                logger.error(device.getIp() + " no longer exists");
+                            }
+                        }
                     }
                     Thread.sleep(1000);
+                }
+                if(devicesToRemove.size()>0){
+                    for (Device device : devicesToRemove) {
+                        if(!devicesToRemove.contains(device)) {
+                            deviceService.sendRemoveDevice(device, lastVote.getVoteStr());
+                        }
+                    }
                 }
             }
         }

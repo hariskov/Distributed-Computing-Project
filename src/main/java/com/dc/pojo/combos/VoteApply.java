@@ -1,9 +1,11 @@
-package com.dc.pojo;
+package com.dc.pojo.combos;
 
 /**
  * Created by xumepa on 10/26/17.
  */
 
+
+import com.dc.pojo.SingleVote;
 
 /**
  * useless stupid stuff -> just used to transfer complex objects for PostRequests

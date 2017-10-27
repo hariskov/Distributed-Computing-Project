@@ -2,7 +2,7 @@ package com.dc.controllers;
 
 import com.dc.pojo.SingleVote;
 import com.dc.pojo.Vote;
-import com.dc.pojo.VoteApply;
+import com.dc.pojo.combos.VoteApply;
 import com.dc.services.NewVotingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

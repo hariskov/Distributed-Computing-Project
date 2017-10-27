@@ -1,6 +1,7 @@
 package com.dc.controllers;
 
 import com.dc.pojo.*;
+import com.dc.pojo.combos.VoteDevice;
 import com.dc.services.NewVotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,13 @@ public class EchoController {
     public ResponseEntity<Boolean> joinGameRequest(@RequestBody Device device){
         newVotingService.sendStartVote("join : " + device.getIp());
         return ResponseEntity.ok(null);
+    }
 
+    @PostMapping("/removeDeviceAndLastVote")
+    public ResponseEntity removeDeviceAndLastVote(@RequestBody VoteDevice voteDevice){
+        deviceManager.removeDevice(voteDevice.getDevice());
+        votingManager.removeVoteForDevice(voteDevice.getDevice(),voteDevice.getVoteStr());
+        return ResponseEntity.ok(null);
     }
 
 }

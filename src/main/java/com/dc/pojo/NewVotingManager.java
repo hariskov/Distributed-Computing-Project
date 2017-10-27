@@ -56,4 +56,10 @@ public class NewVotingManager {
         newVote.setCreator(voteToAdd.getDevice());
         manager.add(newVote);
     }
+
+    public void removeVoteForDevice(Device device, String voteString){
+        Vote vote = getTempVote(voteString);
+        SingleVote voteToRemove = vote.getVotes().stream().filter(e->e.getDevice().equals(device)).findFirst().get();
+        vote.getVotes().remove(voteToRemove);
+    }
 }

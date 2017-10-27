@@ -2,13 +2,12 @@ package com.dc.services;
 
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.Device;
+import com.dc.pojo.combos.VoteDevice;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -55,7 +54,20 @@ public class DeviceServiceImpl implements DeviceService {
             return deviceResponse;
         }catch(Exception e){
             e.printStackTrace();
+            return null;
         }
-        return deviceList;
+    }
+
+    @Override
+    public void sendRemoveDevice(Device device, String voteStr) {
+        try {
+            VoteDevice voteDevice = new VoteDevice();
+            voteDevice.setDevice(device);
+            voteDevice.setVoteStr(voteStr);
+            String uri = "http://" + device.getIp() + ":8080/project/echo/removeDeviceAndLastVote";
+            restTemplate.postForEntity(uri, voteDevice, Device.class);
+        }catch(Exception e){
+
+        }
     }
 }

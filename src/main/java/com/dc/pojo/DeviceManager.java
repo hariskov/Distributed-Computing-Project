@@ -158,4 +158,8 @@ public class DeviceManager {
         String destination = "/broker/discoveryInProgress";
         this.messageSendingOperations.convertAndSend(destination,"true");
     }
+
+    public void removeDevice(Device device) {
+        devices.remove(device);
+    }
 }

@@ -2,6 +2,7 @@ package com.dc.services;
 
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
+import com.dc.pojo.combos.VoteApply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,17 +46,19 @@ public class NewVotingService {
     }
 
 //    @Async
-    public void sendVote(Vote vote) {
-        for (Device device: deviceManager.getDevices()) {
+    public boolean sendVote(Device device, Vote vote) {
+//        for (Device device: deviceManager.getDevices()) {
             try {
                 logger.info("sending to " + device.getIp() + " value : " + vote.getVoteStr());
                 String uri = "http://" + device.getIp() + ":8080/project/voting/receiveNewVote";
                 ResponseEntity<SingleVote> result = restTemplate.postForEntity(uri, vote, SingleVote.class);
                 votingManager.getTempVote(vote.getVoteStr()).addVote(result.getBody());
+                return true;
             } catch (Exception e) {
                 e.printStackTrace();
+                return false;
             }
-        }
+//        }
     }
 
 //    @Async

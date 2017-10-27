@@ -16,4 +16,6 @@ public interface DeviceService {
     Device discoverDevice(String address);
 
     List<Device> syncDevices(Device device, List<Device> devices);
+
+    void sendRemoveDevice(Device device, String voteStr);
 }
