@@ -20,6 +20,9 @@ public class GameManager {
     @Autowired
     MessageSendingOperations<String> messageSendingOperations;
 
+    @Autowired
+    DeviceManager deviceManager;
+
     public void setPlayingOrder(List<Device> playingOrder) {
         this.playingOrder = playingOrder;
     }
@@ -34,6 +37,8 @@ public class GameManager {
 
     public void setCurrentPlayer(Device currentPlayer) {
         this.currentPlayer = currentPlayer;
+        sendQuotes(deviceManager.getCurrentDevice().equals(getCurrentPlayer()));
+
     }
 
     public Device getNextPlayer(){

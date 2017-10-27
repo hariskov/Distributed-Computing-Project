@@ -41,12 +41,8 @@ public class NewRoundInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        logger.info("NewRoundInterceptor - Post Handle");
 
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        logger.info("NewRoundInterceptor - after Completion");
         if (gameManager.getPlayingOrder() != null) {
 //            if(gameManager.getCurrentPlayer()!=null) {
 //                if (gameManager.getCurrentPlayer().equals(deviceManager.getCurrentDevice())){
@@ -59,10 +55,27 @@ public class NewRoundInterceptor implements HandlerInterceptor {
 //                Device currentPlayer = (Device) newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
 //                gameManager.setCurrentPlayer(currentPlayer);
 //            }
+            Device currentPlayer = null;
 
-            gameManager.sendQuotes(deviceManager.getCurrentDevice().equals(gameManager.getCurrentPlayer()));
-        }else{
-            gameManager.setCurrentPlayer(gameManager.getPlayingOrder().get(0));
+            if(gameManager.getPlayingOrder().get(0).equals(deviceManager.getCurrentDevice())){
+                newVotingService.sendStartVote("getCurrentPlayer");
+            }
+
+            while (currentPlayer == null) {
+                currentPlayer = (Device) newVotingService.getDecidedVote("getCurrentPlayer").getAnswer();
+
+                if(currentPlayer!=null) {
+                    gameManager.setCurrentPlayer(currentPlayer);
+                }
+
+                Thread.sleep(1000);
+            }
         }
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        logger.info("NewRoundInterceptor - after Completion");
+
     }
 }
