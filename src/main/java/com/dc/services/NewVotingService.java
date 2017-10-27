@@ -45,6 +45,12 @@ public class NewVotingService {
         return vote;
     }
 
+    public void sendVote(Vote vote){
+        for(Device device : deviceManager.getDevices()){
+            sendVote(device,vote);
+        }
+    }
+
 //    @Async
     public boolean sendVote(Device device, Vote vote) {
 //        for (Device device: deviceManager.getDevices()) {
