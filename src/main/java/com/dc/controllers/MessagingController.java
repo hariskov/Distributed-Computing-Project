@@ -21,7 +21,6 @@ public class MessagingController {
     @Autowired
     NewVotingService newVotingService;
 
-    @Async
     @PostMapping(value="/startVote")
     public ResponseEntity startVote(@RequestBody String newVote){
         logger.info("got in : " + Thread.currentThread().getStackTrace()[0].getMethodName());

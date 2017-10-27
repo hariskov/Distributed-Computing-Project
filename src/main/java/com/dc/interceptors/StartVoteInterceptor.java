@@ -51,7 +51,15 @@ public class StartVoteInterceptor implements HandlerInterceptor {
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // calculate results n shit
 
-        Vote lastVote = votingManager.getLastTempVote();
+        Vote lastVote = null;
+
+        while(lastVote == null) {
+            lastVote = votingManager.getLastTempVote();
+            if(lastVote==null) {
+                Thread.sleep(1000);
+            }
+        }
+
         Vote checklastVote = lastVote;
 
         while(checklastVote == lastVote) {
