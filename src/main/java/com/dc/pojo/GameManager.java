@@ -16,6 +16,7 @@ import java.util.Map;
 public class GameManager {
     private List<Device> playingOrder;
     private Device currentPlayer;
+    private int turn = 0;
 
     @Autowired
     MessageSendingOperations<String> messageSendingOperations;
@@ -56,5 +57,13 @@ public class GameManager {
 
     public Boolean doesGameExist() {
         return playingOrder != null;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public void setTurn(int i){
+        this.turn = i;
     }
 }

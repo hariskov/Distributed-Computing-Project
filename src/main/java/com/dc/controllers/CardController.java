@@ -31,7 +31,7 @@ public class CardController {
         String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
 
         try {
-            restTemplate.postForEntity(uri, card.getCardSign(), Object.class);
+            restTemplate.postForEntity(uri, " " + card.getCardSign(), Object.class);
         }catch(Exception e){
             e.printStackTrace();
         }

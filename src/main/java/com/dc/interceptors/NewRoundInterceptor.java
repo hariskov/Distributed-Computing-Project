@@ -35,6 +35,8 @@ public class NewRoundInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        int turn = gameManager.getTurn() + 1;
+        gameManager.setTurn(turn);
 
         if(gameManager.getCurrentPlayer()!=null) {
             gameManager.setCurrentPlayer(gameManager.getNextPlayer());
@@ -53,10 +55,10 @@ public class NewRoundInterceptor implements HandlerInterceptor {
 
             if(currentPlayer!=null){
                 if(currentPlayer.equals(deviceManager.getCurrentDevice())){
-                    newVotingService.sendStartVote("getCurrentPlayer");
+                    newVotingService.sendStartVote("getCurrentPlayer : " + gameManager.getTurn());
                 }
             }else if(gameManager.getPlayingOrder().get(0).equals(deviceManager.getCurrentDevice())){
-                newVotingService.sendStartVote("getCurrentPlayer");
+                newVotingService.sendStartVote("getCurrentPlayer : " + gameManager.getTurn());
             }
 
             while (currentPlayer != nextPlayer) {

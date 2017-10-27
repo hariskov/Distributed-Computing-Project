@@ -33,7 +33,6 @@ public class CardInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         // now we have a vote
-//        deviceManager.getCurrentDevice()
     }
 
     @Override
