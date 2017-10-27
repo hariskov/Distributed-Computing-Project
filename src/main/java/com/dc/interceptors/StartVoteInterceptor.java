@@ -60,23 +60,14 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             }
         }
 
-        Vote checklastVote = lastVote;
+        deviceChecker(lastVote);
 
-        while(checklastVote == lastVote) {
+        applyTempChecker(lastVote);
 
-            lastVote = votingManager.getLastTempVote();
-            deviceChecker(lastVote);
+        // calculate votes
+        applyVoteChecker(lastVote);
+        // lets say it worked
 
-            lastVote = votingManager.getLastTempVote();
-            applyTempChecker(lastVote);
-
-            // calculate votes
-            lastVote = votingManager.getLastTempVote();
-            applyVoteChecker(lastVote);
-            // lets say it worked
-
-            }
-            checklastVote = null;
         }
 
     @Override
