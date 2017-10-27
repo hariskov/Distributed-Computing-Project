@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -109,6 +110,7 @@ public class NewVotingService {
     }
 
 
+//    @Async
     public void sendApplyVote(Device device, String voteStr, SingleVote calculatedVote) {
         try {
             VoteApply voteApply = new VoteApply();
@@ -121,6 +123,8 @@ public class NewVotingService {
         }
     }
 
+
+//    @Async
     public void sendApplyPlayOrder(Device device, List<Device> order){
         try {
             String uri = "http://" + device.getIp() + ":8080/project/game/applyPlayOrder";
@@ -153,6 +157,10 @@ public class NewVotingService {
         return result;
     }
 
+    public Device getCurrentPlayer(){
+        String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/game/getCurrentPlayer";
+        return restTemplate.postForEntity(uri,null, Device.class).getBody();
+    }
 
     public boolean sendJoinRequest(Device dev) {
         boolean result = false;
@@ -174,10 +182,7 @@ public class NewVotingService {
         return votingManager.getTempVote(vote.getVoteStr());
     }
 
-    public Device getCurrentPlayer(){
-        String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/game/getCurrentPlayer";
-        return restTemplate.postForEntity(uri,null, Device.class).getBody();
-    }
+
 
     public ResponseEntity<SingleVote> getVoteAnswer(String voteStr) {
         SingleVote currentAnswer = votingManager.getTempVote(voteStr).getVoteOfDevice(deviceManager.getCurrentDevice());
@@ -187,6 +192,10 @@ public class NewVotingService {
             }else if(voteStr.equals("getCurrentPlayer")){
                 Device currentPlayer = getCurrentPlayer();
                 currentAnswer.setAnswer(currentPlayer);
+            }else if(voteStr.contains("join")) {
+                // lets say by default yes
+                Boolean answer = true;
+                currentAnswer.setAnswer(answer);
             }else{
                 String answer = sendAskLeader(votingManager.getTempVote(voteStr).getCreator(),voteStr);
                 currentAnswer.setAnswer(answer);

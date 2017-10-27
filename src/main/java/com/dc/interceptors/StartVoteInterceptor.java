@@ -52,8 +52,32 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         // calculate results n shit
 
         Vote lastVote = votingManager.getLastTempVote();
+        Vote checklastVote = lastVote;
 
-        if(!deviceManager.containsAllDevices(lastVote.getDevices())) {
+        while(checklastVote == lastVote) {
+
+            lastVote = votingManager.getLastTempVote();
+            deviceChecker(lastVote);
+
+            lastVote = votingManager.getLastTempVote();
+            applyTempChecker(lastVote);
+
+            // calculate votes
+            lastVote = votingManager.getLastTempVote();
+            applyVoteChecker(lastVote);
+            // lets say it worked
+
+            }
+            checklastVote = null;
+        }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+//        manager.putVote(voteType, device, result);
+    }
+
+    private void deviceChecker(Vote lastVote) throws InterruptedException {
+        if (!deviceManager.containsAllDevices(lastVote.getDevices())) {
             while (!deviceManager.containsAllDevices(lastVote.getDevices())) {
                 List<Device> devicesToRemove = new ArrayList<>();
                 devicesToRemove.addAll(deviceManager.getDevices());
@@ -65,34 +89,37 @@ public class StartVoteInterceptor implements HandlerInterceptor {
                         blankVote.setCreator(lastVote.getCreator());
                         blankVote.setVoteStr(lastVote.getVoteStr());
                         received = newVotingService.sendVote(device, blankVote);
-                        if(!received){
+                        if (!received) {
                             // the vote has been fucked up ! remove device if cant ping
-                            if(deviceService.discoverDevice(device.getIp())!=null){
+                            if (deviceService.discoverDevice(device.getIp()) != null) {
                                 devicesToRemove.remove(device);
                                 // remove device and resync
                                 //TODO
 //                                if you remove - lasTVote should also be removed !!!
-                            }else{
+                            } else {
                                 logger.error(device.getIp() + " no longer exists");
                             }
                         }
                     }
                     Thread.sleep(1000);
                 }
-                if(devicesToRemove.size()>0){
+                if (devicesToRemove.size() > 0) {
                     for (Device device : devicesToRemove) {
-                        if(!devicesToRemove.contains(device)) {
+                        if (!devicesToRemove.contains(device)) {
                             deviceService.sendRemoveDevice(device, lastVote.getVoteStr());
                         }
                     }
                 }
             }
         }
-        if(deviceManager.containsAllDevices(lastVote.getDevices())){
+    }
+
+    private void applyTempChecker(Vote lastVote) throws InterruptedException {
+        if (deviceManager.containsAllDevices(lastVote.getDevices())) {
             //apply
 
             List<Vote> listTempVotesReceived = new ArrayList<>();
-            if(listTempVotesReceived.size()!=deviceManager.getDevices().size()) {
+            if (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
                 while (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
                     for (Device device : deviceManager.getDevices()) {
                         Vote result = newVotingService.sendApplyTempVote(device, lastVote);
@@ -105,44 +132,29 @@ public class StartVoteInterceptor implements HandlerInterceptor {
                 System.out.println("still not time for stage 2");
             }
 
-            while(lastVote.getVotes().stream().filter(e->e.getAnswer()==null).count()>0) {
+            while (lastVote.getVotes().stream().filter(e -> e.getAnswer() == null).count() > 0) {
                 for (Device device : deviceManager.getDevices()) {
                     if (lastVote.getVoteOfDevice(device).getAnswer() == null) {
                         SingleVote singleVote = newVotingService.sendValueRequest(device, lastVote.getVoteStr());
                         lastVote.getVoteOfDevice(device).setAnswer(singleVote.getAnswer());
                     }
                 }
-
                 Thread.sleep(1000);
             }
-
-            // calculate votes
-
-//                Object calculatedResult = newVotingService.calculateOrder(votingManager.getTempVote());
-//                SingleVote calculatedVote = new SingleVote();
-//                calculatedVote.setDevice(deviceManager.getCurrentDevice());
-//                calculatedVote.setAnswer(calculatedResult);
-//
-            Object calculatedResult = newVotingService.calculateVote(lastVote);
-            SingleVote calculatedVote = new SingleVote();
-            calculatedVote.setDevice(deviceManager.getCurrentDevice());
-            calculatedVote.setAnswer(calculatedResult);
-
-            for(Device device : deviceManager.getDevices()){
-
-                List<Device> result = newVotingService.calculateOrder(lastVote);
-                newVotingService.sendApplyVote(device, lastVote.getVoteStr(), calculatedVote);
-                newVotingService.sendApplyPlayOrder(device, result);
-
-            }
-
-            // lets say it worked
-
         }
     }
 
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-//        manager.putVote(voteType, device, result);
+    private void applyVoteChecker(Vote lastVote) {
+        Object calculatedResult = newVotingService.calculateVote(lastVote);
+        SingleVote calculatedVote = new SingleVote();
+        calculatedVote.setDevice(deviceManager.getCurrentDevice());
+        calculatedVote.setAnswer(calculatedResult);
+
+        for (Device device : deviceManager.getDevices()) {
+            List<Device> result = newVotingService.calculateOrder(lastVote);
+            newVotingService.sendApplyVote(device, lastVote.getVoteStr(), calculatedVote);
+            newVotingService.sendApplyPlayOrder(device, result);
+
+        }
     }
 }
