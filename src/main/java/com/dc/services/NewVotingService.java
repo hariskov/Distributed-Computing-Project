@@ -175,6 +175,16 @@ public class NewVotingService {
         return result;
     }
 
+    public boolean sendFullTempVote(Device device, Vote vote) {
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/voting/applyFullTempVote";
+            restTemplate.postForEntity(uri, vote, Boolean.class);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public void sendRevertVote(Device device, String voteStr) {
         try {
@@ -288,6 +298,18 @@ public class NewVotingService {
         }
     }
 
+
+    public void applyFullTempVote(Vote fullTempVote) {
+        Vote tempVote = votingManager.getTempVote(fullTempVote.getVoteStr());
+        Vote passedVote = new Vote();
+        for (SingleVote singleVote : tempVote.getVotes()) {
+            passedVote.addVote(singleVote);
+        }
+        tempVote.setPassedVote(passedVote);
+        tempVote.getVotes().removeAll(tempVote.getVotes());
+
+    }
+
     public void applyVote(VoteApply vote) {
         votingManager.addDecidedVote(vote.getVoteStr(),vote.getCalcVote());
         votingManager.getTempVote(vote.getVoteStr()).setPassedVote(votingManager.getLastTempVote());
@@ -307,4 +329,5 @@ public class NewVotingService {
     public void revertVote(String voteString) {
         votingManager.revertVote(voteString);
     }
+
 }

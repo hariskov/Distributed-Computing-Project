@@ -58,6 +58,12 @@ public class MessagingController {
         return ResponseEntity.ok(null);
     }
 
+    @PutMapping(value = "/applyFullTempVote")
+    public ResponseEntity applyFullTempVote(@RequestBody Vote tempVote){
+        newVotingService.applyFullTempVote(tempVote);
+        return ResponseEntity.ok(null);
+    }
+
     @RequestMapping(value="/askForAnswer",method = RequestMethod.POST)
     public ResponseEntity<String> askAnswer(@RequestBody String voteStr){
         return ResponseEntity.ok(newVotingService.getTempVote(voteStr).getVoteStr());

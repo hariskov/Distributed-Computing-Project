@@ -36,7 +36,6 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
                     break;
                 }
             }
-
         }
 
         if(!gameAlreadyExists) {

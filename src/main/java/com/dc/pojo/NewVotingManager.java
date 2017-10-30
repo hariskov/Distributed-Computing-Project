@@ -61,6 +61,7 @@ public class NewVotingManager {
         Vote vote = getTempVote(voteString);
         SingleVote voteToRemove = vote.getVotes().stream().filter(e->e.getDevice().equals(device)).findFirst().get();
         vote.getVotes().remove(voteToRemove);
+        vote.getPassedVote().getVotes().remove(voteToRemove);
     }
 
     public void removeVoteForDevices(List<Device> devices, String voteStr) {

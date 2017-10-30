@@ -60,22 +60,18 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             }
         }
 
-//        if (!deviceManager.containsAllDevices(lastVote.getDevices())) {
-//            while (!deviceManager.containsAllDevices(lastVote.getDevices())) {
-//                break;
-//            }
-//        }
-
         deviceChecker(lastVote);
         sendBlankTempChecker(lastVote);
 
         deviceChecker(lastVote);
         applyTempChecker(lastVote);
 
+        deviceChecker(lastVote);
+        applySetTempToDevicesChecker(lastVote);
+
         // calculate votes
         deviceChecker(lastVote);
         applyVoteChecker(lastVote);
-        // lets say it worked
 
         }
 
@@ -89,7 +85,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         List<Device> allDevices = new ArrayList<>();
         allDevices.addAll(deviceManager.getDevices());
 
-        for(Device device : deviceManager.getDevices()){
+        for(Device device : allDevices){
             if(deviceService.discoverDevice(device.getIp())==null){
                 devicesToRemove.add(device);
             }
@@ -106,7 +102,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         List<Device> allDevices = new ArrayList<>();
         allDevices.addAll(deviceManager.getDevices());
 
-        for (Device device : deviceManager.getDevices()) {
+        for (Device device : allDevices) {
             if (lastVote.getVoteOfDevice(device) == null) {
                 boolean received = false;
                 Vote blankVote = new Vote();
@@ -115,17 +111,126 @@ public class StartVoteInterceptor implements HandlerInterceptor {
                 received = newVotingService.sendVote(device, blankVote);
                 if (!received) {
                     // the vote has been fucked up ! remove device if cant ping
-//                    if (deviceService.discoverDevice(device.getIp()) == null) {
                         devicesToRemove.add(device);
-//                    }
                 }
             }
-//            Thread.sleep(1000);
         }
 
         if (devicesToRemove.size() > 0) {
             allDevices.removeAll(devicesToRemove);
             constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+        }
+    }
+
+    private void applySetTempToDevicesChecker(Vote lastVote) {
+        List<Device> devicesToRemove = new ArrayList<>();
+        List<Device> allDevices = new ArrayList<>();
+        allDevices.addAll(deviceManager.getDevices());
+
+        for(Device device : allDevices) {
+            boolean success = newVotingService.sendFullTempVote(device, lastVote);
+            if (!success) {
+                devicesToRemove.add(device);
+            }
+        }
+        if(devicesToRemove.size()>1){
+            allDevices.removeAll(devicesToRemove);
+            constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+        }
+    }
+
+    private void applyTempChecker(Vote lastVote) throws InterruptedException {
+        List<Device> devicesToRemove = new LinkedList<>();
+        List<Device> allDevices = new LinkedList<Device>();
+        allDevices.addAll(deviceManager.getDevices());
+
+        if (deviceManager.containsAllDevices(lastVote.getDevices())) {
+            //apply
+
+            List<Vote> listTempVotesReceived = new ArrayList<>();
+            if (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
+                while (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
+
+                    for (Device device : allDevices) {
+                        Vote result = newVotingService.sendApplyTempVote(device, lastVote);
+                        if (result != null) {
+                            listTempVotesReceived.add(result);
+                        }else{
+                            devicesToRemove.add(device);
+//                            deviceManager.removeDevices(Arrays.asList(device));
+                            // device broke
+                        }
+                    }
+                    Thread.sleep(1000);
+                }
+
+                if(devicesToRemove.size()>0) {
+                    allDevices.removeAll(devicesToRemove);
+                    constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+                }
+                System.out.println("still not time for stage 2");
+            }
+
+            devicesToRemove = new LinkedList<>();
+            allDevices = new LinkedList<>();
+            allDevices.addAll(deviceManager.getDevices());
+            while (lastVote.getVotes().stream().filter(e -> e.getAnswer() == null).count() > 0) {
+                for (Device device : allDevices) {
+
+                    if (lastVote.getVoteOfDevice(device).getAnswer() == null) {
+                        SingleVote singleVote = newVotingService.sendValueRequest(device, lastVote.getVoteStr());
+                        if(singleVote == null){
+                            devicesToRemove.add(singleVote.getDevice());
+                        }
+                        lastVote.getVoteOfDevice(device).setAnswer(singleVote.getAnswer()); // check to not send null !
+                    }
+                }
+
+                if(devicesToRemove.size()>0) {
+                    allDevices.removeAll(devicesToRemove);
+                    constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+                }
+                Thread.sleep(1000);
+            }
+        }
+    }
+
+    private void applyVoteChecker(Vote lastVote){
+
+        Object calculatedResult = newVotingService.calculateVote(lastVote);
+        SingleVote calculatedVote = new SingleVote();
+        calculatedVote.setDevice(deviceManager.getCurrentDevice());
+        calculatedVote.setAnswer(calculatedResult);
+
+        List<Device> devicesToRemove = new LinkedList<>();
+        List<Device> allDevices = new LinkedList<Device>();
+        allDevices.addAll(deviceManager.getDevices());
+
+        for (Device device : allDevices) {
+            boolean success = newVotingService.sendApplyVote(device, lastVote.getVoteStr(), calculatedVote);
+            if(!success) {
+                devicesToRemove.add(device);
+            }
+        }
+
+        if(devicesToRemove.size()>0){
+            allDevices.removeAll(devicesToRemove);
+            constructSendRevertTempVote(allDevices, lastVote.getVoteStr());
+            constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+            applyVoteChecker(lastVote);
+        }else{
+            if (lastVote.getVoteStr().equals("LeaderSelect")) {
+                List<Device> result = newVotingService.calculateOrder(lastVote);
+                for (Device device : allDevices) {
+                    newVotingService.sendApplyPlayOrder(device, result);
+                }
+            }
+        }
+    }
+
+    private void constructSendRevertTempVote(List<Device> devicesList, String voteStr) {
+        for (Device device : devicesList) {
+            newVotingService.sendRevertVote(device, voteStr);
         }
     }
 
@@ -142,95 +247,4 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         }
     }
 
-    private void applyTempChecker(Vote lastVote) throws InterruptedException {
-        List<Device> devicesToRemove = new LinkedList<>();
-        List<Device> devicesList = new LinkedList<Device>();
-        devicesList.addAll(deviceManager.getDevices());
-
-        if (deviceManager.containsAllDevices(lastVote.getDevices())) {
-            //apply
-
-            List<Vote> listTempVotesReceived = new ArrayList<>();
-            if (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
-                while (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
-
-                    for (Device device : devicesList) {
-                        Vote result = newVotingService.sendApplyTempVote(device, lastVote);
-                        if (result != null) {
-                            listTempVotesReceived.add(result);
-                        }else{
-                            devicesToRemove.add(device);
-//                            deviceManager.removeDevices(Arrays.asList(device));
-                            // device broke
-                        }
-                    }
-                    Thread.sleep(1000);
-                }
-
-                if(devicesToRemove.size()>0) {
-                    constructSendRemoveDevices(devicesList, devicesToRemove, lastVote.getVoteStr());
-                }
-                System.out.println("still not time for stage 2");
-            }
-
-            devicesToRemove = new LinkedList<>();
-            devicesList = new LinkedList<>();
-            devicesList.addAll(deviceManager.getDevices());
-            while (lastVote.getVotes().stream().filter(e -> e.getAnswer() == null).count() > 0) {
-                for (Device device : devicesList) {
-
-                    if (lastVote.getVoteOfDevice(device).getAnswer() == null) {
-                        SingleVote singleVote = newVotingService.sendValueRequest(device, lastVote.getVoteStr());
-                        if(singleVote == null){
-                            devicesToRemove.add(singleVote.getDevice());
-                        }
-                        lastVote.getVoteOfDevice(device).setAnswer(singleVote.getAnswer()); // check to not send null !
-                    }
-                }
-
-                if(devicesToRemove.size()>0) {
-                    constructSendRemoveDevices(devicesList, devicesToRemove, lastVote.getVoteStr());
-                }
-                Thread.sleep(1000);
-            }
-        }
-    }
-
-    private void applyVoteChecker(Vote lastVote){
-
-        Object calculatedResult = newVotingService.calculateVote(lastVote);
-        SingleVote calculatedVote = new SingleVote();
-        calculatedVote.setDevice(deviceManager.getCurrentDevice());
-        calculatedVote.setAnswer(calculatedResult);
-
-        List<Device> devicesToRemove = new LinkedList<>();
-        List<Device> devicesList = new LinkedList<Device>();
-        devicesList.addAll(deviceManager.getDevices());
-
-        for (Device device : devicesList) {
-            boolean success = newVotingService.sendApplyVote(device, lastVote.getVoteStr(), calculatedVote);
-            if(!success) {
-                devicesToRemove.add(device);
-            }
-        }
-
-        if(devicesToRemove.size()>0){
-            constructSendRevertTempVote(devicesList, lastVote.getVoteStr());
-            constructSendRemoveDevices(devicesList, devicesToRemove, lastVote.getVoteStr());
-            applyVoteChecker(lastVote);
-        }else{
-            if (lastVote.getVoteStr().equals("LeaderSelect")) {
-                List<Device> result = newVotingService.calculateOrder(lastVote);
-                for (Device device : devicesList) {
-                    newVotingService.sendApplyPlayOrder(device, result);
-                }
-            }
-        }
-    }
-
-    private void constructSendRevertTempVote(List<Device> devicesList, String voteStr) {
-        for (Device device : devicesList) {
-            newVotingService.sendRevertVote(device, voteStr);
-        }
-    }
 }

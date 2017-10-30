@@ -61,9 +61,6 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void sendRemoveDevice(Device device, VoteDevice voteDevice) {
         try {
-//            VoteDevice voteDevice = new VoteDevice();
-//            voteDevice.setDevice(device);
-//            voteDevice.setVoteStr(voteStr);
             String uri = "http://" + device.getIp() + ":8080/project/echo/removeDeviceAndLastVote";
             restTemplate.postForEntity(uri, voteDevice, Device.class);
         }catch(Exception e){
