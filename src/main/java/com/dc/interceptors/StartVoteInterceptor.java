@@ -2,6 +2,7 @@ package com.dc.interceptors;
 
 import com.dc.exceptions.NoDevicesException;
 import com.dc.pojo.*;
+import com.dc.pojo.combos.VoteDevice;
 import com.dc.services.DeviceService;
 import com.dc.services.NewVotingService;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,9 +33,6 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
     @Autowired
     NewVotingService newVotingService;
-
-    @Autowired
-    GameManager gameManager;
 
     @Autowired
     DeviceService deviceService;
@@ -60,11 +60,20 @@ public class StartVoteInterceptor implements HandlerInterceptor {
             }
         }
 
-        deviceChecker(lastVote);
+//        if (!deviceManager.containsAllDevices(lastVote.getDevices())) {
+//            while (!deviceManager.containsAllDevices(lastVote.getDevices())) {
+//                break;
+//            }
+//        }
 
+        deviceChecker(lastVote);
+        sendBlankTempChecker(lastVote);
+
+        deviceChecker(lastVote);
         applyTempChecker(lastVote);
 
         // calculate votes
+        deviceChecker(lastVote);
         applyVoteChecker(lastVote);
         // lets say it worked
 
@@ -75,87 +84,153 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 //        manager.putVote(voteType, device, result);
     }
 
-    private void deviceChecker(Vote lastVote) throws InterruptedException {
-        if (!deviceManager.containsAllDevices(lastVote.getDevices())) {
-            while (!deviceManager.containsAllDevices(lastVote.getDevices())) {
-                List<Device> devicesToRemove = new ArrayList<>();
-                devicesToRemove.addAll(deviceManager.getDevices());
+    private void deviceChecker(Vote lastVote){
+        List<Device> devicesToRemove = new LinkedList<>();
+        List<Device> allDevices = new ArrayList<>();
+        allDevices.addAll(deviceManager.getDevices());
 
-                for (Device device : deviceManager.getDevices()) {
-                    if (lastVote.getVoteOfDevice(device) == null) {
-                        boolean received = false;
-                        Vote blankVote = new Vote();
-                        blankVote.setCreator(lastVote.getCreator());
-                        blankVote.setVoteStr(lastVote.getVoteStr());
-                        received = newVotingService.sendVote(device, blankVote);
-                        if (!received) {
-                            // the vote has been fucked up ! remove device if cant ping
-                            if (deviceService.discoverDevice(device.getIp()) != null) {
-                                devicesToRemove.remove(device);
-                                // remove device and resync
-                                //TODO
-//                                if you remove - lasTVote should also be removed !!!
-                            } else {
-                                logger.error(device.getIp() + " no longer exists");
-                            }
-                        }
-                    }
-                    Thread.sleep(1000);
+        for(Device device : deviceManager.getDevices()){
+            if(deviceService.discoverDevice(device.getIp())==null){
+                devicesToRemove.add(device);
+            }
+        }
+
+        allDevices.removeAll(devicesToRemove);
+        if (devicesToRemove.size() > 0) {
+            constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+        }
+    }
+
+    private void sendBlankTempChecker(Vote lastVote) throws InterruptedException {
+        List<Device> devicesToRemove = new ArrayList<>();
+        List<Device> allDevices = new ArrayList<>();
+        allDevices.addAll(deviceManager.getDevices());
+
+        for (Device device : deviceManager.getDevices()) {
+            if (lastVote.getVoteOfDevice(device) == null) {
+                boolean received = false;
+                Vote blankVote = new Vote();
+                blankVote.setCreator(lastVote.getCreator());
+                blankVote.setVoteStr(lastVote.getVoteStr());
+                received = newVotingService.sendVote(device, blankVote);
+                if (!received) {
+                    // the vote has been fucked up ! remove device if cant ping
+//                    if (deviceService.discoverDevice(device.getIp()) == null) {
+                        devicesToRemove.add(device);
+//                    }
                 }
-                if (devicesToRemove.size() > 0) {
-                    for (Device device : devicesToRemove) {
-                        if (!devicesToRemove.contains(device)) {
-                            deviceService.sendRemoveDevice(device, lastVote.getVoteStr());
-                        }
-                    }
-                }
+            }
+//            Thread.sleep(1000);
+        }
+
+        if (devicesToRemove.size() > 0) {
+            allDevices.removeAll(devicesToRemove);
+            constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+        }
+    }
+
+    private void constructSendRemoveDevices(List<Device> allDevices, List<Device> devicesToRemove, String voteStr) {
+        for (Device device : allDevices) {
+            if (deviceService.discoverDevice(device.getIp()) == null) {
+                logger.error(device.getIp() + " no longer exists");
+
+                VoteDevice voteDevice = new VoteDevice();
+                voteDevice.setVoteStr(voteStr);
+                voteDevice.addDevices(devicesToRemove);
+                deviceService.sendRemoveDevice(device, voteDevice);
             }
         }
     }
 
     private void applyTempChecker(Vote lastVote) throws InterruptedException {
+        List<Device> devicesToRemove = new LinkedList<>();
+        List<Device> devicesList = new LinkedList<Device>();
+        devicesList.addAll(deviceManager.getDevices());
+
         if (deviceManager.containsAllDevices(lastVote.getDevices())) {
             //apply
 
             List<Vote> listTempVotesReceived = new ArrayList<>();
             if (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
                 while (listTempVotesReceived.size() != deviceManager.getDevices().size()) {
-                    for (Device device : deviceManager.getDevices()) {
+
+                    for (Device device : devicesList) {
                         Vote result = newVotingService.sendApplyTempVote(device, lastVote);
                         if (result != null) {
                             listTempVotesReceived.add(result);
+                        }else{
+                            devicesToRemove.add(device);
+//                            deviceManager.removeDevices(Arrays.asList(device));
+                            // device broke
                         }
                     }
                     Thread.sleep(1000);
                 }
+
+                if(devicesToRemove.size()>0) {
+                    constructSendRemoveDevices(devicesList, devicesToRemove, lastVote.getVoteStr());
+                }
                 System.out.println("still not time for stage 2");
             }
 
+            devicesToRemove = new LinkedList<>();
+            devicesList = new LinkedList<>();
+            devicesList.addAll(deviceManager.getDevices());
             while (lastVote.getVotes().stream().filter(e -> e.getAnswer() == null).count() > 0) {
-                for (Device device : deviceManager.getDevices()) {
+                for (Device device : devicesList) {
+
                     if (lastVote.getVoteOfDevice(device).getAnswer() == null) {
                         SingleVote singleVote = newVotingService.sendValueRequest(device, lastVote.getVoteStr());
-                        lastVote.getVoteOfDevice(device).setAnswer(singleVote.getAnswer());
+                        if(singleVote == null){
+                            devicesToRemove.add(singleVote.getDevice());
+                        }
+                        lastVote.getVoteOfDevice(device).setAnswer(singleVote.getAnswer()); // check to not send null !
                     }
+                }
+
+                if(devicesToRemove.size()>0) {
+                    constructSendRemoveDevices(devicesList, devicesToRemove, lastVote.getVoteStr());
                 }
                 Thread.sleep(1000);
             }
         }
     }
 
-    private void applyVoteChecker(Vote lastVote) {
+    private void applyVoteChecker(Vote lastVote){
+
         Object calculatedResult = newVotingService.calculateVote(lastVote);
         SingleVote calculatedVote = new SingleVote();
         calculatedVote.setDevice(deviceManager.getCurrentDevice());
         calculatedVote.setAnswer(calculatedResult);
 
-        for (Device device : deviceManager.getDevices()) {
-            List<Device> result = newVotingService.calculateOrder(lastVote);
-            newVotingService.sendApplyVote(device, lastVote.getVoteStr(), calculatedVote);
+        List<Device> devicesToRemove = new LinkedList<>();
+        List<Device> devicesList = new LinkedList<Device>();
+        devicesList.addAll(deviceManager.getDevices());
 
-            if(lastVote.getVoteStr().equals("LeaderSelect")) {
-                newVotingService.sendApplyPlayOrder(device, result);
+        for (Device device : devicesList) {
+            boolean success = newVotingService.sendApplyVote(device, lastVote.getVoteStr(), calculatedVote);
+            if(!success) {
+                devicesToRemove.add(device);
             }
+        }
+
+        if(devicesToRemove.size()>0){
+            constructSendRevertTempVote(devicesList, lastVote.getVoteStr());
+            constructSendRemoveDevices(devicesList, devicesToRemove, lastVote.getVoteStr());
+            applyVoteChecker(lastVote);
+        }else{
+            if (lastVote.getVoteStr().equals("LeaderSelect")) {
+                List<Device> result = newVotingService.calculateOrder(lastVote);
+                for (Device device : devicesList) {
+                    newVotingService.sendApplyPlayOrder(device, result);
+                }
+            }
+        }
+    }
+
+    private void constructSendRevertTempVote(List<Device> devicesList, String voteStr) {
+        for (Device device : devicesList) {
+            newVotingService.sendRevertVote(device, voteStr);
         }
     }
 }

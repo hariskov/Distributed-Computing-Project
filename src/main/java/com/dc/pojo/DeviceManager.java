@@ -159,7 +159,17 @@ public class DeviceManager {
         this.messageSendingOperations.convertAndSend(destination,"true");
     }
 
-    public void removeDevice(Device device) {
-        devices.remove(device);
+    private void removeDevice(Device device) {
+        try {
+            Device deviceToRemove = devices.stream().filter(e -> e.equals(device)).findFirst().orElse(null);
+            devices.remove(deviceToRemove);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void removeDevices(List<Device> devicesToRemove){
+        for (Device device : devicesToRemove) {
+            removeDevice(device);
+        }
     }
 }

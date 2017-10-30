@@ -25,7 +25,12 @@ public class MessagingController {
     public ResponseEntity startVote(@RequestBody String newVote){
         logger.info("got in : " + Thread.currentThread().getStackTrace()[1].getMethodName());
         Vote vote = newVotingService.createVote(newVote);
-        newVotingService.sendVote(vote);
+        try{
+            newVotingService.sendVote(vote);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("broke for : " + newVote);
+        }
         return ResponseEntity.ok(null);
     }
 
@@ -57,4 +62,11 @@ public class MessagingController {
     public ResponseEntity<String> askAnswer(@RequestBody String voteStr){
         return ResponseEntity.ok(newVotingService.getTempVote(voteStr).getVoteStr());
     }
+
+    @PutMapping(value = "/revert")
+    public ResponseEntity revert(@RequestBody String voteString){
+        newVotingService.revertVote(voteString);
+        return ResponseEntity.ok(null);
+    }
 }
+

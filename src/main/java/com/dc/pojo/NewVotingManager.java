@@ -41,7 +41,7 @@ public class NewVotingManager {
     }
 
     public SingleVote getDecidedVote(String voteStr) {
-        Vote returnedVote = manager.stream().filter(e -> e.getVoteStr().equals(voteStr)).findFirst().orElse(null);
+        Vote returnedVote = getVote(voteStr);
         if (returnedVote != null) {
             return returnedVote.getVotes().get(0);
         } else{
@@ -57,9 +57,34 @@ public class NewVotingManager {
         manager.add(newVote);
     }
 
-    public void removeVoteForDevice(Device device, String voteString){
+    private void removeVoteForDevice(Device device, String voteString){
         Vote vote = getTempVote(voteString);
         SingleVote voteToRemove = vote.getVotes().stream().filter(e->e.getDevice().equals(device)).findFirst().get();
         vote.getVotes().remove(voteToRemove);
+    }
+
+    public void removeVoteForDevices(List<Device> devices, String voteStr) {
+        for (Device device : devices) {
+            removeVoteForDevice(device, voteStr);
+        }
+    }
+
+    public void revertVote(String voteString) {
+        Vote returnedVote = getVote(voteString);
+        Vote voteToReturn = returnedVote.getPassedVote();
+        if(returnedVote !=null){
+            manager.remove(returnedVote);
+            tempVote.add(voteToReturn);
+        }else{
+            Vote tempVote = getTempVote(voteString);
+            tempVote.getVotes().removeAll(tempVote.getVotes());
+            for (SingleVote singleVote : tempVote.getPassedVote().getVotes()) {
+                tempVote.addVote(singleVote);
+            }
+        }
+    }
+
+    private Vote getVote(String voteString) {
+        return manager.stream().filter(e -> e.getVoteStr().equals(voteString)).findFirst().orElse(null);
     }
 }

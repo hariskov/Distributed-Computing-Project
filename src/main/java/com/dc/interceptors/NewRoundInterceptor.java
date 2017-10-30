@@ -62,7 +62,8 @@ public class NewRoundInterceptor implements HandlerInterceptor {
             }
 
             while (currentPlayer != nextPlayer) {
-                SingleVote singleVote = newVotingService.getDecidedVote("getCurrentPlayer");
+                logger.info("Get decided vote called");
+                SingleVote singleVote = newVotingService.getDecidedVote("getCurrentPlayer : " + gameManager.getTurn());
 
                 if(singleVote!=null) {
                     Object answer = singleVote.getAnswer();

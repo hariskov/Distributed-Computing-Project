@@ -3,6 +3,7 @@ package com.dc.services;
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
 import com.dc.pojo.combos.VoteApply;
+import com.dc.pojo.combos.VoteDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,15 +112,17 @@ public class NewVotingService {
 
 
 //    @Async
-    public void sendApplyVote(Device device, String voteStr, SingleVote calculatedVote) {
+    public boolean sendApplyVote(Device device, String voteStr, SingleVote calculatedVote) {
         try {
             VoteApply voteApply = new VoteApply();
             voteApply.setVoteStr(voteStr);
             voteApply.setCalcVote(calculatedVote);
             String uri = "http://" + device.getIp() + ":8080/project/voting/applyVote";
             restTemplate.put(uri, voteApply);
+            return true;
         }catch(Exception e){
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -172,12 +175,27 @@ public class NewVotingService {
         return result;
     }
 
+
+    public void sendRevertVote(Device device, String voteStr) {
+        try {
+            String uri = "http://" + device.getIp() + ":8080/project/voting/revert";
+            restTemplate.postForEntity(uri, voteStr, Boolean.class).getBody();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public Vote applyTempVote(Vote vote) {
+        Vote passedVote = new Vote();
+
         for(SingleVote singleVote : vote.getVotes()){
             if(!votingManager.getTempVote(vote.getVoteStr()).containsDevice(singleVote.getDevice())){
                 votingManager.getTempVote(vote.getVoteStr()).addVote(singleVote);
             }
+            passedVote.addVote(singleVote);
         }
+
+        votingManager.getTempVote(vote.getVoteStr()).setPassedVote(passedVote);
         return votingManager.getTempVote(vote.getVoteStr());
     }
 
@@ -188,7 +206,7 @@ public class NewVotingService {
         if(currentAnswer.getAnswer()==null){
             if(voteStr.equals("LeaderSelect")){
                 currentAnswer.setAnswer(generateLeader());
-            }else if(voteStr.equals("getCurrentPlayer")){
+            }else if(voteStr.contains("getCurrentPlayer")){
                 Device currentPlayer = getCurrentPlayer();
                 currentAnswer.setAnswer(currentPlayer);
             }else if(voteStr.contains("join")) {
@@ -272,6 +290,8 @@ public class NewVotingService {
 
     public void applyVote(VoteApply vote) {
         votingManager.addDecidedVote(vote.getVoteStr(),vote.getCalcVote());
+        votingManager.getTempVote(vote.getVoteStr()).setPassedVote(votingManager.getLastTempVote());
+
         votingManager.removeTempVote(vote.getVoteStr());
     }
 
@@ -282,5 +302,9 @@ public class NewVotingService {
 
     public SingleVote getDecidedVote(String voteString){
         return votingManager.getDecidedVote(voteString);
+    }
+
+    public void revertVote(String voteString) {
+        votingManager.revertVote(voteString);
     }
 }

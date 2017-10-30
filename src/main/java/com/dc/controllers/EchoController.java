@@ -65,8 +65,9 @@ public class EchoController {
 
     @PostMapping("/removeDeviceAndLastVote")
     public ResponseEntity removeDeviceAndLastVote(@RequestBody VoteDevice voteDevice){
-        deviceManager.removeDevice(voteDevice.getDevice());
-        votingManager.removeVoteForDevice(voteDevice.getDevice(),voteDevice.getVoteStr());
+
+        deviceManager.removeDevices(voteDevice.getDevices());
+        votingManager.removeVoteForDevices(voteDevice.getDevices(),voteDevice.getVoteStr());
         return ResponseEntity.ok(null);
     }
 

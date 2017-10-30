@@ -15,6 +15,7 @@ public class Vote implements Cloneable{
     private List<SingleVote> votes = new ArrayList<SingleVote>();
     private String voteStr;
     private Device creator;
+    private Vote passedVote;
 
     private final Logger logger = LoggerFactory.getLogger(Vote.class);
 
@@ -70,4 +71,11 @@ public class Vote implements Cloneable{
         return devs;
     }
 
+    public void setPassedVote(Vote passedVote) {
+        this.passedVote = passedVote;
+    }
+
+    public Vote getPassedVote() {
+        return passedVote;
+    }
 }

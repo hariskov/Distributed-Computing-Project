@@ -1,6 +1,7 @@
 package com.dc.services;
 
 import com.dc.pojo.Device;
+import com.dc.pojo.combos.VoteDevice;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -17,5 +18,5 @@ public interface DeviceService {
 
     List<Device> syncDevices(Device device, List<Device> devices);
 
-    void sendRemoveDevice(Device device, String voteStr);
+    void sendRemoveDevice(Device device, VoteDevice voteDevice);
 }
