@@ -44,7 +44,12 @@ public class GameService {
 
     public int requestPlayTurn(Device device) {
         String uri = "http://" + device.getIp() + ":8080/project/game/getPlayTurn";
-        ResponseEntity response = restTemplate.postForEntity(uri,null,null);
+        ResponseEntity response = restTemplate.postForEntity(uri,null,Integer.class);
         return (int) response.getBody();
+    }
+
+    public void sendNextPlayer(Device device, Device nextPlayer) {
+        String uri = "http://" + device.getIp() + ":8080/project/game/setNextPlayer";
+        restTemplate.put(uri,nextPlayer);
     }
 }

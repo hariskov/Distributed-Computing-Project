@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.PUT;
+import javax.xml.ws.Response;
 import java.util.List;
 
 /**
@@ -82,4 +83,9 @@ public class GameController {
         return ResponseEntity.ok(gameManager.getTurn());
     }
 
+    @PutMapping(value ="/setNextPlayer")
+    public ResponseEntity setNextPlayer(@RequestBody Device device){
+        gameManager.setCurrentPlayer(device);
+        return ResponseEntity.ok(null);
+    }
 }

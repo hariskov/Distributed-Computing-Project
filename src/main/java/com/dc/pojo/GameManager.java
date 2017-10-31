@@ -39,7 +39,6 @@ public class GameManager {
     public void setCurrentPlayer(Device currentPlayer) {
         this.currentPlayer = currentPlayer;
         sendQuotes(deviceManager.getCurrentDevice().equals(getCurrentPlayer()));
-
     }
 
     public Device getNextPlayer(){
