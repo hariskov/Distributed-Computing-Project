@@ -91,7 +91,8 @@ public class DeviceManager {
     public void discoverDevices() {
         byte[] ip = localhost.getAddress();
 
-        for (int i = 1; i <= 254; i++) {
+        // 2 for debugging
+        for (int i = 2; i <= 254; i++) {
             try {
                 ip[3] = (byte) i;
                 InetAddress address = InetAddress.getByAddress(ip);
@@ -102,6 +103,8 @@ public class DeviceManager {
                     Device discoveredDevice = discoverDevice(address.toString().substring(1));
                     if (discoveredDevice != null) {
                         addDevice(discoveredDevice);
+                    }
+                    if(devices.size()==3){
                         break;
                     }
                 }
