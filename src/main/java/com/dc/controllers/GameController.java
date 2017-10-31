@@ -77,4 +77,9 @@ public class GameController {
         return ResponseEntity.ok(gameManager.getPlayingOrder());
     }
 
+    @PostMapping(value = "/getPlayTurn")
+    public ResponseEntity<Integer> getPlayTurn(){
+        return ResponseEntity.ok(gameManager.getTurn());
+    }
+
 }

@@ -41,4 +41,10 @@ public class GameService {
         ResponseEntity<List<Device>> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, typeRef);
         return responseEntity.getBody();
     }
+
+    public int requestPlayTurn(Device device) {
+        String uri = "http://" + device.getIp() + ":8080/project/game/getPlayTurn";
+        ResponseEntity response = restTemplate.postForEntity(uri,null,null);
+        return (int) response.getBody();
+    }
 }

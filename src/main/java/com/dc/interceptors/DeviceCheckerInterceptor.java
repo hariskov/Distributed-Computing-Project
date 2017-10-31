@@ -62,6 +62,7 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
                         devices.addAll(deviceManager.getDevices());
                         devices.forEach(e -> deviceManager.syncDevices(e));
                         if(gameManager.getPlayingOrder()!=null) {
+                            gameManager.setTurn(gameService.requestPlayTurn(dev));
                             for (Device device : deviceManager.getDevices()) {
                                 gameService.sendAddPlayer(device, deviceManager.getCurrentDevice());
                             }
