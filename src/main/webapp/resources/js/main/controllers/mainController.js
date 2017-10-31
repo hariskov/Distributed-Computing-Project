@@ -2,7 +2,7 @@
 
 (function(){
 
-var mainFunction = function(mainService, $scope, $http, $location){
+var mainFunction = function(mainService, $scope, $http, $window , $location){
     var self = this;
     var stompClient = null;
 
@@ -68,11 +68,35 @@ var mainFunction = function(mainService, $scope, $http, $location){
         console.log(message);
     });
 
+
+    $window.onbeforeunload = function (e) {
+
+        mainService.exit().then(
+            function(success){
+                console.log(success);
+            },function(fail){
+                console.log(fail);
+            }
+        )
+
+    };
+
+    self.enterFunction = function () {
+        mainService.enter().then(
+            function(success){
+                console.log(success);
+            },function(fail){
+                console.log(fail);
+            }
+
+        )
+    };
+
 };
 
 
 var app = angular.module('mainApp');
 
-app.controller('mainController',['mainService', '$scope' ,'$http', '$location', mainFunction]);
+app.controller('mainController',['mainService', '$scope' ,'$http', '$window', '$location', mainFunction]);
 
 })()

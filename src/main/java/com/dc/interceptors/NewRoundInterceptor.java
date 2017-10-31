@@ -40,9 +40,9 @@ public class NewRoundInterceptor implements HandlerInterceptor {
         int turn = gameManager.getTurn() + 1;
         gameManager.setTurn(turn);
 
-        if(gameManager.getCurrentPlayer()!=null) {
-            gameManager.setCurrentPlayer(gameManager.getNextPlayer());
-        }
+//        if(gameManager.getCurrentPlayer()!=null) {
+//            gameManager.setCurrentPlayer(gameManager.getNextPlayer());
+//        }
 
         return true;
     }

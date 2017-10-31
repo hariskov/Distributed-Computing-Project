@@ -32,6 +32,7 @@ public class DeviceManager {
     List<Device> devices = new ArrayList<>();
     private Device currentDevice;
     private Device server;
+    private boolean discoverable;
 
     @Autowired
     public DeviceManager(){
@@ -174,5 +175,13 @@ public class DeviceManager {
         for (Device device : devicesToRemove) {
             removeDevice(device);
         }
+    }
+
+    public boolean getDiscoverable() {
+        return discoverable;
+    }
+
+    public void setDiscoverable(boolean discoverable) {
+        this.discoverable = discoverable;
     }
 }

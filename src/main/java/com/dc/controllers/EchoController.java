@@ -32,7 +32,23 @@ public class EchoController {
 
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<Device> exists(){
-        return ResponseEntity.ok().body(deviceManager.getCurrentDevice());
+        if(deviceManager.getDiscoverable()) {
+            return ResponseEntity.ok().body(deviceManager.getCurrentDevice());
+        }else{
+            return null;
+        }
+    }
+
+    @PutMapping(value ="/exit")
+    public ResponseEntity stop(){
+        this.deviceManager.setDiscoverable(false);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping(value ="/enter")
+    public ResponseEntity start(){
+        this.deviceManager.setDiscoverable(true);
+        return ResponseEntity.ok(null);
     }
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)

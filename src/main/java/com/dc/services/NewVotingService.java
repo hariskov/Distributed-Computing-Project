@@ -321,7 +321,6 @@ public class NewVotingService {
         votingManager.removeTempVote(vote.getVoteStr());
     }
 
-
     public Vote getTempVote(String voteStr) {
         return votingManager.getTempVote(voteStr);
     }

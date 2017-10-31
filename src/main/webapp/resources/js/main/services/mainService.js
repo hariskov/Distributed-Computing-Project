@@ -29,7 +29,33 @@
                     return result.data;
                 }
             });
-        }
+        };
+
+        this.exit = function(){
+            var request = {
+                method : 'put',
+                url:'echo/exit'
+            };
+
+            return $http(request).then({
+                function(result){
+                    return result.data;
+                }
+            });
+        };
+
+        this.enter = function(){
+            var request = {
+                method : 'put',
+                url:'echo/enter'
+            };
+
+            return $http(request).then({
+                function(result){
+                    return result.data;
+                }
+            });
+        };
     };
 
     var app = angular.module('mainApp');
