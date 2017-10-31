@@ -333,4 +333,7 @@ public class NewVotingService {
         votingManager.revertVote(voteString);
     }
 
+    public void restart() {
+        this.votingManager.restart();
+    }
 }

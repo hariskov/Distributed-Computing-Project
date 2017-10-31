@@ -32,7 +32,7 @@ public class DeviceManager {
     List<Device> devices = new ArrayList<>();
     private Device currentDevice;
     private Device server;
-    private boolean discoverable;
+    private boolean discoverable = true;
 
     @Autowired
     public DeviceManager(){

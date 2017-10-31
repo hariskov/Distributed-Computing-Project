@@ -74,4 +74,10 @@ public class GameManager {
     public void addPlayer(Device device) {
         this.playingOrder.add(device);
     }
+
+    public void restart() {
+        this.setPlayingOrder(null);
+        this.setCurrentPlayer(null);
+        this.setTurn(0);
+    }
 }

@@ -99,4 +99,9 @@ public class NewVotingManager {
     private Vote getVote(String voteString) {
         return manager.stream().filter(e -> e.getVoteStr().equals(voteString)).findFirst().orElse(null);
     }
+
+    public void restart() {
+        this.tempVote = new LinkedList<>();
+        this.manager = new LinkedList<>();
+    }
 }
