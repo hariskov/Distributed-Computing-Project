@@ -72,5 +72,9 @@ public class GameController {
         return ResponseEntity.ok(null);
     }
 
+    @PostMapping(value ="/getPlayingOrder")
+    public ResponseEntity getPlayingOrder(){
+        return ResponseEntity.ok(gameManager.getPlayingOrder());
+    }
 
 }

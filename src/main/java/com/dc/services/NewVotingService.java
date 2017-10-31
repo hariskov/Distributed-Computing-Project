@@ -167,19 +167,11 @@ public class NewVotingService {
         return restTemplate.postForEntity(uri,null, Device.class).getBody();
     }
 
-    public List<Device> sendJoinRequest(Device device) {
-        List<Device> result = null;
+    public boolean sendJoinRequest(Device device) {
+        boolean result = false;
         try {
             String uri = "http://" + device.getIp() + ":8080/project/echo/joinRequest";
-            ParameterizedTypeReference<List<Device>> typeRef = new ParameterizedTypeReference<List<Device>>() {};
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<Object> requestEntity = new HttpEntity<Object>(deviceManager.getCurrentDevice(),headers);
-
-            ResponseEntity<List<Device>> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, typeRef);
-            result = responseEntity.getBody();
+            result =  restTemplate.postForEntity(uri, deviceManager.getCurrentDevice(), Boolean.class).getBody();
         }catch(Exception e){
             logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp());
         }

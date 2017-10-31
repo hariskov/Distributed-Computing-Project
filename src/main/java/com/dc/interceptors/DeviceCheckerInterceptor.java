@@ -52,26 +52,25 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
             deviceManager.getDevices().forEach(e -> deviceManager.syncDevices(e));
             newVotingService.sendStartVote("LeaderSelect");
         }else{
-            List<Device> freeToJoin = null;
+            Boolean freeToJoin = false;
             for(Device dev : deviceManager.getDevices()) {
                 if(!dev.equals(deviceManager.getCurrentDevice())) {
                     freeToJoin = newVotingService.sendJoinRequest(dev);
+                    if(freeToJoin){
+                        gameManager.setPlayingOrder(gameService.getPlayingOrder(dev));
+                        List<Device> devices = new LinkedList<Device>();
+                        devices.addAll(deviceManager.getDevices());
+                        devices.forEach(e -> deviceManager.syncDevices(e));
+                        if(gameManager.getPlayingOrder()!=null) {
+                            for (Device device : deviceManager.getDevices()) {
+                                gameService.sendAddPlayer(device, deviceManager.getCurrentDevice());
+                            }
+                        }
+                    }
                     break;
                 }
             }
-
-            if(freeToJoin!=null){
-                gameManager.setPlayingOrder(freeToJoin);
-
-                List<Device> devices = new LinkedList<Device>();
-                devices.addAll(deviceManager.getDevices());
-                devices.forEach(e -> deviceManager.syncDevices(e));
-                for (Device device : deviceManager.getDevices()) {
-                    gameService.sendAddPlayer(device,deviceManager.getCurrentDevice());
-                }
-            }
         }
-
     }
 
     @Override
