@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.PUT;
 import java.util.List;
 
 /**
@@ -63,6 +64,12 @@ public class GameController {
         }else{
             return ResponseEntity.ok(currentPlayer);
         }
+    }
+
+    @PutMapping(value = "/addPlayer")
+    public ResponseEntity addPlayer(@RequestBody Device device){
+        gameManager.addPlayer(device);
+        return ResponseEntity.ok(null);
     }
 
 

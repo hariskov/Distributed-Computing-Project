@@ -66,4 +66,8 @@ public class GameManager {
     public void setTurn(int i){
         this.turn = i;
     }
+
+    public void addPlayer(Device device) {
+        this.playingOrder.add(device);
+    }
 }
