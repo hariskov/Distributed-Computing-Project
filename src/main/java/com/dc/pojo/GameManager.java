@@ -1,5 +1,7 @@
 package com.dc.pojo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,6 +19,8 @@ public class GameManager {
     private List<Device> playingOrder;
     private Device currentPlayer;
     private int turn = 0;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     MessageSendingOperations<String> messageSendingOperations;
@@ -37,8 +41,9 @@ public class GameManager {
     }
 
     public void setCurrentPlayer(Device currentPlayer) {
+        logger.info("Set Current Player " + deviceManager.getCurrentDevice().equals(currentPlayer) + " for " + currentPlayer.getIp());
         this.currentPlayer = currentPlayer;
-        sendQuotes(deviceManager.getCurrentDevice().equals(getCurrentPlayer()));
+        sendQuotes(deviceManager.getCurrentDevice().equals(currentPlayer));
     }
 
     public Device getNextPlayer(){
