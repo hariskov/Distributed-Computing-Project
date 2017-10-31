@@ -26,7 +26,7 @@ public class VoteDevice {
     }
 
     public void addDevices(List<Device> devices){
-        devices.addAll(devices);
+       this.devices.addAll(devices);
     }
 
     public void setDevice(List<Device> device) {

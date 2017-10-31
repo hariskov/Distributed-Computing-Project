@@ -1,5 +1,6 @@
 package com.dc.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ public class Vote implements Cloneable{
     private Device creator;
     private Vote passedVote;
 
+    @JsonIgnore
     private final Logger logger = LoggerFactory.getLogger(Vote.class);
 
     public Vote(){
@@ -77,5 +79,9 @@ public class Vote implements Cloneable{
 
     public Vote getPassedVote() {
         return passedVote;
+    }
+
+    public boolean hasPassedVote(){
+        return passedVote != null;
     }
 }

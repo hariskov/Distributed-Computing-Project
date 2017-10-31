@@ -2,6 +2,7 @@ package com.dc.interceptors;
 
 import com.dc.pojo.*;
 import com.dc.services.VotingService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class Stage1Interceptor implements AsyncHandlerInterceptor {
     @Autowired
     VotingManager votingManager;
 
+    @JsonIgnore
     private Logger logger = LoggerFactory.getLogger(Stage1Interceptor.class);
 
     @Override

@@ -1,5 +1,6 @@
 package com.dc.mvc.controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import java.io.IOException;
 public class MainController {
 
     private static final String MAIN = "main";
+    @JsonIgnore
     private final static Logger log = LoggerFactory.getLogger(MainController.class);
 
     @RequestMapping(value = "/", method = RequestMethod.GET)

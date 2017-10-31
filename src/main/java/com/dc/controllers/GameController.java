@@ -3,6 +3,7 @@ package com.dc.controllers;
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
 import com.dc.pojo.GameManager;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/game")
 public class GameController {
 
+    @JsonIgnore
     private final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     @Autowired

@@ -2,6 +2,7 @@ package com.dc.controllers;
 
 import com.dc.pojo.*;
 import com.dc.services.VotingService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 @RequestMapping(value = "/a")
 public class VotingController {
 
+    @JsonIgnore
     private final static Logger logger = LoggerFactory.getLogger(VotingController.class);
 
 //    @Autowired

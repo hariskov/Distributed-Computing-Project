@@ -5,6 +5,7 @@ import com.dc.pojo.*;
 import com.dc.pojo.combos.VoteDevice;
 import com.dc.services.DeviceService;
 import com.dc.services.NewVotingService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.List;
  */
 public class StartVoteInterceptor implements HandlerInterceptor {
 
+    @JsonIgnore
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -49,7 +51,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        // calculate results n shit
+        logger.error("Came In : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName());
 
         Vote lastVote = null;
 
@@ -103,7 +105,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         allDevices.addAll(deviceManager.getDevices());
 
         for (Device device : allDevices) {
-            if (lastVote.getVoteOfDevice(device) == null) {
+            if (lastVote.getVoteOfDevice(device).getAnswer() == null) {
                 boolean received = false;
                 Vote blankVote = new Vote();
                 blankVote.setCreator(lastVote.getCreator());
@@ -161,13 +163,14 @@ public class StartVoteInterceptor implements HandlerInterceptor {
                             // device broke
                         }
                     }
+                    if(devicesToRemove.size()>0) {
+                        allDevices.removeAll(devicesToRemove);
+                        constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
+                    }
                     Thread.sleep(1000);
                 }
 
-                if(devicesToRemove.size()>0) {
-                    allDevices.removeAll(devicesToRemove);
-                    constructSendRemoveDevices(allDevices, devicesToRemove, lastVote.getVoteStr());
-                }
+
                 System.out.println("still not time for stage 2");
             }
 
@@ -179,10 +182,11 @@ public class StartVoteInterceptor implements HandlerInterceptor {
 
                     if (lastVote.getVoteOfDevice(device).getAnswer() == null) {
                         SingleVote singleVote = newVotingService.sendValueRequest(device, lastVote.getVoteStr());
-                        if(singleVote == null){
-                            devicesToRemove.add(singleVote.getDevice());
+                        if (singleVote == null) {
+                            devicesToRemove.add(device);
+                        } else{
+                            lastVote.getVoteOfDevice(device).setAnswer(singleVote.getAnswer()); // check to not send null !
                         }
-                        lastVote.getVoteOfDevice(device).setAnswer(singleVote.getAnswer()); // check to not send null !
                     }
                 }
 
@@ -234,16 +238,22 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         }
     }
 
-    private void constructSendRemoveDevices(List<Device> allDevices, List<Device> devicesToRemove, String voteStr) {
-        for (Device device : allDevices) {
-            if (deviceService.discoverDevice(device.getIp()) == null) {
-                logger.error(device.getIp() + " no longer exists");
 
-                VoteDevice voteDevice = new VoteDevice();
-                voteDevice.setVoteStr(voteStr);
-                voteDevice.addDevices(devicesToRemove);
-                deviceService.sendRemoveDevice(device, voteDevice);
+    private void constructSendRemoveDevices(List<Device> allDevices, List<Device> devicesToCheck, String voteStr) {
+        List<Device> devicesToRemove = new LinkedList<>();
+
+        for (Device device : devicesToCheck) {
+            if (deviceService.discoverDevice(device.getIp()) == null) {
+                devicesToRemove.add(device);
+                logger.error(device.getIp() + " no longer exists");
             }
+        }
+
+        for (Device device : allDevices) {
+            VoteDevice voteDevice = new VoteDevice();
+            voteDevice.setVoteStr(voteStr);
+            voteDevice.addDevices(devicesToRemove);
+            deviceService.sendRemoveDevice(device, voteDevice);
         }
     }
 

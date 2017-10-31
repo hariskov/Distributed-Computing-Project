@@ -2,6 +2,7 @@ package com.dc.services;
 
 import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Service(value="votingService")
 public class VotingService {
 
+    @JsonIgnore
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired

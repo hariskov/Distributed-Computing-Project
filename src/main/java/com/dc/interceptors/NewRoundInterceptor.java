@@ -5,6 +5,7 @@ import com.dc.pojo.DeviceManager;
 import com.dc.pojo.GameManager;
 import com.dc.pojo.SingleVote;
 import com.dc.services.NewVotingService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.UUID;
  */
 public class NewRoundInterceptor implements HandlerInterceptor {
 
+    @JsonIgnore
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired

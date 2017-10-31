@@ -42,14 +42,12 @@ public class EchoController {
         return ResponseEntity.ok(null);
     }
 
-//    @PostMapping(value="/syncDevices", produces = "application/json", consumes = "application/json")
     @PostMapping("/getDevices")
     public ResponseEntity<Object> syncDevices(@RequestBody List<Device> devices){
         deviceManager.callPlayersToNotDiscover();
         devices.forEach(e->deviceManager.addDevice(e));
         return ResponseEntity.ok().body(deviceManager.getDevices());
     }
-
 
     @PostMapping("/syncVotes")
     public ResponseEntity<String> syncVotes(@RequestBody List<Vote> votes){
@@ -58,9 +56,11 @@ public class EchoController {
     }
 
     @PostMapping("/joinRequest")
-    public ResponseEntity<Boolean> joinGameRequest(@RequestBody Device device){
-        newVotingService.sendStartVote("join : " + device.getIp());
-        return ResponseEntity.ok(null);
+    public ResponseEntity<Object> joinGameRequest(@RequestBody Device device){
+        String voteStr = "join : " + device.getIp();
+        newVotingService.sendStartVote(voteStr);
+        SingleVote vote = votingManager.getDecidedVote(voteStr);
+        return ResponseEntity.ok(vote.getAnswer());
     }
 
     @PostMapping("/removeDeviceAndLastVote")

@@ -4,6 +4,7 @@ import com.dc.pojo.SingleVote;
 import com.dc.pojo.Vote;
 import com.dc.pojo.combos.VoteApply;
 import com.dc.services.NewVotingService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/voting")
 public class MessagingController {
 
+    @JsonIgnore
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired

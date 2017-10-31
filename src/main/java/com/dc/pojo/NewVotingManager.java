@@ -33,7 +33,9 @@ public class NewVotingManager {
     }
 
     public void addTempVote(Vote currentCirculatingVote) {
-        this.tempVote.add(currentCirculatingVote);
+        if(getTempVote(currentCirculatingVote.getVoteStr())==null){
+            this.tempVote.add(currentCirculatingVote);
+        }
     }
 
     public Vote getLastTempVote(){
@@ -59,9 +61,18 @@ public class NewVotingManager {
 
     private void removeVoteForDevice(Device device, String voteString){
         Vote vote = getTempVote(voteString);
-        SingleVote voteToRemove = vote.getVotes().stream().filter(e->e.getDevice().equals(device)).findFirst().get();
-        vote.getVotes().remove(voteToRemove);
-        vote.getPassedVote().getVotes().remove(voteToRemove);
+        if(vote!=null) {
+            SingleVote voteToRemove = vote.getVotes().stream().filter(e -> e.getDevice().equals(device)).findFirst().get();
+            vote.getVotes().remove(voteToRemove);
+            if (vote.hasPassedVote()) {
+                vote.getPassedVote().getVotes().remove(voteToRemove);
+            }
+        }else{
+            // after applied in last stage
+            vote = getVote(voteString);
+            tempVote.add(vote);
+            manager.remove(vote);
+        }
     }
 
     public void removeVoteForDevices(List<Device> devices, String voteStr) {

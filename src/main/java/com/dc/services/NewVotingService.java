@@ -4,12 +4,14 @@ import com.dc.components.CustomRestTemplate;
 import com.dc.pojo.*;
 import com.dc.pojo.combos.VoteApply;
 import com.dc.pojo.combos.VoteDevice;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class NewVotingService {
 
+    @JsonIgnore
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -63,10 +66,9 @@ public class NewVotingService {
                 votingManager.getTempVote(vote.getVoteStr()).addVote(result.getBody());
                 return true;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp() + " + " + vote.getVoteStr());
                 return false;
             }
-//        }
     }
 
 //    @Async
@@ -78,8 +80,8 @@ public class NewVotingService {
             String uri = "http://" + device.getIp() + ":8080/project/voting/applyTempVote";
             result = restTemplate.postForEntity(uri, vote, Vote.class).getBody();
 //                votingManager.getTempVote().addVote(result.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ResourceAccessException e) {
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp() + " + " + vote.getVoteStr());
         }
 
         return result;
@@ -93,7 +95,7 @@ public class NewVotingService {
             String uri = "http://" + deviceManager.getCurrentDevice().getIp() + ":8080/project/voting/startVote";
             result = restTemplate.postForEntity(uri, voteString, Object.class).getBody();
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + deviceManager.getCurrentDevice().getIp() + " + " + voteString);
         }
         return result;
     }
@@ -105,7 +107,7 @@ public class NewVotingService {
             System.out.println(voteStr);
             result = restTemplate.postForEntity(uri, voteStr, SingleVote.class).getBody();
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp() + " + " + voteStr);
         }
         return result;
     }
@@ -121,7 +123,7 @@ public class NewVotingService {
             restTemplate.put(uri, voteApply);
             return true;
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp() + " + " + voteStr);
             return false;
         }
     }
@@ -132,7 +134,7 @@ public class NewVotingService {
             String uri = "http://" + device.getIp() + ":8080/project/game/applyPlayOrder";
             restTemplate.put(uri, order);
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp());
         }
     }
 
@@ -142,7 +144,7 @@ public class NewVotingService {
             String uri = "http://" + device.getIp() + ":8080/project/voting/askForAnswer";
             result =  restTemplate.postForEntity(uri, voteStr, String.class).getBody();
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp() + " + " + voteStr);
         }
         return result;
     }
@@ -154,7 +156,7 @@ public class NewVotingService {
             String uri = "http://" + device.getIp() + ":8080/project/game/checkGameExists";
             result =  restTemplate.getForEntity(uri, Boolean.class).getBody();
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp());
         }
         return result;
     }
@@ -164,13 +166,13 @@ public class NewVotingService {
         return restTemplate.postForEntity(uri,null, Device.class).getBody();
     }
 
-    public boolean sendJoinRequest(Device dev) {
+    public boolean sendJoinRequest(Device device) {
         boolean result = false;
         try {
-            String uri = "http://" + dev.getIp() + ":8080/project/echo/joinRequest";
+            String uri = "http://" + device.getIp() + ":8080/project/echo/joinRequest";
             result =  restTemplate.postForEntity(uri, deviceManager.getCurrentDevice(), Boolean.class).getBody();
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp());
         }
         return result;
     }
@@ -178,10 +180,10 @@ public class NewVotingService {
     public boolean sendFullTempVote(Device device, Vote vote) {
         try {
             String uri = "http://" + device.getIp() + ":8080/project/voting/applyFullTempVote";
-            restTemplate.postForEntity(uri, vote, Boolean.class);
+            restTemplate.put(uri, vote);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp() + " + " + vote.getVoteStr());
             return false;
         }
     }
@@ -191,7 +193,7 @@ public class NewVotingService {
             String uri = "http://" + device.getIp() + ":8080/project/voting/revert";
             restTemplate.postForEntity(uri, voteStr, Boolean.class).getBody();
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp() + " + " + voteStr);
         }
     }
 
@@ -307,6 +309,7 @@ public class NewVotingService {
         }
         tempVote.setPassedVote(passedVote);
         tempVote.getVotes().removeAll(tempVote.getVotes());
+        tempVote.getVotes().addAll(fullTempVote.getVotes());
 
     }
 
