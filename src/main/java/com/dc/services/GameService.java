@@ -6,6 +6,7 @@ import com.dc.pojo.DeviceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,8 +49,9 @@ public class GameService {
         return (int) response.getBody();
     }
 
+    @Async
     public void sendNextPlayer(Device device, Device nextPlayer) {
         String uri = "http://" + device.getIp() + ":8080/project/game/setNextPlayer";
-        restTemplate.put(uri,nextPlayer);
+        restTemplate.put(uri, nextPlayer);
     }
 }

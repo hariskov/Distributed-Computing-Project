@@ -47,11 +47,16 @@ public class CardInterceptor implements HandlerInterceptor {
 
         // calculate ->
 
+
+
+
         // call next round
         if(deviceManager.getDevices().containsAll((gameManager.getPlayingOrder()))){
             gameManager.setTurn(gameManager.getTurn() + 1);
+            Device player = gameManager.getNextPlayer();
+
             for (Device device : deviceManager.getDevices()) {
-                gameService.sendNextPlayer(device, gameManager.getNextPlayer());
+                gameService.sendNextPlayer(device, player);
             }
         }else {
             // remove device from order

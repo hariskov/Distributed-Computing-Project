@@ -75,7 +75,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
         deviceChecker(lastVote);
         applyVoteChecker(lastVote);
 
-        }
+    }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
