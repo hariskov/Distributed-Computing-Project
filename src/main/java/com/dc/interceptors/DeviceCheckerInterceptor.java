@@ -2,6 +2,7 @@ package com.dc.interceptors;
 
 import com.dc.pojo.Device;
 import com.dc.pojo.DeviceManager;
+import com.dc.pojo.GameManager;
 import com.dc.services.GameService;
 import com.dc.services.NewVotingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
     @Autowired
     GameService gameService;
 
+    @Autowired
+    GameManager gameManager;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;
@@ -48,7 +52,7 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
             deviceManager.getDevices().forEach(e -> deviceManager.syncDevices(e));
             newVotingService.sendStartVote("LeaderSelect");
         }else{
-            Boolean freeToJoin = false;
+            List<Device> freeToJoin = null;
             for(Device dev : deviceManager.getDevices()) {
                 if(!dev.equals(deviceManager.getCurrentDevice())) {
                     freeToJoin = newVotingService.sendJoinRequest(dev);
@@ -56,7 +60,9 @@ public class DeviceCheckerInterceptor implements HandlerInterceptor {
                 }
             }
 
-            if(freeToJoin){
+            if(freeToJoin!=null){
+                gameManager.setPlayingOrder(freeToJoin);
+
                 List<Device> devices = new LinkedList<Device>();
                 devices.addAll(deviceManager.getDevices());
                 devices.forEach(e -> deviceManager.syncDevices(e));

@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
@@ -166,11 +167,19 @@ public class NewVotingService {
         return restTemplate.postForEntity(uri,null, Device.class).getBody();
     }
 
-    public boolean sendJoinRequest(Device device) {
-        boolean result = false;
+    public List<Device> sendJoinRequest(Device device) {
+        List<Device> result = null;
         try {
             String uri = "http://" + device.getIp() + ":8080/project/echo/joinRequest";
-            result =  restTemplate.postForEntity(uri, deviceManager.getCurrentDevice(), Boolean.class).getBody();
+            ParameterizedTypeReference<List<Device>> typeRef = new ParameterizedTypeReference<List<Device>>() {};
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Object> requestEntity = new HttpEntity<Object>(deviceManager.getCurrentDevice(),headers);
+
+            ResponseEntity<List<Device>> responseEntity = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, typeRef);
+            result = responseEntity.getBody();
         }catch(Exception e){
             logger.error("Error in : " + this.getClass().getName() + "." + Thread.currentThread().getStackTrace()[1].getMethodName() + " : " + device.getIp());
         }

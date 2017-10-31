@@ -30,6 +30,9 @@ public class EchoController {
     @Autowired
     NewVotingService newVotingService;
 
+    @Autowired
+    GameManager gameManager;
+
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<Device> exists(){
         return ResponseEntity.ok().body(deviceManager.getCurrentDevice());
@@ -56,11 +59,19 @@ public class EchoController {
     }
 
     @PostMapping("/joinRequest")
-    public ResponseEntity<Object> joinGameRequest(@RequestBody Device device){
+    public ResponseEntity<List<Device>> joinGameRequest(@RequestBody Device device){
         String voteStr = "join : " + device.getIp();
         newVotingService.sendStartVote(voteStr);
         SingleVote vote = votingManager.getDecidedVote(voteStr);
-        return ResponseEntity.ok(vote.getAnswer());
+        if(vote.getAnswer() instanceof Boolean) {
+            Boolean answer = (Boolean)vote.getAnswer();
+            if (answer) {
+                return ResponseEntity.ok(gameManager.getPlayingOrder());
+            } else {
+                return ResponseEntity.ok(null);
+            }
+        }
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping("/removeDeviceAndLastVote")

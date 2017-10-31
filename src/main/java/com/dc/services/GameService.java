@@ -17,6 +17,6 @@ public class GameService {
 
     public void sendAddPlayer(Device device, Device currentDevice) {
         String uri = "http://" + device.getIp() + ":8080/project/game/addPlayer";
-        restTemplate.postForEntity(uri, currentDevice, Device.class);
+        restTemplate.put(uri, currentDevice);
     }
 }
