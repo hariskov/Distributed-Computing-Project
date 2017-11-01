@@ -32,7 +32,6 @@ public class DeviceManager {
     List<Device> devices = new ArrayList<>();
     private Device currentDevice;
     private Device server;
-    private boolean discoverable = true;
 
     @Autowired
     public DeviceManager(){
@@ -177,11 +176,4 @@ public class DeviceManager {
         }
     }
 
-    public boolean getDiscoverable() {
-        return discoverable;
-    }
-
-    public void setDiscoverable(boolean discoverable) {
-        this.discoverable = discoverable;
-    }
 }

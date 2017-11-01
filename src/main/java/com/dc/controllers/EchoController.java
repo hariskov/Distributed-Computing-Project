@@ -30,34 +30,9 @@ public class EchoController {
     @Autowired
     NewVotingService newVotingService;
 
-    @Autowired
-    GameManager gameManager;
-
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<Device> exists(){
-        if(deviceManager.getDiscoverable()) {
-            return ResponseEntity.ok().body(deviceManager.getCurrentDevice());
-        }else{
-            return null;
-        }
-    }
-
-    @PutMapping(value ="/exit")
-    public ResponseEntity stop(){
-        this.deviceManager.setDiscoverable(false);
-        this.deviceManager.removeDevices(this.deviceManager.getDevices());
-        this.deviceManager.addDevice(this.deviceManager.getCurrentDevice());
-
-        newVotingService.restart();
-        gameManager.restart();
-
-        return ResponseEntity.ok(null);
-    }
-
-    @PutMapping(value ="/enter")
-    public ResponseEntity start(){
-        this.deviceManager.setDiscoverable(true);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().body(deviceManager.getCurrentDevice());
     }
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)
