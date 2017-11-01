@@ -228,6 +228,7 @@ public class StartVoteInterceptor implements HandlerInterceptor {
                 for (Device device : allDevices) {
                     newVotingService.sendApplyPlayOrder(device, result);
                 }
+                deviceManager.setDiscoverable(true);
             }
         }
     }

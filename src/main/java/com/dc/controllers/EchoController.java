@@ -3,6 +3,8 @@ package com.dc.controllers;
 import com.dc.pojo.*;
 import com.dc.pojo.combos.VoteDevice;
 import com.dc.services.NewVotingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -33,6 +35,8 @@ public class EchoController {
     @Autowired
     GameManager gameManager;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @RequestMapping(value="/", method = RequestMethod.POST)
     public ResponseEntity<Device> exists(){
         if(deviceManager.getDiscoverable()) {
@@ -42,36 +46,41 @@ public class EchoController {
         }
     }
 
-    @PutMapping(value ="/exit")
-    public ResponseEntity stop(){
-        this.deviceManager.setDiscoverable(false);
-        this.deviceManager.removeDevices(this.deviceManager.getDevices());
-        this.deviceManager.addDevice(this.deviceManager.getCurrentDevice());
+//    @PutMapping(value ="/exit")
+//    public ResponseEntity stop(){
+//        this.deviceManager.setDiscoverable(false);
+//        this.deviceManager.removeDevices(this.deviceManager.getDevices());
+//        this.deviceManager.addDevice(this.deviceManager.getCurrentDevice());
+//
+//        newVotingService.restart();
+//        gameManager.restart();
+//
+//        return ResponseEntity.ok(null);
+//    }
 
-        newVotingService.restart();
-        gameManager.restart();
-
-        return ResponseEntity.ok(null);
-    }
-
-    @PutMapping(value ="/enter")
-    public ResponseEntity start(){
-        this.deviceManager.setDiscoverable(true);
-        return ResponseEntity.ok(null);
-    }
+//    @PutMapping(value ="/enter")
+//    public ResponseEntity start(){
+//        this.deviceManager.setDiscoverable(true);
+//        return ResponseEntity.ok(null);
+//    }
 
     @RequestMapping(value ="/discovery", method = RequestMethod.GET)
     public ResponseEntity discover() throws IOException {
         deviceManager.discoverDevices();
+
+        logger.info(deviceManager.getDevices().size() + "");
 
         return ResponseEntity.ok(null);
     }
 
     @PostMapping("/getDevices")
     public ResponseEntity<Object> syncDevices(@RequestBody List<Device> devices){
+        logger.info("got in get Devices");
         deviceManager.callPlayersToNotDiscover();
         devices.forEach(e->deviceManager.addDevice(e));
-        return ResponseEntity.ok().body(deviceManager.getDevices());
+        List<Device> devicesres = deviceManager.getDevices();
+
+        return ResponseEntity.ok().body(devicesres);
     }
 
     @PostMapping("/syncVotes")

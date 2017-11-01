@@ -33,4 +33,5 @@ public class MainController {
         log.info(Thread.currentThread().getStackTrace()[1].getClassName() + " / " + Thread.currentThread().getStackTrace()[1].getMethodName());
         return MAIN;
     }
+
 }

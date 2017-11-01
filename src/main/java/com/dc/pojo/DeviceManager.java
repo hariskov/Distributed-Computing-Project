@@ -1,6 +1,8 @@
 package com.dc.pojo;
 
 import com.dc.services.DeviceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,7 +34,9 @@ public class DeviceManager {
     List<Device> devices = new ArrayList<>();
     private Device currentDevice;
     private Device server;
-    private boolean discoverable = true;
+    private boolean discoverable = false;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public DeviceManager(){
@@ -91,6 +95,7 @@ public class DeviceManager {
 
     public void discoverDevices() {
         byte[] ip = localhost.getAddress();
+        logger.info("Discovery Started");
 
         // 2 for debugging
         for (int i = 2; i <= 254; i++) {

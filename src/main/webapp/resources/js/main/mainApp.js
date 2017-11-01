@@ -11,6 +11,16 @@ console.log('provider');
             controller : 'mainController',
             controllerAs : 'mnCtrl'
         })
+        .when('/search',{
+            templateUrl :'resources/html/templates/search.html',
+            controller : 'searchController',
+            controllerAs : 'scCtrl'
+        })
+        .when('/play',{
+            templateUrl :'resources/html/templates/game.html',
+            controller : 'gameController',
+            controllerAs : 'gmCtrl'
+        })
 };
 
 var app = angular.module('mainApp',['ngRoute']);

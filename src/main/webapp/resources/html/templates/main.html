@@ -1,17 +1,4 @@
-<!-- this should be the main view containing the cards for the different players -->
-
-<form ng-show="!mnCtrl.discoverDone">
-    <input type="button" ng-click="mnCtrl.discover()" value="Search Devices">
+<form>
+    <label for="pName">Enter Player Name</label><input type="text" id="pName" ng-model="mnCtrl.playerName"/>
+    <input type="button" ng-click="mnCtrl.enterPlayStage()" value="Enter">
 </form>
-<input type="button" ng-click="mnCtrl.enter()" value="Enter" ng-click="mnCtrl.enter()">
-<input type="button" ng-click="mnCtrl.exit()" value="Exit" ng-click="mnCtrl.exit()">
-
-<form ng-if="mnCtrl.discoverDone">
-    <input type="text" ng-model="mnCtrl.card.cardValue"/>
-    <input type="text" ng-model="mnCtrl.card.cardSign"/>
-    <input type="button" ng-click="mnCtrl.submit()" value="submit" ng-if="mnCtrl.canPlay==true">
-</form>
-
-
-<body>
-</body>

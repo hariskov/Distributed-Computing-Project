@@ -4,58 +4,6 @@
 
     var initializationServiceFunction = function($http) {
 
-        this.submitCard = function (card) {
-            var request = {
-                method: 'post',
-                url: 'card/playCard',
-                data: card
-            };
-
-            return $http(request).then({
-                function(result){
-                    return result.data;
-                }
-            });
-        };
-
-        this.discover = function(){
-            var request = {
-                method : 'get',
-                url:'echo/discovery'
-            };
-
-            return $http(request).then({
-                function(result){
-                    return result.data;
-                }
-            });
-        };
-
-        this.exit = function(){
-            var request = {
-                method : 'put',
-                url:'echo/exit'
-            };
-
-            return $http(request).then({
-                function(result){
-                    return result.data;
-                }
-            });
-        };
-
-        this.enter = function(){
-            var request = {
-                method : 'put',
-                url:'echo/enter'
-            };
-
-            return $http(request).then({
-                function(result){
-                    return result.data;
-                }
-            });
-        };
     };
 
     var app = angular.module('mainApp');
