@@ -3,8 +3,6 @@
 <form ng-show="!mnCtrl.discoverDone">
     <input type="button" ng-click="mnCtrl.discover()" value="Search Devices">
 </form>
-<input type="button" ng-click="mnCtrl.enter()" value="Enter" ng-click="mnCtrl.enter()">
-<input type="button" ng-click="mnCtrl.exit()" value="Exit" ng-click="mnCtrl.exit()">
 
 <form ng-if="mnCtrl.discoverDone">
     <input type="text" ng-model="mnCtrl.card.cardValue"/>
